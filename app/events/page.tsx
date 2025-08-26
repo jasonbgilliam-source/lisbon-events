@@ -1,0 +1,4 @@
+
+import EventCard,{type EventRecord} from "@/components/EventCard"; import { supabaseServer } from "@/lib/supabaseServer"; export const revalidate=60;
+async function getEvents():Promise<EventRecord[]>{const sb=supabaseServer(); const {data,error}=await sb.from('events').select('id,title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url').gte('starts_at',new Date(new Date().setHours(0,0,0,0)).toISOString()).order('starts_at',{ascending:true}); if(error){console.error(error); return [];} return data as EventRecord[];}
+export default async function EventsPage(){const events=await getEvents(); return(<div className='container'><h1>Upcoming Events</h1>{events.length===0 && <div className='card'>No upcoming events yet. Be the first to <a href='/submit'>submit one</a>!</div>}{events.map(e=><EventCard key={e.id} evt={e}/>)}</div>)}

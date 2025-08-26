@@ -1,0 +1,1 @@
+import { createClient } from '@supabase/supabase-js'; export function supabaseServer(){const u=process.env.SUPABASE_URL!,k=process.env.SUPABASE_SERVICE_ROLE_KEY!; if(!u||!k) throw new Error('Missing Supabase env'); return createClient(u,k,{auth:{persistSession:false}});}

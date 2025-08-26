@@ -1,0 +1,1 @@
+@tailwind base;@tailwind components;@tailwind utilities; .container{max-width:72rem;margin:0 auto;padding:0 1rem} .card{background:#fff;border-radius:1rem;box-shadow:0 8px 16px rgba(0,0,0,.06);padding:1.25rem} .btn{display:inline-flex;gap:.5rem;border:1px solid #000;border-radius:1rem;padding:.5rem 1rem} .btn-primary{background:#000;color:#fff}

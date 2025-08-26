@@ -1,0 +1,1 @@
+export default function Blog(){return(<div className='container'><h1>Lisbon Food & Travel Bloggers</h1><div className='card'>Add your favorite blogs in app/blog/blogroll.json later.</div></div>)}
