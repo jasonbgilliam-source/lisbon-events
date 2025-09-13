@@ -1,3 +1,6 @@
+// app/calendar/page.tsx
+export const dynamic = "force-dynamic";
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import MonthCalendar from "@/components/MonthCalendar";
@@ -5,7 +8,7 @@ import EventCard, { type EventRecord } from "@/components/EventCard";
 
 type Search = { date?: string };
 
-// ---- utilities ----
+// ---------- utilities ----------
 function startEndForDate(ymd: string) {
   // Interpret as UTC window [00:00Z, next 00:00Z)
   const start = new Date(ymd + "T00:00:00.000Z");
@@ -13,14 +16,12 @@ function startEndForDate(ymd: string) {
   return { startISO: start.toISOString(), endISO: end.toISOString() };
 }
 
-function truthy(v: string | undefined) {
-  const s = String(v ?? "").trim().toLowerCase();
-  return s === "true" || s === "1" || s === "yes" || s === "y";
-}
+const truthy = (v: string | null | undefined) =>
+  ["true", "1", "yes", "y"].includes(String(v ?? "").trim().toLowerCase());
 
-function toISODateTime(s: string | undefined) {
+function toISODateTime(s: string | null | undefined) {
   if (!s) return "";
-  const t = s.trim();
+  const t = String(s).trim();
   if (!t) return "";
   // If it's a date-only, make it 00:00Z; if it has time but no zone, add Z.
   if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return `${t}T00:00:00.000Z`;
@@ -30,56 +31,72 @@ function toISODateTime(s: string | undefined) {
   return t;
 }
 
-function addDaysISO(dateYYYYMMDD: string, days: number) {
-  const d = new Date(dateYYYYMMDD + "T00:00:00.000Z");
+function addDaysISO(ymd: string, days: number) {
+  const d = new Date(ymd + "T00:00:00.000Z");
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString();
 }
 
-function overlapsDay(startsAtISO: string, endsAtISO: string, dayStartISO: string, dayEndISO: string) {
-  // 1) starts that day  2) ends that day  3) spans across the whole day
-  const s = new Date(startsAtISO).getTime();
-  const e = new Date(endsAtISO).getTime();
+function overlapsDay(
+  startsAtISO: string | null | undefined,
+  endsAtISO: string | null | undefined,
+  dayStartISO: string,
+  dayEndISO: string
+) {
+  const sStr = startsAtISO ?? "";
+  const eStr = endsAtISO ?? startsAtISO ?? "";
+  if (!sStr) return false;
+
+  const s = new Date(sStr).getTime();
+  const e = new Date(eStr).getTime();
   const ds = new Date(dayStartISO).getTime();
   const de = new Date(dayEndISO).getTime();
-  return (
-    (s >= ds && s < de) ||
-    (e > ds && e <= de) ||
-    (s < ds && e >= de)
-  );
+
+  if (Number.isNaN(s) || Number.isNaN(e)) return false;
+
+  return (s >= ds && s < de) || (e > ds && e <= de) || (s < ds && e >= de);
 }
 
-// Tiny CSV parser that handles quotes & commas
+// Tiny CSV parser that handles quotes, commas, CRLF, and BOM.
 function parseCSV(text: string): Record<string, string>[] {
+  if (text && text.charCodeAt(0) === 0xfeff) text = text.slice(1); // strip BOM
   const rows: string[][] = [];
   let row: string[] = [];
   let field = "";
   let inQuotes = false;
 
-  const pushField = () => { row.push(field); field = ""; };
-  const pushRow = () => { rows.push(row); row = []; };
+  const pushField = () => {
+    row.push(field);
+    field = "";
+  };
+  const pushRow = () => {
+    rows.push(row);
+    row = [];
+  };
 
   for (let i = 0; i < text.length; i++) {
     const c = text[i];
     if (c === '"') {
-      if (inQuotes && text[i + 1] === '"') { field += '"'; i++; }
-      else { inQuotes = !inQuotes; }
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
     } else if (c === "," && !inQuotes) {
       pushField();
     } else if ((c === "\n" || c === "\r") && !inQuotes) {
       pushField();
-      // swallow \r\n pairs
       if (c === "\r" && text[i + 1] === "\n") i++;
       pushRow();
     } else {
       field += c;
     }
   }
-  // last field/row
   pushField();
   if (row.length > 1 || rows.length === 0) pushRow();
-
   if (rows.length === 0) return [];
+
   const header = rows[0].map((h) => h.trim().toLowerCase());
   const out: Record<string, string>[] = [];
   for (let r = 1; r < rows.length; r++) {
@@ -107,19 +124,20 @@ function csvRowToEvent(r: Record<string, string>): EventRecord | null {
     if (/^\d{4}-\d{2}-\d{2}$/.test(endRaw)) {
       ends_at = addDaysISO(endRaw, 1);
     } else if (!ends_at) {
-      // single-day all-day: end = start + 1 day
       if (/^\d{4}-\d{2}-\d{2}$/.test(startRaw)) {
         ends_at = addDaysISO(startRaw, 1);
       } else if (starts_at) {
-        const d = new Date(starts_at); d.setUTCDate(d.getUTCDate() + 1);
+        const d = new Date(starts_at);
+        d.setUTCDate(d.getUTCDate() + 1);
         ends_at = d.toISOString();
       }
     }
   }
-  // If still missing an end, default to start (non-all-day short events)
+
+  // If still missing an end, default to start (keeps types as string)
   if (!ends_at && starts_at) ends_at = starts_at;
 
-  const id = `${starts_at}|${title}`; // stable string id
+  const id = `${starts_at}|${title}`;
 
   return {
     id,
@@ -132,17 +150,24 @@ function csvRowToEvent(r: Record<string, string>): EventRecord | null {
     city: r["city"] ?? "",
     address: r["address"] ?? "",
     ticket_url: r["source_url"] ?? "",
-    image_url: "" // not provided by CSV
+    image_url: ""
   } as EventRecord;
 }
 
-// ---- data loader (filesystem, no network) ----
+// ---------- server data loader ----------
 async function getEventsForDayFromCSV(ymd: string): Promise<EventRecord[]> {
   const { startISO, endISO } = startEndForDate(ymd);
   const csvPath = path.join(process.cwd(), "public", "events.csv");
-  const csvText = await fs.readFile(csvPath, "utf8");
-  const rows = parseCSV(csvText);
 
+  let csvText = "";
+  try {
+    csvText = await fs.readFile(csvPath, "utf8");
+  } catch (e) {
+    console.error("Failed to read CSV at", csvPath, e);
+    return [];
+  }
+
+  const rows = parseCSV(csvText);
   const events = rows
     .map(csvRowToEvent)
     .filter((e): e is EventRecord => !!e)
@@ -152,14 +177,16 @@ async function getEventsForDayFromCSV(ymd: string): Promise<EventRecord[]> {
   return events;
 }
 
-// ---- page ----
+// ---------- page ----------
 export default async function CalendarPage({ searchParams }: { searchParams: Search }) {
   const selectedDate = searchParams.date ?? new Date().toISOString().slice(0, 10);
   const events = await getEventsForDayFromCSV(selectedDate);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Calendar</h1>
+      <h1 className="text-2xl font-bold">
+        Calendar <span className="text-xs align-middle opacity-60">(src: csv)</span>
+      </h1>
 
       <MonthCalendar selectedDate={selectedDate} />
 
