@@ -1,1 +1,15 @@
-import { createClient } from '@supabase/supabase-js'; export function supabaseServer(){const u=process.env.SUPABASE_URL!,k=process.env.SUPABASE_SERVICE_ROLE_KEY!; if(!u||!k) throw new Error('Missing Supabase env'); return createClient(u,k,{auth:{persistSession:false}});}
+// lib/supabaseServer.ts
+import { createClient } from "@supabase/supabase-js";
+
+export function supabaseServer() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!; // SERVER ONLY
+
+  return createClient(url, key, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+      detectSessionInUrl: false,
+    },
+  });
+}
