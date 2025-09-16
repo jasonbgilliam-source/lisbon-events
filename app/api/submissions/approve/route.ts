@@ -1,17 +1,15 @@
 // app/api/submissions/approve/route.ts
 import { NextResponse } from "next/server";
-import { supabaseServer } from "../../../lib/supabaseServer";
-import { mapSubmissionToEvent } from "../../../lib/submissionMapper";
-import { appendRowToCsv, toCsvRow } from "../../../lib/githubCsv";
+import { supabaseServer } from "../../../../lib/supabaseServer";
+import { mapSubmissionToEvent } from "../../../../lib/submissionMapper";
+import { appendRowToCsv, toCsvRow } from "../../../../lib/githubCsv";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
     const { id, reviewer, notes } = (await req.json()) as {
-      id: number | string;
-      reviewer?: string;
-      notes?: string;
+      id: number | string; reviewer?: string; notes?: string;
     };
     if (!id) return NextResponse.json({ error: "Missing submission id" }, { status: 400 });
 
@@ -44,8 +42,7 @@ export async function POST(req: Request) {
       const row = toCsvRow(eventRow);
       await appendRowToCsv(row, `chore(events): approve submission #${id} -> ${eventRow.title}`);
     } catch (e: any) {
-      console.warn("CSV append failed:", e?.message || e);
-      // non-fatal
+      console.warn("CSV append failed:", e?.message || e); // non-fatal
     }
 
     const { error: updateErr } = await supabase
