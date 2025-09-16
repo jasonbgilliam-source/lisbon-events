@@ -12,12 +12,10 @@ function csvEscape(value?: string | boolean | null) {
 }
 
 export function toCsvRow(e: Record<string, any>) {
-  // Keep this order EXACTLY as your CSV header:
   const order = [
     "title","start","end","all_day","venue","city","address","price","age",
     "category","description","organizer","source_url","tags","recurrence_note"
   ] as const;
-
   return order.map(k => csvEscape(e[k])).join(",");
 }
 
