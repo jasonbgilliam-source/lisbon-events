@@ -1,0 +1,46 @@
+// lib/submissionMapper.ts
+
+// Convert date-ish strings to ISO (UTC). If empty, return null.
+function toIso(s?: string | null) {
+  if (!s) return null;
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+// If submissions store booleans as strings, normalize them.
+function toBool(v: any) {
+  if (typeof v === "boolean") return v;
+  if (v == null) return false;
+  return String(v).trim().toLowerCase() === "true";
+}
+
+/**
+ * Map ONE row from event_submissions to the EVENTS table shape + CSV.
+ * Edit the left-hand keys to match your submission column names.
+ */
+export function mapSubmissionToEvent(sub: any) {
+  // 👉 EDIT THESE to match *your* event_submissions columns
+  const title = sub.title ?? sub.name ?? sub.event_title;
+  const start = toIso(sub.start ?? sub.start_time ?? sub.start_datetime);
+  const end   = toIso(sub.end ?? sub.end_time ?? sub.end_datetime) || start;
+  const all_day = toBool(sub.all_day ?? sub.is_all_day ?? false);
+
+  return {
+    title,
+    start,
+    end,
+    all_day,
+    venue: sub.venue ?? sub.location_name ?? "",
+    city: sub.city ?? "",
+    address: sub.address ?? "",
+    price: sub.price ?? "",
+    age: sub.age ?? "",
+    category: sub.category ?? sub.type ?? "",
+    description: sub.description ?? sub.details ?? "",
+    organizer: sub.organizer ?? "",
+    source_url: sub.source_url ?? sub.url ?? "",
+    tags: sub.tags ?? "",
+    recurrence_note: sub.recurrence_note ?? "",
+  };
+}
