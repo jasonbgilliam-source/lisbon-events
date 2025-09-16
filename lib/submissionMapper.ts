@@ -19,7 +19,7 @@ function toBool(v: any) {
  */
 export function mapSubmissionToEvent(sub: any) {
   const title = sub.title ?? sub.name ?? sub.event_title;
-  const start = toIso(sub.start ?? sub.start_time ?? sub.start_datetime);
+  const starts_at = toIso(sub.start ?? sub.start_time ?? sub.start_datetime);
   const end   = toIso(sub.end ?? sub.end_time ?? sub.end_datetime) || start;
   const all_day = toBool(sub.all_day ?? sub.is_all_day ?? false);
 
