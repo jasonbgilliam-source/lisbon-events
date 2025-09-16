@@ -1,6 +1,5 @@
-import { supabaseServer } from "@/lib/supabaseServer";
 // app/api/submissions/list/route.ts
-import { supabaseServer } from "../../../lib/supabaseServer"; // ← relative path
+import { supabaseServer } from "../../../../lib/supabaseServer"; // go up 4 levels
 
 export const dynamic = "force-dynamic"; // avoid caching
 
