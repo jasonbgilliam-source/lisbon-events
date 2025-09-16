@@ -1,16 +1,13 @@
-import { NextResponse } from "next/server";
 // app/api/submissions/reject/route.ts
 import { NextResponse } from "next/server";
-import { supabaseServer } from "../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
     const { id, reviewer, notes } = (await req.json()) as {
-      id: number | string;
-      reviewer?: string;
-      notes?: string;
+      id: number | string; reviewer?: string; notes?: string;
     };
     if (!id) return NextResponse.json({ error: "Missing submission id" }, { status: 400 });
 
