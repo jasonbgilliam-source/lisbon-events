@@ -1,4 +1,8 @@
 import { supabaseServer } from "@/lib/supabaseServer";
+// app/api/submissions/list/route.ts
+import { supabaseServer } from "../../../lib/supabaseServer"; // ← relative path
+
+export const dynamic = "force-dynamic"; // avoid caching
 
 export async function GET() {
   const supabase = supabaseServer();
@@ -8,8 +12,13 @@ export async function GET() {
     .eq("status", "pending")
     .order("id", { ascending: true });
 
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
   return new Response(JSON.stringify({ items: data }), {
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
   });
 }
