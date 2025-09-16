@@ -1,6 +1,5 @@
 // lib/submissionMapper.ts
 
-// Convert date-ish strings to ISO (UTC). If empty, return null.
 function toIso(s?: string | null) {
   if (!s) return null;
   const d = new Date(s);
@@ -8,7 +7,6 @@ function toIso(s?: string | null) {
   return d.toISOString();
 }
 
-// If submissions store booleans as strings, normalize them.
 function toBool(v: any) {
   if (typeof v === "boolean") return v;
   if (v == null) return false;
@@ -16,11 +14,10 @@ function toBool(v: any) {
 }
 
 /**
- * Map ONE row from event_submissions to the EVENTS table shape + CSV.
- * Edit the left-hand keys to match your submission column names.
+ * EDIT the left-hand keys (sub.whatever) so they match your event_submissions columns.
+ * If you're unsure: Supabase → Table Editor → event_submissions → note exact column names.
  */
 export function mapSubmissionToEvent(sub: any) {
-  // 👉 EDIT THESE to match *your* event_submissions columns
   const title = sub.title ?? sub.name ?? sub.event_title;
   const start = toIso(sub.start ?? sub.start_time ?? sub.start_datetime);
   const end   = toIso(sub.end ?? sub.end_time ?? sub.end_datetime) || start;
