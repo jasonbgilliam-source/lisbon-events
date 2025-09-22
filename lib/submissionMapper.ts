@@ -16,7 +16,7 @@ function toBool(v: any) {
 export type EventRow = {
   title: string;
   start: string;       // ISO
-  end_at: string;      // ISO  <-- use end_at for the DB
+  ends_at: string;      // ISO  <-- use ends_at for the DB
   all_day: boolean;
   venue?: string;
   city?: string;
@@ -37,7 +37,7 @@ export function mapSubmissionToEvent(sub: any): EventRow {
   const start =
     toIso(sub.start ?? sub.start_time ?? sub.start_datetime) ?? new Date().toISOString();
 
-  const end_at =
+  const ends_at =
     toIso(sub.end ?? sub.end_time ?? sub.end_datetime) ?? start;
 
   const all_day = toBool(sub.all_day ?? sub.is_all_day ?? false);
@@ -45,7 +45,7 @@ export function mapSubmissionToEvent(sub: any): EventRow {
   return {
     title,
     start,
-    end_at,                 // <-- DB column name
+    ends_at,                 // <-- DB column name
     all_day,
     venue: sub.venue ?? sub.location_name ?? sub.location ?? "",
     city: sub.city ?? "",
