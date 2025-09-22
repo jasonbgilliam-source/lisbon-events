@@ -1,6 +1,5 @@
 // lib/submissionMapper.ts
 
-// --- tiny helpers kept in this file so there are no missing imports ---
 function toIso(s?: string | null) {
   if (!s) return null;
   const d = new Date(s);
@@ -14,11 +13,10 @@ function toBool(v: any) {
   return String(v).trim().toLowerCase() === "true";
 }
 
-// Shape we insert into the `events` table and write to CSV
 export type EventRow = {
   title: string;
-  start: string;             // ISO string
-  end: string;               // ISO string
+  start: string;       // ISO
+  end_at: string;      // ISO  <-- use end_at for the DB
   all_day: boolean;
   venue?: string;
   city?: string;
@@ -33,19 +31,13 @@ export type EventRow = {
   recurrence_note?: string;
 };
 
-/**
- * Map ONE row from event_submissions -> canonical EventRow.
- * EDIT the left-hand `sub.<field>` names to match your actual event_submissions columns.
- */
 export function mapSubmissionToEvent(sub: any): EventRow {
   const title = sub.title ?? sub.name ?? sub.event_title;
 
-  // IMPORTANT: keep the variable named `start` (not starts_at) so we can reuse it below
   const start =
     toIso(sub.start ?? sub.start_time ?? sub.start_datetime) ?? new Date().toISOString();
 
-  // If there is no end in the submission, fall back to start
-  const end =
+  const end_at =
     toIso(sub.end ?? sub.end_time ?? sub.end_datetime) ?? start;
 
   const all_day = toBool(sub.all_day ?? sub.is_all_day ?? false);
@@ -53,7 +45,7 @@ export function mapSubmissionToEvent(sub: any): EventRow {
   return {
     title,
     start,
-    end,
+    end_at,                 // <-- DB column name
     all_day,
     venue: sub.venue ?? sub.location_name ?? sub.location ?? "",
     city: sub.city ?? "",
