@@ -11,12 +11,25 @@ function csvEscape(value?: string | boolean | null) {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
+// Order matches your `events` table (and what your CSV header should be)
 export function toCsvRow(e: Record<string, any>) {
   const order = [
-    "title","start","end","all_day","venue","city","address","price","age",
-    "category","description","organizer","source_url","tags","recurrence_note"
+    "title",
+    "description",
+    "starts_at",
+    "ends_at",
+    "category",
+    "location_name",
+    "city",
+    "address",
+    "ticket_url",
+    "image_url",
+    "all_day",
+    "age",
+    "organizer_email"
   ] as const;
-  return order.map(k => csvEscape(e[k])).join(",");
+
+  return order.map((k) => csvEscape(e[k])).join(",");
 }
 
 async function getFileShaAndContent() {
@@ -37,7 +50,14 @@ async function getFileShaAndContent() {
 
 export async function appendRowToCsv(row: string, commitMsg: string) {
   const { sha, current } = await getFileShaAndContent();
-  const next = current.endsWith("\n") ? `${current}${row}\n` : `${current}\n${row}\n`;
+
+  // Ensure CSV has the correct header. If FILE is empty or header mismatched, we add/correct it.
+  const header = "title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url,all_day,age,organizer_email";
+  const lines = current.trim().split(/\r?\n/);
+  const hasHeader = lines.length > 0 && lines[0].trim().toLowerCase() === header;
+  const body = hasHeader ? current : (current.trim() ? `${header}\n${current}` : `${header}\n`);
+
+  const next = body.endsWith("\n") ? `${body}${row}\n` : `${body}\n${row}\n`;
 
   const putUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(FILE_PATH)}`;
   const commitRes = await fetch(putUrl, {
