@@ -1,211 +1,99 @@
-// app/calendar/page.tsx
-export const dynamic = "force-dynamic";
+"use client";
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import MonthCalendar from "@/components/MonthCalendar";
-import EventCard, { type EventRecord } from "@/components/EventCard";
+import * as React from "react";
 
-type Search = { date?: string };
+type EventRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  category: string | null;
+  location_name: string | null;
+  city: string | null;
+  address: string | null;
+  ticket_url: string | null;
+  image_url: string | null;
+  all_day: boolean | null;
+  age: string | null;
+  organizer_email: string | null;
+};
 
-// ---------- utilities ----------
-function startEndForDate(ymd: string) {
-  // Interpret as UTC window [00:00Z, next 00:00Z)
-  const start = new Date(ymd + "T00:00:00.000Z");
-  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-  return { startISO: start.toISOString(), endISO: end.toISOString() };
-}
+export default function CalendarPage() {
+  const [events, setEvents] = React.useState<EventRow[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
 
-const truthy = (v: string | null | undefined) =>
-  ["true", "1", "yes", "y"].includes(String(v ?? "").trim().toLowerCase());
-
-function toISODateTime(s: string | null | undefined) {
-  if (!s) return "";
-  const t = String(s).trim();
-  if (!t) return "";
-  // If it's a date-only, make it 00:00Z; if it has time but no zone, add Z.
-  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return `${t}T00:00:00.000Z`;
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(t) && !/[zZ]|[+\-]\d{2}:\d{2}$/.test(t)) {
-    return t + "Z";
-  }
-  return t;
-}
-
-function addDaysISO(ymd: string, days: number) {
-  const d = new Date(ymd + "T00:00:00.000Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString();
-}
-
-function overlapsDay(
-  startsAtISO: string | null | undefined,
-  endsAtISO: string | null | undefined,
-  dayStartISO: string,
-  dayEndISO: string
-) {
-  const sStr = startsAtISO ?? "";
-  const eStr = endsAtISO ?? startsAtISO ?? "";
-  if (!sStr) return false;
-
-  const s = new Date(sStr).getTime();
-  const e = new Date(eStr).getTime();
-  const ds = new Date(dayStartISO).getTime();
-  const de = new Date(dayEndISO).getTime();
-
-  if (Number.isNaN(s) || Number.isNaN(e)) return false;
-
-  return (s >= ds && s < de) || (e > ds && e <= de) || (s < ds && e >= de);
-}
-
-// Tiny CSV parser that handles quotes, commas, CRLF, and BOM.
-function parseCSV(text: string): Record<string, string>[] {
-  if (text && text.charCodeAt(0) === 0xfeff) text = text.slice(1); // strip BOM
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let inQuotes = false;
-
-  const pushField = () => {
-    row.push(field);
-    field = "";
-  };
-  const pushRow = () => {
-    rows.push(row);
-    row = [];
-  };
-
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') {
-      if (inQuotes && text[i + 1] === '"') {
-        field += '"';
-        i++;
-      } else {
-        inQuotes = !inQuotes;
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/events/list", { cache: "no-store" });
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        const t = await res.text();
+        throw new Error(`Expected JSON from /api/events/list, got ${res.status}. First bytes: ${t.slice(0, 120)}`);
       }
-    } else if (c === "," && !inQuotes) {
-      pushField();
-    } else if ((c === "\n" || c === "\r") && !inQuotes) {
-      pushField();
-      if (c === "\r" && text[i + 1] === "\n") i++;
-      pushRow();
-    } else {
-      field += c;
-    }
-  }
-  pushField();
-  if (row.length > 1 || rows.length === 0) pushRow();
-  if (rows.length === 0) return [];
-
-  const header = rows[0].map((h) => h.trim().toLowerCase());
-  const out: Record<string, string>[] = [];
-  for (let r = 1; r < rows.length; r++) {
-    const obj: Record<string, string> = {};
-    for (let c = 0; c < header.length; c++) obj[header[c]] = rows[r][c] ?? "";
-    out.push(obj);
-  }
-  return out;
-}
-
-// Map CSV row -> EventRecord expected by <EventCard />
-function csvRowToEvent(r: Record<string, string>): EventRecord | null {
-  const title = (r["title"] ?? "").trim();
-  if (!title) return null;
-
-  const startRaw = (r["start"] ?? "").trim();
-  const endRaw = (r["end"] ?? "").trim();
-  const allDay = truthy(r["all_day"]);
-
-  const starts_at = toISODateTime(startRaw);
-  let ends_at = endRaw ? toISODateTime(endRaw) : "";
-
-  // For all-day with date-only end, make end exclusive by adding 1 day
-  if (allDay) {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(endRaw)) {
-      ends_at = addDaysISO(endRaw, 1);
-    } else if (!ends_at) {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(startRaw)) {
-        ends_at = addDaysISO(startRaw, 1);
-      } else if (starts_at) {
-        const d = new Date(starts_at);
-        d.setUTCDate(d.getUTCDate() + 1);
-        ends_at = d.toISOString();
-      }
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || res.statusText);
+      setEvents(j.items || []);
+    } catch (e: any) {
+      setError(e.message || "Failed to load events");
+    } finally {
+      setLoading(false);
     }
   }
 
-  // If still missing an end, default to start (keeps types as string)
-  if (!ends_at && starts_at) ends_at = starts_at;
-
-  const id = `${starts_at}|${title}`;
-
-  return {
-    id,
-    title,
-    description: r["description"] ?? "",
-    starts_at,
-    ends_at,
-    category: r["category"] ?? "",
-    location_name: r["venue"] ?? "",
-    city: r["city"] ?? "",
-    address: r["address"] ?? "",
-    ticket_url: r["source_url"] ?? "",
-    image_url: ""
-  } as EventRecord;
-}
-
-// ---------- server data loader ----------
-async function getEventsForDayFromCSV(ymd: string): Promise<EventRecord[]> {
-  const { startISO, endISO } = startEndForDate(ymd);
-  const csvPath = path.join(process.cwd(), "public", "events.csv");
-
-  let csvText = "";
-  try {
-    csvText = await fs.readFile(csvPath, "utf8");
-  } catch (e) {
-    console.error("Failed to read CSV at", csvPath, e);
-    return [];
-  }
-
-  const rows = parseCSV(csvText);
-  const events = rows
-    .map(csvRowToEvent)
-    .filter((e): e is EventRecord => !!e)
-    .filter((e) => overlapsDay(e.starts_at, e.ends_at, startISO, endISO))
-    .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
-
-  return events;
-}
-
-// ---------- page ----------
-export default async function CalendarPage({ searchParams }: { searchParams: Search }) {
-  const selectedDate = searchParams.date ?? new Date().toISOString().slice(0, 10);
-  const events = await getEventsForDayFromCSV(selectedDate);
+  React.useEffect(() => { load(); }, []);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">
-        Calendar <span className="text-xs align-middle opacity-60">(src: csv)</span>
-      </h1>
+    <main className="p-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-semibold">Calendar</h1>
+        <button className="border px-3 py-1 rounded" onClick={load} disabled={loading}>
+          {loading ? "Loading…" : "Refresh"}
+        </button>
+      </div>
 
-      <MonthCalendar selectedDate={selectedDate} />
+      {error && <p className="text-red-700 mb-3">Error: {error}</p>}
+      {!error && loading && <p>Loading…</p>}
+      {!loading && events.length === 0 && <p>No upcoming events yet.</p>}
 
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">
-          Events on {new Date(selectedDate + "T00:00:00Z").toLocaleDateString("en-GB")}
-        </h2>
-        {events.length === 0 && (
-          <div className="card">
-            No events on this day (yet!). Try another date or{" "}
-            <a href="/submit" className="underline">submit one</a>.
-          </div>
-        )}
-        <div className="grid gap-4">
-          {events.map((e) => (
-            <EventCard key={e.id} evt={e} />
-          ))}
-        </div>
-      </section>
-    </div>
+      <ul className="space-y-4">
+        {events.map(ev => (
+          <li key={ev.id} className="border rounded p-4">
+            <div className="flex justify-between items-start gap-4">
+              <div className="min-w-0">
+                <div className="font-medium truncate">{ev.title}</div>
+                <div className="text-sm text-gray-600">
+                  {new Date(ev.starts_at).toLocaleString()}{" "}
+                  {ev.location_name ? `@ ${ev.location_name}` : ""}
+                  {ev.city ? `, ${ev.city}` : ""}
+                </div>
+                {ev.category && <div className="text-xs mt-1">Category: {ev.category}</div>}
+                {ev.age && <div className="text-xs">Age: {ev.age}</div>}
+                {ev.description ? <p className="mt-2 text-sm">{ev.description}</p> : null}
+                <div className="mt-2 flex gap-3 text-sm">
+                  {ev.ticket_url && (
+                    <a className="underline" href={ev.ticket_url} target="_blank" rel="noreferrer">
+                      Tickets
+                    </a>
+                  )}
+                  {ev.image_url && (
+                    <a className="underline" href={ev.image_url} target="_blank" rel="noreferrer">
+                      Image
+                    </a>
+                  )}
+                </div>
+              </div>
+              <div className="text-right text-xs text-gray-500">
+                {ev.ends_at ? `Ends: ${new Date(ev.ends_at).toLocaleString()}` : null}
+                {ev.all_day ? <div>All day</div> : null}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </main>
   );
 }
