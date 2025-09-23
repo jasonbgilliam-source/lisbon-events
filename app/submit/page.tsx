@@ -5,28 +5,35 @@ import * as React from "react";
 export default function SubmitEventPage() {
   const [busy, setBusy] = React.useState(false);
   const [msg, setMsg] = React.useState<string | null>(null);
+  const formRef = React.useRef<HTMLFormElement | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
 
-    const f = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(f.entries());
+    // 👇 capture the form element *before* any await
+    const formEl = e.currentTarget as HTMLFormElement;
+    const payload = Object.fromEntries(new FormData(formEl).entries());
 
     try {
       const res = await fetch("/api/submit-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        cache: "no-store",
       });
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j.error || res.statusText);
+
+      // check JSON safely
+      const ct = res.headers.get("content-type") || "";
+      const data = ct.includes("application/json") ? await res.json() : {};
+      if (!res.ok) throw new Error((data as any)?.error || res.statusText);
 
       setMsg("✅ Submitted for review. Thanks!");
-      (e.currentTarget as HTMLFormElement).reset();
+      // 👇 use the captured element (or the ref) — not e.currentTarget
+      (formRef.current ?? formEl).reset();
     } catch (err: any) {
-      setMsg(`❌ ${err.message || "Submit failed"}`);
+      setMsg(`❌ ${err?.message || "Submit failed"}`);
     } finally {
       setBusy(false);
     }
@@ -36,7 +43,7 @@ export default function SubmitEventPage() {
     <main className="mx-auto max-w-2xl p-6">
       <h1 className="text-2xl font-semibold mb-4">Submit an Event</h1>
 
-      <form className="space-y-4" onSubmit={onSubmit}>
+      <form ref={formRef} className="space-y-4" onSubmit={onSubmit}>
         {/* required */}
         <div>
           <label className="block text-sm font-medium">Title *</label>
@@ -64,9 +71,9 @@ export default function SubmitEventPage() {
           <input name="location_name" required className="border p-2 w-full" />
         </div>
 
-        {/* optional but captured */}
+        {/* optional */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium">City</label><input name="city" className="border p-2 w-full" placeholder="Lisbon" /></div>
+          <div><label className="block text-sm font-medium">City</label><input name="city" className="border p-2 w-full" placeholder="Lisboa" /></div>
           <div><label className="block text-sm font-medium">Address</label><input name="address" className="border p-2 w-full" /></div>
           <div><label className="block text-sm font-medium">Category</label><input name="category" className="border p-2 w-full" placeholder="Music, Food, Arts..." /></div>
           <div><label className="block text-sm font-medium">Age</label><input name="age" className="border p-2 w-full" placeholder="All ages, 18+ ..." /></div>
