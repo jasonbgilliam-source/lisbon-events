@@ -1,11 +1,41 @@
 "use client";
 
 import * as React from "react";
-import FilterBar, { FilterState } from "../components/FilterBar";
+import FilterBar, { type FilterState } from "../components/FilterBar";
 
-// tiny util
-function toISODateOnly(d: Date) { return d.toISOString().slice(0, 10); }
+/* --------------------------- tiny date helpers --------------------------- */
+function startOfMonth(d: Date) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function endOfMonth(d: Date)   { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+function addMonths(d: Date, n: number) { return new Date(d.getFullYear(), d.getMonth() + n, 1); }
+function sameDay(a: Date, b: Date) {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+function toISODateOnly(d: Date) { return d.toISOString().slice(0, 10); } // YYYY-MM-DD
+function startOfWeek(d: Date, mondayFirst = false) {
+  const nd = new Date(d);
+  const dow = nd.getDay(); // 0=Sun
+  const offset = mondayFirst ? (dow === 0 ? 6 : dow - 1) : dow;
+  nd.setDate(nd.getDate() - offset);
+  nd.setHours(0, 0, 0, 0);
+  return nd;
+}
+function endOfWeek(d: Date, mondayFirst = false) {
+  const s = startOfWeek(d, mondayFirst);
+  const nd = new Date(s);
+  nd.setDate(nd.getDate() + 6);
+  return nd;
+}
+function formatMonthYear(d: Date) {
+  return d.toLocaleString(undefined, { month: "long", year: "numeric" });
+}
+function formatTime(dt?: string | null) {
+  if (!dt) return "";
+  const date = new Date(dt);
+  if (isNaN(date.getTime())) return "";
+  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
 
+/* ------------------------------ data shapes ----------------------------- */
 type EventRow = {
   id: string;
   title: string;
@@ -23,7 +53,11 @@ type EventRow = {
   organizer_email: string | null;
 };
 
+/* ------------------------------ main page -------------------------------- */
 export default function CalendarPage() {
+  // month cursor
+  const [cursor, setCursor] = React.useState<Date>(startOfMonth(new Date()));
+
   // filters
   const [filters, setFilters] = React.useState<FilterState>({
     category: "",
@@ -33,28 +67,36 @@ export default function CalendarPage() {
     to: "",
   });
 
-  // data
+  // data + ui state
   const [events, setEvents] = React.useState<EventRow[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [selected, setSelected] = React.useState<EventRow | null>(null);
 
+  // calendar grid (6 weeks)
+  const mondayFirst = false; // set true for Monday-first weeks
+  const monthStart = startOfMonth(cursor);
+  const monthEnd = endOfMonth(cursor);
+  const gridStart = startOfWeek(monthStart, mondayFirst);
+  const gridEnd = endOfWeek(monthEnd, mondayFirst);
+  const days: Date[] = [];
+  for (let d = new Date(gridStart); d <= gridEnd; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
+    days.push(d);
+  }
+
+  // fetch events for range + filters
   async function load() {
     setLoading(true);
     setError(null);
     try {
-      // Default range: today → +60 days, unless the user sets from/to.
-      const today = new Date();
-      const defaultFrom = toISODateOnly(today);
-      const plus60 = new Date(today);
-      plus60.setDate(plus60.getDate() + 60);
-      const defaultTo = toISODateOnly(plus60);
-
-      const fromDate = filters.from || defaultFrom;
-      const toDate = filters.to || defaultTo;
+      // Use explicit filter dates if set; else use visible grid range (pad by 1 day)
+      const fromDate = filters.from ? new Date(filters.from + "T00:00:00") : new Date(gridStart);
+      const toDate   = filters.to   ? new Date(filters.to   + "T23:59:59") : new Date(gridEnd);
+      toDate.setDate(toDate.getDate() + 1);
 
       const params = new URLSearchParams({
-        from: new Date(fromDate + "T00:00:00").toISOString(),
-        to: new Date(toDate + "T23:59:59").toISOString(),
+        from: fromDate.toISOString(),
+        to: toDate.toISOString(),
       });
       if (filters.category.trim()) params.set("category", filters.category.trim());
       if (filters.city.trim()) params.set("city", filters.city.trim());
@@ -76,19 +118,14 @@ export default function CalendarPage() {
     }
   }
 
-  function clearFilters() {
-    setFilters({ category: "", city: "", allAges: false, from: "", to: "" });
-  }
-
-  React.useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
-  // reload when filters change (debounced)
+  // reload when month or filters change (debounced a bit)
   React.useEffect(() => {
-    const id = setTimeout(() => load(), 150);
+    const id = setTimeout(() => { load(); }, 150);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.category, filters.city, filters.allAges, filters.from, filters.to]);
+  }, [cursor.getFullYear(), cursor.getMonth(), filters.category, filters.city, filters.allAges, filters.from, filters.to]);
 
-  // derive simple facets (from currently loaded events)
+  // facet options from current result set (simple client-side)
   const facet = React.useMemo(() => {
     const cats = new Set<string>();
     const cities = new Set<string>();
@@ -102,13 +139,42 @@ export default function CalendarPage() {
     };
   }, [events]);
 
+  // group events by day
+  const byDay = React.useMemo(() => {
+    const m = new Map<string, EventRow[]>();
+    for (const ev of events) {
+      const dkey = toISODateOnly(new Date(ev.starts_at));
+      const arr = m.get(dkey) || [];
+      arr.push(ev);
+      m.set(dkey, arr);
+    }
+    for (const [k, arr] of m.entries()) {
+      arr.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+      m.set(k, arr);
+    }
+    return m;
+  }, [events]);
+
+  function gotoToday() { setCursor(startOfMonth(new Date())); }
+  function prevMonth() { setCursor(prev => addMonths(prev, -1)); }
+  function nextMonth() { setCursor(prev => addMonths(prev, 1)); }
+  function clearFilters() {
+    setFilters({ category: "", city: "", allAges: false, from: "", to: "" });
+  }
+
   return (
-    <main className="p-6 max-w-5xl mx-auto">
-      <div className="flex items-center justify-between mb-3">
-        <h1 className="text-2xl font-semibold">Events</h1>
-        <button className="border px-3 py-1 rounded" onClick={load} disabled={loading}>
-          {loading ? "Loading…" : "Refresh"}
-        </button>
+    <main className="p-6 max-w-7xl mx-auto">
+      {/* header + month nav */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <h1 className="text-2xl font-semibold">{formatMonthYear(cursor)}</h1>
+        <div className="flex gap-2">
+          <button className="border px-3 py-1 rounded" onClick={prevMonth}>← Prev</button>
+          <button className="border px-3 py-1 rounded" onClick={gotoToday}>Today</button>
+          <button className="border px-3 py-1 rounded" onClick={nextMonth}>Next →</button>
+          <button className="border px-3 py-1 rounded" onClick={load} disabled={loading}>
+            {loading ? "Loading…" : "Refresh"}
+          </button>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -121,41 +187,94 @@ export default function CalendarPage() {
       />
 
       {error && <p className="text-red-700 mb-3">Error: {error}</p>}
-      {!error && loading && <p className="mb-3">Loading…</p>}
-      {!loading && events.length === 0 && <p>No events found for this filter.</p>}
 
-      {/* Simple list (you can swap this for your grid UI later) */}
-      <ul className="space-y-4">
-        {events.map((ev) => (
-          <li key={ev.id} className="border rounded p-4">
-            <div className="flex justify-between items-start gap-4">
-              <div className="min-w-0">
-                <div className="font-medium truncate">{ev.title}</div>
-                <div className="text-sm text-gray-600">
-                  {new Date(ev.starts_at).toLocaleString()}
-                  {ev.location_name ? ` @ ${ev.location_name}` : ""}
-                  {ev.city ? `, ${ev.city}` : ""}
-                </div>
-                {ev.category && <div className="text-xs mt-1">Category: {ev.category}</div>}
-                {ev.age && <div className="text-xs">Age: {ev.age}</div>}
-                {ev.description ? <p className="mt-2 text-sm">{ev.description}</p> : null}
-                <div className="mt-2 flex gap-3 text-sm">
-                  {ev.ticket_url && (
-                    <a className="underline" href={ev.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
-                  )}
-                  {ev.image_url && (
-                    <a className="underline" href={ev.image_url} target="_blank" rel="noreferrer">Image</a>
-                  )}
-                </div>
+      {/* weekday header */}
+      <div className="grid grid-cols-7 text-xs font-semibold text-gray-600 mb-1">
+        {(mondayFirst ? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]).map(d => (
+          <div key={d} className="p-2">{d}</div>
+        ))}
+      </div>
+
+      {/* month grid */}
+      <div className="grid grid-cols-7 border rounded overflow-hidden">
+        {days.map((d, i) => {
+          const isOtherMonth = d.getMonth() !== cursor.getMonth();
+          const isToday = sameDay(d, new Date());
+          const key = toISODateOnly(d);
+          const todays = byDay.get(key) || [];
+          const maxShow = 3;
+          const extra = Math.max(0, todays.length - maxShow);
+          return (
+            <div
+              key={i}
+              className={[
+                "min-h-[120px] border-r border-b p-2 flex flex-col gap-1",
+                (i % 7 === 6) ? "border-r-0" : "",
+                (Math.floor(i / 7) === days.length / 7 - 1) ? "border-b-0" : "",
+                isOtherMonth ? "bg-gray-50" : "bg-white",
+              ].join(" ")}
+            >
+              <div className="text-xs flex items-center justify-between">
+                <span className={isOtherMonth ? "text-gray-400" : ""}>{d.getDate()}</span>
+                {isToday && <span className="text-[10px] px-1 py-0.5 rounded bg-blue-100 text-blue-700">Today</span>}
               </div>
-              <div className="text-right text-xs text-gray-500">
-                {ev.ends_at ? `Ends: ${new Date(ev.ends_at).toLocaleString()}` : null}
-                {ev.all_day ? <div>All day</div> : null}
+
+              <div className="mt-1 flex-1 space-y-1">
+                {todays.slice(0, maxShow).map(ev => (
+                  <button
+                    key={ev.id}
+                    onClick={() => setSelected(ev)}
+                    className="w-full text-left text-xs truncate px-2 py-1 rounded border hover:bg-gray-50"
+                    title={ev.title}
+                  >
+                    {ev.all_day ? "• " : `${formatTime(ev.starts_at)} · `}
+                    <span className="font-medium">{ev.title}</span>
+                    {ev.location_name ? ` @ ${ev.location_name}` : ""}
+                  </button>
+                ))}
+                {extra > 0 && (
+                  <span className="text-[11px] text-gray-600">+ {extra} more</span>
+                )}
               </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          );
+        })}
+      </div>
+
+      {/* details drawer */}
+      {selected && (
+        <div className="fixed inset-0 bg-black/20 flex items-end md:items-center justify-center z-50" onClick={() => setSelected(null)}>
+          <div
+            className="bg-white w-full md:max-w-xl rounded-t-2xl md:rounded-2xl p-4 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="text-lg font-semibold">{selected.title}</h2>
+              <button className="border px-3 py-1 rounded" onClick={() => setSelected(null)}>Close</button>
+            </div>
+            <div className="text-sm text-gray-600 mt-1">
+              {new Date(selected.starts_at).toLocaleString()}
+              {selected.ends_at ? ` – ${new Date(selected.ends_at).toLocaleString()}` : ""}
+              {selected.location_name ? ` @ ${selected.location_name}` : ""}
+              {selected.city ? `, ${selected.city}` : ""}
+            </div>
+            {selected.category && <div className="text-xs mt-1">Category: {selected.category}</div>}
+            {selected.age && <div className="text-xs">Age: {selected.age}</div>}
+            {selected.description && <p className="mt-3 text-sm whitespace-pre-wrap">{selected.description}</p>}
+            <div className="mt-3 flex gap-3 text-sm">
+              {selected.ticket_url && (
+                <a className="underline" href={selected.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
+              )}
+              {selected.image_url && (
+                <a className="underline" href={selected.image_url} target="_blank" rel="noreferrer">Image</a>
+              )}
+              {selected.organizer_email && (
+                <a className="underline" href={`mailto:${selected.organizer_email}`} target="_blank" rel="noreferrer">Email organizer</a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
