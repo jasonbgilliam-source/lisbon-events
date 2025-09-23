@@ -3,22 +3,22 @@
 import * as React from "react";
 
 type Submission = {
-  id: number;
-  status: string;
-  title?: string;
-  start?: string;
-  end?: string;
-  venue?: string;
-  city?: string;
-  address?: string;
-  price?: string;
-  category?: string;
-  description?: string;
-  organizer?: string;
-  source_url?: string;
-  tags?: string;
-  recurrence_note?: string;
-  // add any other fields you store in event_submissions you want to show
+  id: string;
+  status: string | null;
+  title?: string | null;
+  description?: string | null;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  location_name?: string | null;
+  city?: string | null;
+  address?: string | null;
+  category?: string | null;
+  organizer_email?: string | null;
+  image_url?: string | null;
+  ticket_url?: string | null;
+  all_day?: boolean | null;
+  age?: string | null;
+  created_at?: string | null;
 };
 
 export default function SubmissionsAdminPage() {
@@ -30,7 +30,12 @@ export default function SubmissionsAdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/submissions/list");
+      const res = await fetch("/api/submissions/list", { cache: "no-store" });
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        const t = await res.text();
+        throw new Error(`Expected JSON from /api/submissions/list, got ${res.status}. First bytes: ${t.slice(0, 120)}`);
+      }
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || res.statusText);
       setSubs(j.items || []);
@@ -43,56 +48,74 @@ export default function SubmissionsAdminPage() {
 
   React.useEffect(() => { load(); }, []);
 
-  async function approve(id: number) {
-    const reviewer = "admin"; // optional: replace with your auth user
-    const notes = "";
-    const res = await fetch("/api/submissions/approve", {
+  async function postJSON(url: string, body: any) {
+    const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, reviewer, notes })
+      body: JSON.stringify(body),
+      cache: "no-store",
     });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      alert(`Approve failed: ${j.error || res.statusText}`);
-    } else {
-      await load();
+    const ct = res.headers.get("content-type") || "";
+    const j = ct.includes("application/json") ? await res.json() : {};
+    if (!res.ok) throw new Error(j.error || res.statusText);
+    return j;
+  }
+
+  async function approve(id: string) {
+    // optimistic remove
+    setSubs(prev => prev.filter(s => s.id !== id));
+    try {
+      await postJSON("/api/submissions/approve", { id, reviewer: "admin", notes: "" });
+      // no reload needed—the optimistic removal already hid it
       alert("Approved + published");
+    } catch (e: any) {
+      alert(`Approve failed: ${e.message || e}`);
+      // if failed, reload to resync
+      load();
     }
   }
 
-  async function reject(id: number) {
-    const reviewer = "admin";
+  async function reject(id: string) {
     const notes = prompt("Optional note for rejection") || "";
-    const res = await fetch("/api/submissions/reject", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, reviewer, notes })
-    });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      alert(`Reject failed: ${j.error || res.statusText}`);
-    } else {
-      await load();
+    // optimistic remove
+    setSubs(prev => prev.filter(s => s.id !== id));
+    try {
+      await postJSON("/api/submissions/reject", { id, reviewer: "admin", notes });
       alert("Rejected");
+    } catch (e: any) {
+      alert(`Reject failed: ${e.message || e}`);
+      load();
     }
   }
-
-  if (loading) return <main className="p-6">Loading…</main>;
-  if (error)   return <main className="p-6">Error: {error}</main>;
 
   return (
     <main className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Pending Event Submissions</h1>
-      {subs.length === 0 ? <p>No pending submissions 🎉</p> : null}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-semibold">Pending Event Submissions</h1>
+        <button className="border px-3 py-1 rounded" onClick={load} disabled={loading}>
+          {loading ? "Loading…" : "Refresh"}
+        </button>
+      </div>
+
+      {error && <p className="text-red-700 mb-3">Error: {error}</p>}
+      {!error && loading && <p>Loading…</p>}
+      {!loading && subs.length === 0 && <p>No pending submissions 🎉</p>}
+
       <ul className="space-y-4">
         {subs.map(s => (
           <li key={s.id} className="border rounded p-4">
             <div className="flex justify-between items-start gap-4">
               <div>
-                <div className="font-medium">{s.title || "(no title)"} <span className="text-xs text-gray-500">#{s.id}</span></div>
-                <div className="text-sm text-gray-600">{s.start} {s.venue ? `@ ${s.venue}` : ""}</div>
+                <div className="font-medium">
+                  {s.title || "(no title)"}{" "}
+                  <span className="text-xs text-gray-500">#{s.id.slice(0, 8)}</span>
+                </div>
+                <div className="text-sm text-gray-600">
+                  {s.starts_at || ""} {s.location_name ? `@ ${s.location_name}` : ""}
+                </div>
                 {s.description ? <p className="mt-2 text-sm">{s.description}</p> : null}
-                {s.source_url ? <a className="text-sm underline" href={s.source_url} target="_blank">Source</a> : null}
+                {s.ticket_url ? <a className="text-sm underline mr-3" href={s.ticket_url} target="_blank" rel="noreferrer">Tickets</a> : null}
+                {s.image_url ? <a className="text-sm underline" href={s.image_url} target="_blank" rel="noreferrer">Image</a> : null}
               </div>
               <div className="flex gap-2">
                 <button className="border px-3 py-1 rounded" onClick={() => approve(s.id)}>Approve</button>
