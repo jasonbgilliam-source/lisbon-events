@@ -1,7 +1,7 @@
 // app/api/submissions/list/route.ts
-import { supabaseServer } from "../../../../lib/supabaseServer"; // go up 4 levels
+import { supabaseServer } from "../../../../lib/supabaseServer";
 
-export const dynamic = "force-dynamic"; // avoid caching
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabase = supabaseServer();
@@ -9,7 +9,7 @@ export async function GET() {
     .from("event_submissions")
     .select("*")
     .eq("status", "pending")
-    .order("id", { ascending: true });
+    .order("created_at", { ascending: true });
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
