@@ -9,6 +9,9 @@ function toIso(s?: string | null) {
   return d.toISOString();
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -26,7 +29,10 @@ export async function POST(req: Request) {
 
     const ends_at = toIso(body.ends_at || body.end);
     const all_day =
-      String(body.all_day ?? "").toLowerCase() === "true" || body.all_day === true;
+      String(body.all_day ?? "").trim().toLowerCase() === "true" || body.all_day === true;
+
+    // Normalize status just in case someone passes it
+    const status = String(body.status ?? "pending").trim().toLowerCase();
 
     const { error } = await supabaseServer()
       .from("event_submissions")
@@ -41,9 +47,10 @@ export async function POST(req: Request) {
         image_url: body.image_url ?? null,
         organizer_email,
         age: body.age ?? null,
-        city: body.city ?? null, // DB default 'Lisboa' will apply if null
+        city: body.city ?? null,          // DB default 'Lisboa' will apply if null
         all_day,
-        category: body.category ?? null
+        category: body.category ?? null,
+        status                              // ← explicitly set to "pending"
       }]);
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
