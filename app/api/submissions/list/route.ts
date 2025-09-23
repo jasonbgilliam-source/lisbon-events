@@ -7,7 +7,7 @@ export const revalidate = 0;
 export async function GET() {
   const supabase = supabaseServer();
 
-  // Pull latest 200 and filter in JS to be tolerant of odd/NULL statuses.
+  // Grab latest 200, then keep only "pending" (tolerant of null/empty)
   const { data, error } = await supabase
     .from("event_submissions")
     .select("*")
@@ -23,7 +23,7 @@ export async function GET() {
 
   const items = (data || []).filter((row: any) => {
     const s = (row.status ?? "").toString().trim().toLowerCase();
-    return s === "" || s === "pending"; // show true pending + any null/empty rows
+    return s === "" || s === "pending";
   });
 
   return new Response(JSON.stringify({ items }), {
