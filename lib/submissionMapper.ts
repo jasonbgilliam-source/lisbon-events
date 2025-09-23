@@ -1,4 +1,6 @@
 // lib/submissionMapper.ts
+//
+// Maps a row from event_submissions to the exact events table shape.
 
 function toIso(s?: string | null) {
   if (!s) return null;
@@ -13,7 +15,7 @@ function toBool(v: any) {
   return String(v).trim().toLowerCase() === "true";
 }
 
-// The exact shape we insert into `events`
+// Exact shape of your `events` table (columns you shared)
 export type EventRow = {
   title: string;
   description: string | null;
@@ -31,7 +33,6 @@ export type EventRow = {
 };
 
 export function mapSubmissionToEvent(sub: any): EventRow {
-  // NOTE: event_submissions already uses nearly the same names.
   const title = sub.title ?? sub.name ?? sub.event_title;
 
   const starts_at =
@@ -48,7 +49,7 @@ export function mapSubmissionToEvent(sub: any): EventRow {
     ends_at,
     category: sub.category ?? null,
     location_name: sub.location_name ?? sub.venue ?? null,
-    city: sub.city ?? null,                   // your submissions default to 'Lisboa'; fine.
+    city: sub.city ?? null, // submissions default to 'Lisboa' in DB; null lets DB default kick in if omitted
     address: sub.address ?? null,
     ticket_url: sub.ticket_url ?? null,
     image_url: sub.image_url ?? null,
