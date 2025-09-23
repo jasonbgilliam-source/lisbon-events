@@ -2,14 +2,17 @@
 import { supabaseServer } from "../../../../lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   const supabase = supabaseServer();
+
+  // Pull latest 200 and filter in JS to be tolerant of odd/NULL statuses.
   const { data, error } = await supabase
     .from("event_submissions")
     .select("*")
-    .eq("status", "pending")
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false })
+    .limit(200);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -17,7 +20,13 @@ export async function GET() {
       headers: { "Content-Type": "application/json" },
     });
   }
-  return new Response(JSON.stringify({ items: data }), {
-    headers: { "Content-Type": "application/json" },
+
+  const items = (data || []).filter((row: any) => {
+    const s = (row.status ?? "").toString().trim().toLowerCase();
+    return s === "" || s === "pending"; // show true pending + any null/empty rows
+  });
+
+  return new Response(JSON.stringify({ items }), {
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }
