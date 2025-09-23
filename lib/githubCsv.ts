@@ -1,4 +1,8 @@
 // lib/githubCsv.ts
+//
+// Appends a row to public/events.csv in your GitHub repo.
+// Ensures header matches your `events` table columns.
+
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN!;
 const REPO_OWNER = process.env.REPO_OWNER!;
 const REPO_NAME  = process.env.REPO_NAME!;
@@ -11,7 +15,7 @@ function csvEscape(value?: string | boolean | null) {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-// Order matches your `events` table (and what your CSV header should be)
+// Column order matches your `events` table
 export function toCsvRow(e: Record<string, any>) {
   const order = [
     "title",
@@ -51,11 +55,14 @@ async function getFileShaAndContent() {
 export async function appendRowToCsv(row: string, commitMsg: string) {
   const { sha, current } = await getFileShaAndContent();
 
-  // Ensure CSV has the correct header. If FILE is empty or header mismatched, we add/correct it.
+  // Ensure correct header exists
   const header = "title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url,all_day,age,organizer_email";
-  const lines = current.trim().split(/\r?\n/);
-  const hasHeader = lines.length > 0 && lines[0].trim().toLowerCase() === header;
-  const body = hasHeader ? current : (current.trim() ? `${header}\n${current}` : `${header}\n`);
+  const lines = current.trim() ? current.trim().split(/\r?\n/) : [];
+  const hasHeader = lines[0]?.trim().toLowerCase() === header;
+
+  const body = hasHeader
+    ? current
+    : (current.trim() ? `${header}\n${current.trim()}\n` : `${header}\n`);
 
   const next = body.endsWith("\n") ? `${body}${row}\n` : `${body}\n${row}\n`;
 
