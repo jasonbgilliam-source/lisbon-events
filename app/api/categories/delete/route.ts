@@ -1,5 +1,5 @@
 // app/api/categories/delete/route.ts
-import { supabaseServer } from "../../../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
