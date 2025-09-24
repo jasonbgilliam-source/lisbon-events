@@ -9,13 +9,18 @@ export default function SubmitEventPage() {
 
   // facets for category dropdown
   const [categories, setCategories] = React.useState<string[]>([]);
+  const [catsError, setCatsError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     (async () => {
       try {
         const res = await fetch("/api/events/facets", { cache: "no-store" });
         const j = await res.json();
-        if (res.ok) setCategories(j.categories || []);
-      } catch {}
+        if (!res.ok) throw new Error(j.error || res.statusText);
+        setCategories(j.categories || []);
+      } catch (e: any) {
+        setCatsError(e?.message || "Failed to load categories");
+      }
     })();
   }, []);
 
@@ -91,24 +96,25 @@ export default function SubmitEventPage() {
             <input name="address" className="border p-2 w-full" />
           </div>
 
-          {/* Category with picklist + free type */}
+          {/* Category PICK LIST ONLY (required) */}
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium">Category</label>
-            <div className="flex gap-2">
-              <select name="category" className="border p-2 w-full">
-                <option value="">Select category</option>
-                {categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              <input
-                name="category"
-                placeholder="or type your own…"
-                className="border p-2 w-60"
-              />
-            </div>
+            <label className="block text-sm font-medium">Category *</label>
+            <select
+              name="category"
+              className="border p-2 w-full"
+              required
+              disabled={!categories.length && !catsError}
+              defaultValue=""
+            >
+              <option value="" disabled>
+                {catsError ? `Failed to load: ${catsError}` : "Select a category"}
+              </option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
             <p className="text-xs text-gray-600 mt-1">
-              Choose from the list, or type a new category in the box.
+              Choose a category from the list. (Free typing is disabled to keep categories consistent.)
             </p>
           </div>
 
@@ -148,4 +154,3 @@ export default function SubmitEventPage() {
     </main>
   );
 }
-
