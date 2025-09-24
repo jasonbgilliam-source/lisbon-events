@@ -67,6 +67,10 @@ export default function CalendarPage() {
     to: "",
   });
 
+  // facet options (from the facets API)
+  const [facetCats, setFacetCats] = React.useState<string[]>([]);
+  const [facetCities, setFacetCities] = React.useState<string[]>([]);
+
   // data + ui state
   const [events, setEvents] = React.useState<EventRow[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -83,6 +87,24 @@ export default function CalendarPage() {
   for (let d = new Date(gridStart); d <= gridEnd; d = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1)) {
     days.push(d);
   }
+
+  // load facets (one-time on mount; you can add a refresh button if desired)
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/events/facets", { cache: "no-store" });
+        const j = await res.json();
+        if (res.ok) {
+          setFacetCats(j.categories || []);
+          setFacetCities(j.cities || []);
+        } else {
+          console.warn("facets error:", j.error || res.statusText);
+        }
+      } catch (e) {
+        console.warn("facets failed:", e);
+      }
+    })();
+  }, []);
 
   // fetch events for range + filters
   async function load() {
@@ -102,11 +124,11 @@ export default function CalendarPage() {
       if (filters.city.trim()) params.set("city", filters.city.trim());
       if (filters.allAges) params.set("all_ages", "true");
 
-      const res = await fetch(`/api/events/list?${params.toString()}`, { cache: "no-store" });
+      const res = await fetch(`/api/events/combined?${params.toString()}`, { cache: "no-store" });
       const ct = res.headers.get("content-type") || "";
       if (!ct.includes("application/json")) {
         const t = await res.text();
-        throw new Error(`Expected JSON from /api/events/list, got ${res.status}. First bytes: ${t.slice(0, 120)}`);
+        throw new Error(`Expected JSON from /api/events/combined, got ${res.status}. First bytes: ${t.slice(0, 120)}`);
       }
       const j = await res.json();
       if (!res.ok) throw new Error(j.error || res.statusText);
@@ -124,20 +146,6 @@ export default function CalendarPage() {
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor.getFullYear(), cursor.getMonth(), filters.category, filters.city, filters.allAges, filters.from, filters.to]);
-
-  // facet options from current result set (simple client-side)
-  const facet = React.useMemo(() => {
-    const cats = new Set<string>();
-    const cities = new Set<string>();
-    for (const e of events) {
-      if (e.category) cats.add(e.category);
-      if (e.city) cities.add(e.city);
-    }
-    return {
-      categories: Array.from(cats).sort((a, b) => a.localeCompare(b)),
-      cities: Array.from(cities).sort((a, b) => a.localeCompare(b)),
-    };
-  }, [events]);
 
   // group events by day
   const byDay = React.useMemo(() => {
@@ -177,20 +185,20 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* Filter Bar */}
+      {/* Filter Bar - uses global facets for full pick lists */}
       <FilterBar
         value={filters}
         onChange={setFilters}
         onClear={clearFilters}
-        categories={facet.categories}
-        cities={facet.cities}
+        categories={facetCats}
+        cities={facetCities}
       />
 
       {error && <p className="text-red-700 mb-3">Error: {error}</p>}
 
       {/* weekday header */}
       <div className="grid grid-cols-7 text-xs font-semibold text-gray-600 mb-1">
-        {(mondayFirst ? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]).map(d => (
+        {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d => (
           <div key={d} className="p-2">{d}</div>
         ))}
       </div>
@@ -221,16 +229,11 @@ export default function CalendarPage() {
 
               <div className="mt-1 flex-1 space-y-1">
                 {todays.slice(0, maxShow).map(ev => (
-                  <button
-                    key={ev.id}
-                    onClick={() => setSelected(ev)}
-                    className="w-full text-left text-xs truncate px-2 py-1 rounded border hover:bg-gray-50"
-                    title={ev.title}
-                  >
+                  <div key={ev.id} className="w-full text-left text-xs truncate px-2 py-1 rounded border">
                     {ev.all_day ? "• " : `${formatTime(ev.starts_at)} · `}
                     <span className="font-medium">{ev.title}</span>
                     {ev.location_name ? ` @ ${ev.location_name}` : ""}
-                  </button>
+                  </div>
                 ))}
                 {extra > 0 && (
                   <span className="text-[11px] text-gray-600">+ {extra} more</span>
@@ -240,41 +243,6 @@ export default function CalendarPage() {
           );
         })}
       </div>
-
-      {/* details drawer */}
-      {selected && (
-        <div className="fixed inset-0 bg-black/20 flex items-end md:items-center justify-center z-50" onClick={() => setSelected(null)}>
-          <div
-            className="bg-white w-full md:max-w-xl rounded-t-2xl md:rounded-2xl p-4 shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <h2 className="text-lg font-semibold">{selected.title}</h2>
-              <button className="border px-3 py-1 rounded" onClick={() => setSelected(null)}>Close</button>
-            </div>
-            <div className="text-sm text-gray-600 mt-1">
-              {new Date(selected.starts_at).toLocaleString()}
-              {selected.ends_at ? ` – ${new Date(selected.ends_at).toLocaleString()}` : ""}
-              {selected.location_name ? ` @ ${selected.location_name}` : ""}
-              {selected.city ? `, ${selected.city}` : ""}
-            </div>
-            {selected.category && <div className="text-xs mt-1">Category: {selected.category}</div>}
-            {selected.age && <div className="text-xs">Age: {selected.age}</div>}
-            {selected.description && <p className="mt-3 text-sm whitespace-pre-wrap">{selected.description}</p>}
-            <div className="mt-3 flex gap-3 text-sm">
-              {selected.ticket_url && (
-                <a className="underline" href={selected.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
-              )}
-              {selected.image_url && (
-                <a className="underline" href={selected.image_url} target="_blank" rel="noreferrer">Image</a>
-              )}
-              {selected.organizer_email && (
-                <a className="underline" href={`mailto:${selected.organizer_email}`} target="_blank" rel="noreferrer">Email organizer</a>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
