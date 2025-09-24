@@ -1,5 +1,5 @@
 // app/api/categories/delete/route.ts
-import { supabaseServer } from "//lib/supabaseServer.ts";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -8,20 +8,16 @@ function assertAdmin(req: Request) {
   const want = process.env.ADMIN_KEY;
   const got = req.headers.get("x-admin-key");
   if (!want || !got || got !== want) {
-    const msg = !want
-      ? "Server missing ADMIN_KEY env var."
-      : "Unauthorized.";
-    return msg;
+    return !want ? "Server missing ADMIN_KEY env var." : "Unauthorized.";
   }
   return null;
 }
 
 export async function POST(req: Request) {
-  const err = assertAdmin(req);
-  if (err) {
-    return new Response(JSON.stringify({ error: err }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
+  const authErr = assertAdmin(req);
+  if (authErr) {
+    return new Response(JSON.stringify({ error: authErr }), {
+      status: 401, headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -35,10 +31,7 @@ export async function POST(req: Request) {
     }
 
     const supabase = supabaseServer();
-    const { error } = await supabase
-      .from("category_catalog")
-      .delete()
-      .eq("name", name);
+    const { error } = await supabase.from("category_catalog").delete().eq("name", name);
 
     if (error) {
       return new Response(JSON.stringify({ error: error.message }), {
