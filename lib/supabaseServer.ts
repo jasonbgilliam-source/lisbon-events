@@ -1,23 +1,24 @@
 // lib/supabaseServer.ts
 import { createClient } from "@supabase/supabase-js";
 
-/**
- * Server-side Supabase client using the SERVICE ROLE key.
- * ⚠️ Do NOT import this in client components.
- *
- * Required env vars (from Step 1):
- * - NEXT_PUBLIC_SUPABASE_URL
- * - SUPABASE_SERVICE_ROLE_KEY
- */
 export function supabaseServer() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!; // server-only
+  const url =
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.SUPABASE_URL ||
+    "";
+
+  // Prefer a server-side key if present, else fall back to anon for read-only.
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    "";
+
+  if (!url || !key) {
+    throw new Error("Supabase URL or KEY missing. Set NEXT_PUBLIC_SUPABASE_URL and either SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY.");
+  }
 
   return createClient(url, key, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-      detectSessionInUrl: false,
-    },
+    auth: { persistSession: false },
   });
 }
