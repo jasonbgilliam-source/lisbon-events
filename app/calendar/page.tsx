@@ -77,6 +77,9 @@ export default function CalendarPage() {
   const [error, setError] = React.useState<string | null>(null);
   const [selected, setSelected] = React.useState<EventRow | null>(null);
 
+  // selected date for below-list (default to today if visible, else first of month)
+  const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
+
   // calendar grid (6 weeks)
   const mondayFirst = false; // set true for Monday-first weeks
   const monthStart = startOfMonth(cursor);
@@ -88,7 +91,15 @@ export default function CalendarPage() {
     days.push(d);
   }
 
-  // load facets (one-time on mount; you can add a refresh button if desired)
+  // ensure selectedDate stays sensible when month changes
+  React.useEffect(() => {
+    const today = new Date();
+    const inGrid = today >= gridStart && today <= gridEnd;
+    setSelectedDate(inGrid ? today : monthStart);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cursor.getFullYear(), cursor.getMonth()]);
+
+  // load facets (one-time on mount)
   React.useEffect(() => {
     (async () => {
       try {
@@ -97,12 +108,8 @@ export default function CalendarPage() {
         if (res.ok) {
           setFacetCats(j.categories || []);
           setFacetCities(j.cities || []);
-        } else {
-          console.warn("facets error:", j.error || res.statusText);
         }
-      } catch (e) {
-        console.warn("facets failed:", e);
-      }
+      } catch {}
     })();
   }, []);
 
@@ -147,7 +154,7 @@ export default function CalendarPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cursor.getFullYear(), cursor.getMonth(), filters.category, filters.city, filters.allAges, filters.from, filters.to]);
 
-  // group events by day
+  // group events by day for fast lookup
   const byDay = React.useMemo(() => {
     const m = new Map<string, EventRow[]>();
     for (const ev of events) {
@@ -163,11 +170,24 @@ export default function CalendarPage() {
     return m;
   }, [events]);
 
-  function gotoToday() { setCursor(startOfMonth(new Date())); }
+  // list data for the selected date (already filtered at fetch-time)
+  const listForSelectedDate = React.useMemo(() => {
+    const key = toISODateOnly(selectedDate);
+    return (byDay.get(key) || []).slice().sort(
+      (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+    );
+  }, [byDay, selectedDate]);
+
+  function gotoToday() {
+    const today = new Date();
+    setCursor(startOfMonth(today));
+    setSelectedDate(today);
+  }
   function prevMonth() { setCursor(prev => addMonths(prev, -1)); }
   function nextMonth() { setCursor(prev => addMonths(prev, 1)); }
-  function clearFilters() {
-    setFilters({ category: "", city: "", allAges: false, from: "", to: "" });
+
+  function handleDayClick(d: Date) {
+    setSelectedDate(d);
   }
 
   return (
@@ -189,7 +209,7 @@ export default function CalendarPage() {
       <FilterBar
         value={filters}
         onChange={setFilters}
-        onClear={clearFilters}
+        onClear={() => setFilters({ category: "", city: "", allAges: false, from: "", to: "" })}
         categories={facetCats}
         cities={facetCities}
       />
@@ -208,28 +228,40 @@ export default function CalendarPage() {
         {days.map((d, i) => {
           const isOtherMonth = d.getMonth() !== cursor.getMonth();
           const isToday = sameDay(d, new Date());
+          const isSelected = sameDay(d, selectedDate);
           const key = toISODateOnly(d);
           const todays = byDay.get(key) || [];
           const maxShow = 3;
           const extra = Math.max(0, todays.length - maxShow);
           return (
-            <div
+            <button
+              type="button"
               key={i}
+              onClick={() => handleDayClick(d)}
               className={[
-                "min-h-[120px] border-r border-b p-2 flex flex-col gap-1",
+                "min-h-[120px] border-r border-b p-2 text-left flex flex-col gap-1 focus:outline-none",
                 (i % 7 === 6) ? "border-r-0" : "",
                 (Math.floor(i / 7) === days.length / 7 - 1) ? "border-b-0" : "",
                 isOtherMonth ? "bg-gray-50" : "bg-white",
+                isSelected ? "ring-2 ring-blue-400 relative" : "",
               ].join(" ")}
             >
               <div className="text-xs flex items-center justify-between">
                 <span className={isOtherMonth ? "text-gray-400" : ""}>{d.getDate()}</span>
-                {isToday && <span className="text-[10px] px-1 py-0.5 rounded bg-blue-100 text-blue-700">Today</span>}
+                <div className="flex items-center gap-1">
+                  {isToday && <span className="text-[10px] px-1 py-0.5 rounded bg-blue-100 text-blue-700">Today</span>}
+                  {isSelected && <span className="text-[10px] px-1 py-0.5 rounded bg-blue-600 text-white">Selected</span>}
+                </div>
               </div>
 
               <div className="mt-1 flex-1 space-y-1">
                 {todays.slice(0, maxShow).map(ev => (
-                  <div key={ev.id} className="w-full text-left text-xs truncate px-2 py-1 rounded border">
+                  <div
+                    key={ev.id}
+                    className="w-full text-left text-xs truncate px-2 py-1 rounded border hover:bg-gray-50"
+                    title={ev.title}
+                    onClick={(e) => { e.stopPropagation(); setSelected(ev); }}
+                  >
                     {ev.all_day ? "• " : `${formatTime(ev.starts_at)} · `}
                     <span className="font-medium">{ev.title}</span>
                     {ev.location_name ? ` @ ${ev.location_name}` : ""}
@@ -239,10 +271,93 @@ export default function CalendarPage() {
                   <span className="text-[11px] text-gray-600">+ {extra} more</span>
                 )}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
+
+      {/* BELOW-CALENDAR LIST FOR SELECTED DATE */}
+      <section className="mt-6">
+        <h2 className="text-lg font-semibold mb-2">
+          Events on {selectedDate.toLocaleDateString()}
+        </h2>
+
+        {loading && <p>Loading…</p>}
+
+        {!loading && listForSelectedDate.length === 0 && (
+          <p>No events for this date with the current filters.</p>
+        )}
+
+        <ul className="space-y-3">
+          {listForSelectedDate.map((ev) => (
+            <li key={ev.id} className="border rounded p-3">
+              <div className="flex justify-between items-start gap-4">
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{ev.title}</div>
+                  <div className="text-sm text-gray-600">
+                    {ev.all_day ? "All day" : formatTime(ev.starts_at)}
+                    {ev.ends_at ? ` – ${formatTime(ev.ends_at)}` : ""}
+                    {ev.location_name ? ` @ ${ev.location_name}` : ""}
+                    {ev.city ? `, ${ev.city}` : ""}
+                  </div>
+                  {ev.category && <div className="text-xs mt-1">Category: {ev.category}</div>}
+                  {ev.age && <div className="text-xs">Age: {ev.age}</div>}
+                  {ev.description ? <p className="mt-2 text-sm">{ev.description}</p> : null}
+                  <div className="mt-2 flex gap-3 text-sm">
+                    {ev.ticket_url && (
+                      <a className="underline" href={ev.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
+                    )}
+                    {ev.image_url && (
+                      <a className="underline" href={ev.image_url} target="_blank" rel="noreferrer">Image</a>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right text-xs text-gray-500">
+                  {/* keep details panel optional; click title in grid already opens it */}
+                  <button className="border px-2 py-1 rounded" onClick={() => setSelected(ev)}>
+                    Details
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* details drawer (optional quick view) */}
+      {selected && (
+        <div className="fixed inset-0 bg-black/20 flex items-end md:items-center justify-center z-50" onClick={() => setSelected(null)}>
+          <div
+            className="bg-white w-full md:max-w-xl rounded-t-2xl md:rounded-2xl p-4 shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-4">
+              <h2 className="text-lg font-semibold">{selected.title}</h2>
+              <button className="border px-3 py-1 rounded" onClick={() => setSelected(null)}>Close</button>
+            </div>
+            <div className="text-sm text-gray-600 mt-1">
+              {new Date(selected.starts_at).toLocaleString()}
+              {selected.ends_at ? ` – ${new Date(selected.ends_at).toLocaleString()}` : ""}
+              {selected.location_name ? ` @ ${selected.location_name}` : ""}
+              {selected.city ? `, ${selected.city}` : ""}
+            </div>
+            {selected.category && <div className="text-xs mt-1">Category: {selected.category}</div>}
+            {selected.age && <div className="text-xs">Age: {selected.age}</div>}
+            {selected.description && <p className="mt-3 text-sm whitespace-pre-wrap">{selected.description}</p>}
+            <div className="mt-3 flex gap-3 text-sm">
+              {selected.ticket_url && (
+                <a className="underline" href={selected.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
+              )}
+              {selected.image_url && (
+                <a className="underline" href={selected.image_url} target="_blank" rel="noreferrer">Image</a>
+              )}
+              {selected.organizer_email && (
+                <a className="underline" href={`mailto:${selected.organizer_email}`} target="_blank" rel="noreferrer">Email organizer</a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
