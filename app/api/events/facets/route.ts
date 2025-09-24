@@ -1,5 +1,5 @@
 // app/api/events/facets/route.ts
-import { supabaseServer } from "../../../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../lib/supabaseServer";
 import { readFile } from "fs/promises";
 import path from "path";
 
