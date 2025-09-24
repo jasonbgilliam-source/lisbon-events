@@ -1,5 +1,5 @@
 // app/api/categories/upsert/route.ts
-import { supabaseServer } from "../../../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const name = (body.name || "").toString().trim();
-    const renameFrom = (body.renameFrom || "").toString().trim(); // optional old name
+    const renameFrom = (body.renameFrom || "").toString().trim(); // optional
 
     if (!name) {
       return new Response(JSON.stringify({ error: "Missing category name" }), {
@@ -44,7 +44,6 @@ export async function POST(req: Request) {
     const supabase = supabaseServer();
 
     if (renameFrom && renameFrom !== name) {
-      // Rename: delete old, insert new (transaction-ish in two calls)
       const { error: delErr } = await supabase
         .from("category_catalog")
         .delete()
@@ -76,4 +75,3 @@ export async function POST(req: Request) {
     });
   }
 }
-
