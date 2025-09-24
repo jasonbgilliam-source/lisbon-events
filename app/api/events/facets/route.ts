@@ -1,12 +1,12 @@
 // app/api/events/facets/route.ts
-import { supabaseServer } from "../../../../lib/supabaseServer";
+import { supabaseServer } from "../../../../../lib/supabaseServer";
 import { readFile } from "fs/promises";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// very small CSV parser (same as combined route but simplified)
+// mini CSV parser
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
   let i = 0, field = "", row: string[] = [], inQuotes = false;
@@ -33,45 +33,38 @@ function parseCsv(text: string): string[][] {
 
 export async function GET() {
   try {
-    const cats = new Set<string>();
-    const cities = new Set<string>();
-
-    // 1) DB facets
     const supabase = supabaseServer();
-    const { data: dbRows, error } = await supabase.from("events").select("category,city");
-    if (error) throw new Error(error.message);
-    for (const r of dbRows || []) {
-      if (r.category) cats.add(String(r.category));
-      if (r.city) cities.add(String(r.city));
-    }
 
-    // 2) CSV facets
+    // Categories from catalog
+    const { data: catRows, error: catErr } = await supabase
+      .from("category_catalog")
+      .select("name")
+      .order("name");
+    if (catErr) throw new Error(catErr.message);
+    const categories = (catRows || []).map((r: any) => r.name);
+
+    // Cities from DB + CSV
+    const citiesSet = new Set<string>();
+    const { data: dbRows, error: dbErr } = await supabase.from("events").select("city");
+    if (dbErr) throw new Error(dbErr.message);
+    for (const r of dbRows || []) {
+      if (r?.city) citiesSet.add(String(r.city));
+    }
     try {
       const p = path.join(process.cwd(), "public", "events.csv");
       const raw = await readFile(p, "utf8");
       const rows = parseCsv(raw);
       const header = rows[0]?.map(h => h.trim().toLowerCase()) ?? [];
-      const cIdx = header.indexOf("category");
       const cityIdx = header.indexOf("city");
       for (let i = 1; i < rows.length; i++) {
-        const r = rows[i];
-        if (!r) continue;
-        const c = (r[cIdx] || "").trim();
-        const ci = (r[cityIdx] || "").trim();
-        if (c) cats.add(c);
-        if (ci) cities.add(ci);
+        const ci = (rows[i]?.[cityIdx] || "").trim();
+        if (ci) citiesSet.add(ci);
       }
-    } catch (err) {
-      // ok if CSV is missing
-      console.warn("CSV facets read failed:", (err as any)?.message || err);
-    }
+    } catch {}
 
-    const out = {
-      categories: Array.from(cats).filter(Boolean).sort((a, b) => a.localeCompare(b)),
-      cities: Array.from(cities).filter(Boolean).sort((a, b) => a.localeCompare(b)),
-    };
+    const cities = Array.from(citiesSet).sort((a, b) => a.localeCompare(b));
 
-    return new Response(JSON.stringify(out), {
+    return new Response(JSON.stringify({ categories, cities }), {
       headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   } catch (e: any) {
