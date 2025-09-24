@@ -7,12 +7,23 @@ export default function SubmitEventPage() {
   const [msg, setMsg] = React.useState<string | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
+  // facets for category dropdown
+  const [categories, setCategories] = React.useState<string[]>([]);
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/events/facets", { cache: "no-store" });
+        const j = await res.json();
+        if (res.ok) setCategories(j.categories || []);
+      } catch {}
+    })();
+  }, []);
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
 
-    // 👇 capture the form element *before* any await
     const formEl = e.currentTarget as HTMLFormElement;
     const payload = Object.fromEntries(new FormData(formEl).entries());
 
@@ -24,13 +35,11 @@ export default function SubmitEventPage() {
         cache: "no-store",
       });
 
-      // check JSON safely
       const ct = res.headers.get("content-type") || "";
       const data = ct.includes("application/json") ? await res.json() : {};
       if (!res.ok) throw new Error((data as any)?.error || res.statusText);
 
       setMsg("✅ Submitted for review. Thanks!");
-      // 👇 use the captured element (or the ref) — not e.currentTarget
       (formRef.current ?? formEl).reset();
     } catch (err: any) {
       setMsg(`❌ ${err?.message || "Submit failed"}`);
@@ -71,17 +80,50 @@ export default function SubmitEventPage() {
           <input name="location_name" required className="border p-2 w-full" />
         </div>
 
-        {/* optional */}
+        {/* optional but captured */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium">City</label><input name="city" className="border p-2 w-full" placeholder="Lisboa" /></div>
-          <div><label className="block text-sm font-medium">Address</label><input name="address" className="border p-2 w-full" /></div>
-          <div><label className="block text-sm font-medium">Category</label><input name="category" className="border p-2 w-full" placeholder="Music, Food, Arts..." /></div>
-          <div><label className="block text-sm font-medium">Age</label><input name="age" className="border p-2 w-full" placeholder="All ages, 18+ ..." /></div>
-        </div>
+          <div>
+            <label className="block text-sm font-medium">City</label>
+            <input name="city" className="border p-2 w-full" placeholder="Lisboa" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Address</label>
+            <input name="address" className="border p-2 w-full" />
+          </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label className="block text-sm font-medium">Ticket URL</label><input type="url" name="ticket_url" className="border p-2 w-full" /></div>
-          <div><label className="block text-sm font-medium">Image URL</label><input type="url" name="image_url" className="border p-2 w-full" /></div>
+          {/* Category with picklist + free type */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium">Category</label>
+            <div className="flex gap-2">
+              <select name="category" className="border p-2 w-full">
+                <option value="">Select category</option>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <input
+                name="category"
+                placeholder="or type your own…"
+                className="border p-2 w-60"
+              />
+            </div>
+            <p className="text-xs text-gray-600 mt-1">
+              Choose from the list, or type a new category in the box.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium">Age</label>
+            <input name="age" className="border p-2 w-full" placeholder="All ages, 18+ ..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Ticket URL</label>
+            <input type="url" name="ticket_url" className="border p-2 w-full" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Image URL</label>
+            <input type="url" name="image_url" className="border p-2 w-full" />
+          </div>
         </div>
 
         <div>
@@ -106,3 +148,4 @@ export default function SubmitEventPage() {
     </main>
   );
 }
+
