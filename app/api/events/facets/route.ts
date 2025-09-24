@@ -1,76 +1,50 @@
-// app/api/events/facets/route.ts
-import { supabaseServer } from "../../../../lib/supabaseServer";
-import { readFile } from "fs/promises";
-import path from "path";
+// app/api/categories/delete/route.ts
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// mini CSV parser
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let i = 0, field = "", row: string[] = [], inQuotes = false;
-  while (i < text.length) {
-    const c = text[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
-        inQuotes = false; i++; continue;
-      }
-      field += c; i++; continue;
-    } else {
-      if (c === '"') { inQuotes = true; i++; continue; }
-      if (c === ",") { row.push(field); field = ""; i++; continue; }
-      if (c === "\r") { i++; continue; }
-      if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; i++; continue; }
-      field += c; i++; continue;
-    }
+function assertAdmin(req: Request) {
+  const want = process.env.ADMIN_KEY;
+  const got = req.headers.get("x-admin-key");
+  if (!want || !got || got !== want) {
+    return !want ? "Server missing ADMIN_KEY env var." : "Unauthorized.";
   }
-  row.push(field);
-  rows.push(row);
-  return rows.filter(r => r.some(cell => cell !== ""));
+  return null;
 }
 
-export async function GET() {
+export async function POST(req: Request) {
+  const authErr = assertAdmin(req);
+  if (authErr) {
+    return new Response(JSON.stringify({ error: authErr }), {
+      status: 401, headers: { "Content-Type": "application/json" },
+    });
+  }
+
   try {
-    const supabase = supabaseServer();
-
-    // Categories from catalog
-    const { data: catRows, error: catErr } = await supabase
-      .from("category_catalog")
-      .select("name")
-      .order("name");
-    if (catErr) throw new Error(catErr.message);
-    const categories = (catRows || []).map((r: any) => r.name);
-
-    // Cities from DB + CSV
-    const citiesSet = new Set<string>();
-    const { data: dbRows, error: dbErr } = await supabase.from("events").select("city");
-    if (dbErr) throw new Error(dbErr.message);
-    for (const r of dbRows || []) {
-      if (r?.city) citiesSet.add(String(r.city));
+    const body = await req.json();
+    const name = (body.name || "").toString().trim();
+    if (!name) {
+      return new Response(JSON.stringify({ error: "Missing category name" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
     }
-    try {
-      const p = path.join(process.cwd(), "public", "events.csv");
-      const raw = await readFile(p, "utf8");
-      const rows = parseCsv(raw);
-      const header = rows[0]?.map(h => h.trim().toLowerCase()) ?? [];
-      const cityIdx = header.indexOf("city");
-      for (let i = 1; i < rows.length; i++) {
-        const ci = (rows[i]?.[cityIdx] || "").trim();
-        if (ci) citiesSet.add(ci);
-      }
-    } catch {}
 
-    const cities = Array.from(citiesSet).sort((a, b) => a.localeCompare(b));
+    const supabase = supabaseServer();
+    const { error } = await supabase.from("category_catalog").delete().eq("name", name);
 
-    return new Response(JSON.stringify({ categories, cities }), {
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+    if (error) {
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500, headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ ok: true }), {
+      headers: { "Content-Type": "application/json" },
     });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e?.message || "failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+      status: 500, headers: { "Content-Type": "application/json" },
     });
   }
 }
