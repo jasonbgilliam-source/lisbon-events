@@ -1,29 +1,23 @@
 // app/api/categories/upsert/route.ts
-import { supabaseServer } from "//lib/supabaseServer.ts";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-/**
- * Admin protection: set ADMIN_KEY in your Vercel env.
- * Requests must include header:  x-admin-key: <ADMIN_KEY>
- */
+/** Admin protection via x-admin-key header (matches process.env.ADMIN_KEY) */
 function assertAdmin(req: Request) {
   const want = process.env.ADMIN_KEY;
   const got = req.headers.get("x-admin-key");
   if (!want || !got || got !== want) {
-    const msg = !want
-      ? "Server missing ADMIN_KEY env var."
-      : "Unauthorized.";
-    return msg;
+    return !want ? "Server missing ADMIN_KEY env var." : "Unauthorized.";
   }
   return null;
 }
 
 export async function POST(req: Request) {
-  const err = assertAdmin(req);
-  if (err) {
-    return new Response(JSON.stringify({ error: err }), {
+  const authErr = assertAdmin(req);
+  if (authErr) {
+    return new Response(JSON.stringify({ error: authErr }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
     });
@@ -36,8 +30,7 @@ export async function POST(req: Request) {
 
     if (!name) {
       return new Response(JSON.stringify({ error: "Missing category name" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
+        status: 400, headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -70,8 +63,7 @@ export async function POST(req: Request) {
     });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e?.message || "failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+      status: 500, headers: { "Content-Type": "application/json" },
     });
   }
 }
