@@ -1,113 +1,224 @@
-// app/events/page.tsx
-export const dynamic = "force-dynamic";
+"use client";
 
-import fs from "node:fs/promises";
-import path from "node:path";
-import EventCard, { type EventRecord } from "@/components/EventCard";
+import * as React from "react";
+import FilterBar, { type FilterState } from "../components/FilterBar";
 
-function truthy(v: string | null | undefined) {
-  return ["true", "1", "yes", "y"].includes(String(v ?? "").trim().toLowerCase());
+/* ------------------------------ data shapes ----------------------------- */
+type EventRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  starts_at: string;   // ISO
+  ends_at: string | null;
+  category: string | null;
+  location_name: string | null;
+  city: string | null;
+  address: string | null;
+  ticket_url: string | null;
+  image_url: string | null;
+  all_day: boolean | null;
+  age: string | null;
+  organizer_email: string | null;
+};
+
+/* ------------------------------ helpers --------------------------------- */
+function toISODateOnly(d: Date) { return d.toISOString().slice(0, 10); }
+function fmtDateTime(iso?: string | null) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleString([], { year: "numeric", month: "short", day: "2-digit", hour: "numeric", minute: "2-digit" });
 }
-function toISODateTime(s: string | null | undefined) {
-  if (!s) return "";
-  const t = String(s).trim();
-  if (!t) return "";
-  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return `${t}T00:00:00.000Z`;
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(t) && !/[zZ]|[+\-]\d{2}:\d{2}$/.test(t)) return t + "Z";
-  return t;
+function fmtTime(iso?: string | null) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
-function addDaysISO(ymd: string, days: number) {
-  const d = new Date(ymd + "T00:00:00.000Z");
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString();
-}
-function parseCSV(text: string): Record<string, string>[] {
-  if (text && text.charCodeAt(0) === 0xfeff) text = text.slice(1); // BOM
-  const rows: string[][] = [];
-  let row: string[] = [], field = "", inQuotes = false;
-  const pushField = () => { row.push(field); field = ""; };
-  const pushRow = () => { rows.push(row); row = []; };
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (c === '"') { if (inQuotes && text[i + 1] === '"') { field += '"'; i++; } else { inQuotes = !inQuotes; } }
-    else if (c === "," && !inQuotes) { pushField(); }
-    else if ((c === "\n" || c === "\r") && !inQuotes) { pushField(); if (c === "\r" && text[i + 1] === "\n") i++; pushRow(); }
-    else { field += c; }
-  }
-  pushField(); if (row.length > 1 || rows.length === 0) pushRow();
-  if (rows.length === 0) return [];
-  const header = rows[0].map((h) => h.trim().toLowerCase());
-  const out: Record<string, string>[] = [];
-  for (let r = 1; r < rows.length; r++) {
-    const obj: Record<string, string> = {};
-    for (let c = 0; c < header.length; c++) obj[header[c]] = rows[r][c] ?? "";
-    out.push(obj);
-  }
-  return out;
-}
-function rowToEvent(r: Record<string, string>): EventRecord | null {
-  const title = (r["title"] ?? "").trim();
-  if (!title) return null;
-  const startRaw = (r["start"] ?? "").trim();
-  const endRaw = (r["end"] ?? "").trim();
-  const allDay = truthy(r["all_day"]);
-  const starts_at = toISODateTime(startRaw);
-  let ends_at = endRaw ? toISODateTime(endRaw) : "";
-  if (allDay) {
-    if (/^\d{4}-\d{2}-\d{2}$/.test(endRaw)) ends_at = addDaysISO(endRaw, 1);
-    else if (!ends_at) {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(startRaw)) ends_at = addDaysISO(startRaw, 1);
-      else if (starts_at) { const d = new Date(starts_at); d.setUTCDate(d.getUTCDate() + 1); ends_at = d.toISOString(); }
+
+/* ------------------------------- page ----------------------------------- */
+export default function EventsPage() {
+  // filters (same shape as calendar FilterBar)
+  const [filters, setFilters] = React.useState<FilterState>({
+    category: "",
+    city: "",
+    allAges: false,
+    from: "",
+    to: "",
+  });
+
+  // facets (same source as calendar)
+  const [facetCats, setFacetCats] = React.useState<string[]>([]);
+  const [facetCities, setFacetCities] = React.useState<string[]>([]);
+
+  // data state
+  const [events, setEvents] = React.useState<EventRow[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // load facets once
+  React.useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/events/facets", { cache: "no-store" });
+        const j = await res.json();
+        if (res.ok) {
+          setFacetCats(j.categories || []);
+          setFacetCities(j.cities || []);
+        }
+      } catch {}
+    })();
+  }, []);
+
+  // fetch events with same filters behavior as calendar
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      // Default range: today → +60 days unless user set from/to
+      const today = new Date();
+      const defaultFrom = toISODateOnly(today);
+      const plus60 = new Date(today);
+      plus60.setDate(plus60.getDate() + 60);
+      const defaultTo = toISODateOnly(plus60);
+
+      const fromDate = filters.from || defaultFrom;
+      const toDate   = filters.to   || defaultTo;
+
+      const params = new URLSearchParams({
+        from: new Date(fromDate + "T00:00:00").toISOString(),
+        to: new Date(toDate + "T23:59:59").toISOString(),
+      });
+      if (filters.category.trim()) params.set("category", filters.category.trim());
+      if (filters.city.trim()) params.set("city", filters.city.trim());
+      if (filters.allAges) params.set("all_ages", "true");
+
+      const res = await fetch(`/api/events/combined?${params.toString()}`, { cache: "no-store" });
+      const ct = res.headers.get("content-type") || "";
+      if (!ct.includes("application/json")) {
+        const t = await res.text();
+        throw new Error(`Expected JSON from /api/events/combined, got ${res.status}. First bytes: ${t.slice(0,120)}`);
+      }
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error || res.statusText);
+
+      const items = (j.items || []) as EventRow[];
+
+      // sort globally by starts_at, then group by category
+      items.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+      setEvents(items);
+    } catch (e: any) {
+      setError(e.message || "Failed to load events");
+    } finally {
+      setLoading(false);
     }
   }
-  if (!ends_at && starts_at) ends_at = starts_at;
-  return {
-    id: `${starts_at}|${title}`,
-    title,
-    description: r["description"] ?? "",
-    starts_at,
-    ends_at,
-    category: r["category"] ?? "",
-    location_name: r["venue"] ?? "",
-    city: r["city"] ?? "",
-    address: r["address"] ?? "",
-    ticket_url: r["source_url"] ?? "",
-    image_url: ""
-  } as EventRecord;
-}
 
-async function loadAllEventsFromCSV(): Promise<EventRecord[]> {
-  const csvPath = path.join(process.cwd(), "public", "events.csv");
-  let csv = "";
-  try { csv = await fs.readFile(csvPath, "utf8"); } catch { return []; }
-  const rows = parseCSV(csv);
-  return rows.map(rowToEvent).filter((e): e is EventRecord => !!e);
-}
+  // initial & whenever filters change (debounced to feel snappy)
+  React.useEffect(() => {
+    const id = setTimeout(() => load(), 150);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category, filters.city, filters.allAges, filters.from, filters.to]);
 
-export default async function EventsPage() {
-  const all = await loadAllEventsFromCSV();
+  // group by category (A→Z), with "Uncategorized" last
+  const grouped = React.useMemo(() => {
+    const map = new Map<string, EventRow[]>();
+    for (const ev of events) {
+      const cat = (ev.category || "").trim();
+      const key = cat || "__UNCAT__";
+      const arr = map.get(key) || [];
+      arr.push(ev);
+      map.set(key, arr);
+    }
 
-  // Upcoming = ends_at >= now
-  const now = Date.now();
-  const upcoming = all
-    .filter((e) => new Date(e.ends_at ?? e.starts_at).getTime() >= now)
-    .sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
+    const keys = Array.from(map.keys()).filter(k => k !== "__UNCAT__").sort((a, b) => a.localeCompare(b));
+    if (map.has("__UNCAT__")) keys.push("__UNCAT__");
+
+    return keys.map(k => ({
+      category: k === "__UNCAT__" ? "Uncategorized" : k,
+      items: (map.get(k) || []).slice().sort((a, b) =>
+        new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
+      ),
+    }));
+  }, [events]);
+
+  function clearFilters() {
+    setFilters({ category: "", city: "", allAges: false, from: "", to: "" });
+  }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">
-        Events <span className="text-xs align-middle opacity-60">(src: csv)</span>
-      </h1>
+    <main className="p-6 max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-2xl font-semibold">Events</h1>
+        <button className="border px-3 py-1 rounded" onClick={load} disabled={loading}>
+          {loading ? "Loading…" : "Refresh"}
+        </button>
+      </div>
 
-      {upcoming.length === 0 && (
-        <div className="card">No upcoming events. Check back soon or <a href="/submit" className="underline">submit one</a>.</div>
+      {/* Same FilterBar as calendar, sourced from the same facets */}
+      <FilterBar
+        value={filters}
+        onChange={setFilters}
+        onClear={clearFilters}
+        categories={facetCats}
+        cities={facetCities}
+      />
+
+      {error && <p className="text-red-700 mb-3">Error: {error}</p>}
+      {!error && loading && <p className="mb-3">Loading…</p>}
+
+      {!loading && grouped.length === 0 && (
+        <p>No events match the current filters.</p>
       )}
 
-      <div className="grid gap-4">
-        {upcoming.map((e) => (
-          <EventCard key={e.id} evt={e} />
+      {/* Category sections */}
+      <div className="space-y-8">
+        {grouped.map(section => (
+          <section key={section.category}>
+            <h2 className="text-lg font-semibold mb-3">
+              {section.category} <span className="text-sm text-gray-500">({section.items.length})</span>
+            </h2>
+
+            <ul className="space-y-3">
+              {section.items.map(ev => (
+                <li key={ev.id} className="border rounded p-4">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{ev.title}</div>
+                      <div className="text-sm text-gray-600">
+                        {ev.all_day ? "All day" : fmtDateTime(ev.starts_at)}
+                        {ev.ends_at ? ` – ${fmtTime(ev.ends_at)}` : ""}
+                        {ev.location_name ? ` @ ${ev.location_name}` : ""}
+                        {ev.city ? `, ${ev.city}` : ""}
+                      </div>
+                      {ev.age && <div className="text-xs mt-1">Age: {ev.age}</div>}
+                      {ev.description ? <p className="mt-2 text-sm">{ev.description}</p> : null}
+                      <div className="mt-2 flex gap-3 text-sm">
+                        {ev.ticket_url && (
+                          <a className="underline" href={ev.ticket_url} target="_blank" rel="noreferrer">Tickets</a>
+                        )}
+                        {ev.image_url && (
+                          <a className="underline" href={ev.image_url} target="_blank" rel="noreferrer">Image</a>
+                        )}
+                        {ev.organizer_email && (
+                          <a className="underline" href={`mailto:${ev.organizer_email}`} target="_blank" rel="noreferrer">
+                            Email organizer
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                    {/* right column could hold a small badge or share button */}
+                    <div className="text-right text-xs text-gray-500">
+                      {ev.category || ""}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
