@@ -7,14 +7,13 @@ export default function SubmitEventPage() {
   const [msg, setMsg] = React.useState<string | null>(null);
   const formRef = React.useRef<HTMLFormElement | null>(null);
 
-  // facets for category dropdown
   const [categories, setCategories] = React.useState<string[]>([]);
   const [catsError, setCatsError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/events/facets", { cache: "no-store" });
+        const res = await fetch("/api/categories/list", { cache: "no-store" });
         const j = await res.json();
         if (!res.ok) throw new Error(j.error || res.statusText);
         setCategories(j.categories || []);
@@ -58,7 +57,6 @@ export default function SubmitEventPage() {
       <h1 className="text-2xl font-semibold mb-4">Submit an Event</h1>
 
       <form ref={formRef} className="space-y-4" onSubmit={onSubmit}>
-        {/* required */}
         <div>
           <label className="block text-sm font-medium">Title *</label>
           <input name="title" required className="border p-2 w-full" />
@@ -85,7 +83,6 @@ export default function SubmitEventPage() {
           <input name="location_name" required className="border p-2 w-full" />
         </div>
 
-        {/* optional but captured */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium">City</label>
@@ -96,7 +93,7 @@ export default function SubmitEventPage() {
             <input name="address" className="border p-2 w-full" />
           </div>
 
-          {/* Category PICK LIST ONLY (required) */}
+          {/* Category from catalog ONLY (required) */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium">Category *</label>
             <select
@@ -113,9 +110,6 @@ export default function SubmitEventPage() {
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-600 mt-1">
-              Choose a category from the list. (Free typing is disabled to keep categories consistent.)
-            </p>
           </div>
 
           <div>
