@@ -1,5 +1,5 @@
 // app/api/categories/list/route.ts
-import { supabaseServer } from "//lib/supabaseServer.ts";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
