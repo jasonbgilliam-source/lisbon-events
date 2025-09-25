@@ -19,7 +19,6 @@ export default function EventsPage() {
   React.useEffect(() => {
     (async () => {
       try {
-        // categories from catalog
         const cRes = await fetch("/api/categories/list", { cache: "no-store" });
         const cJson = await cRes.json();
         if (cRes.ok) {
@@ -28,7 +27,6 @@ export default function EventsPage() {
         }
       } catch {}
       try {
-        // cities still come from facets endpoint (DB + CSV)
         const fRes = await fetch("/api/events/facets", { cache: "no-store" });
         const fJson = await fRes.json();
         if (fRes.ok) setFacetCities(fJson.cities || []);
@@ -127,7 +125,7 @@ export default function EventsPage() {
               <p className="text-sm text-gray-600">No events in this category for the selected filters.</p>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {section.items.map(ev => (<EventCard key={`${ev.id}`} ev={ev} />))}
+                {section.items.map(ev => (<EventCard key={ev.id} ev={ev} />))}
               </div>
             )}
           </section>
