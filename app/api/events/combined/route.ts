@@ -1,46 +1,12 @@
 // app/api/events/combined/route.ts
-import { supabaseServer } from "../../../../lib/supabaseServer";
+import { supabaseServer } from "@/lib/supabaseServer";
 import { readFile } from "fs/promises";
 import path from "path";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type EventRow = {
-  id: string; // generated UUID or derived key for CSV
-  title: string;
-  description: string | null;
-  starts_at: string;   // ISO
-  ends_at: string | null;
-  category: string | null;
-  location_name: string | null;
-  city: string | null;
-  address: string | null;
-  ticket_url: string | null;
-  image_url: string | null;
-  all_day: boolean | null;
-  age: string | null;
-  organizer_email: string | null;
-  _source: "db" | "csv"; // to know where it came from (optional, useful for debugging)
-};
-
-/* --------------------------- helpers --------------------------- */
-function toISO(v?: string | null) {
-  if (!v) return null;
-  const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d.toISOString();
-}
-
-function toBoolLoose(v: any): boolean | null {
-  if (v === null || v === undefined || v === "") return null;
-  if (typeof v === "boolean") return v;
-  const s = String(v).trim().toLowerCase();
-  if (s === "true" || s === "1" || s === "yes") return true;
-  if (s === "false" || s === "0" || s === "no") return false;
-  return null;
-}
-
-// tiny CSV parser that supports quotes and commas inside quotes
+/* ------------------------------- utils ---------------------------------- */
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
   let i = 0, field = "", row: string[] = [], inQuotes = false;
@@ -48,7 +14,7 @@ function parseCsv(text: string): string[][] {
     const c = text[i];
     if (inQuotes) {
       if (c === '"') {
-        if (text[i + 1] === '"') { field += '"'; i += 2; continue; } // escaped quote
+        if (text[i + 1] === '"') { field += '"'; i += 2; continue; }
         inQuotes = false; i++; continue;
       }
       field += c; i++; continue;
@@ -60,142 +26,217 @@ function parseCsv(text: string): string[][] {
       field += c; i++; continue;
     }
   }
-  // last field
   row.push(field);
   rows.push(row);
-  // remove trailing blank rows
   return rows.filter(r => r.some(cell => cell !== ""));
 }
 
-function csvToEvents(rows: string[][]): EventRow[] {
-  if (rows.length === 0) return [];
+function safeISO(s?: string | null) {
+  if (!s) return null;
+  const d = new Date(s);
+  const ok = !Number.isNaN(d.getTime());
+  return ok ? d.toISOString() : null;
+}
+
+function boolFrom(v: any): boolean {
+  if (v === true || v === false) return v;
+  if (v == null) return false;
+  const t = String(v).trim().toLowerCase();
+  return t === "true" || t === "1" || t === "yes";
+}
+
+type EventRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  starts_at: string;      // ISO
+  ends_at: string | null; // ISO
+  category: string | null;
+  location_name: string | null;
+  city: string | null;
+  address: string | null;
+  ticket_url: string | null;
+  image_url: string | null;
+  created_at: string | null;
+  all_day: boolean | null;
+  age: string | null;
+  organizer_email: string | null;
+  source?: "db" | "csv";
+};
+
+/* --------------------------- category catalog --------------------------- */
+async function loadCatalog(): Promise<{ list: string[]; canon: Map<string, string> }> {
+  const supabase = supabaseServer();
+  const { data, error } = await supabase.from("category_catalog").select("name");
+  if (error) throw new Error(error.message);
+  const list = (data || []).map((r: any) => String(r.name));
+  const canon = new Map<string, string>();
+  for (const name of list) canon.set(name.trim().toLowerCase(), name);
+  return { list, canon };
+}
+
+function normalizeCategory(raw: any, canon: Map<string, string>): string | null {
+  const val = (raw ?? "").toString().trim();
+  if (!val) return null;
+  const hit = canon.get(val.toLowerCase());
+  return hit ?? null; // only allow catalog values
+}
+
+/* ------------------------------- loaders -------------------------------- */
+async function loadDbEvents(fromISO: string, toISO: string, category?: string, city?: string, allAges?: boolean, canon?: Map<string, string>): Promise<EventRow[]> {
+  const supabase = supabaseServer();
+  let q = supabase
+    .from("events")
+    .select("id,title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url,created_at,all_day,age,organizer_email")
+    .gte("starts_at", fromISO)
+    .lte("starts_at", toISO);
+
+  if (city) q = q.eq("city", city);
+  if (allAges) q = q.or('age.is.null,age.eq."All ages",age.eq."all ages",age.eq."All Ages"');
+
+  if (category) {
+    // only match exact normalized catalog name
+    q = q.eq("category", category);
+  }
+
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+
+  return (data || []).map((r: any) => {
+    const normalized = canon ? normalizeCategory(r.category, canon) : (r.category ?? null);
+    return {
+      id: String(r.id),
+      title: r.title,
+      description: r.description ?? null,
+      starts_at: safeISO(r.starts_at)!,
+      ends_at: safeISO(r.ends_at),
+      category: normalized, // ← normalized to catalog (or null)
+      location_name: r.location_name ?? null,
+      city: r.city ?? null,
+      address: r.address ?? null,
+      ticket_url: r.ticket_url ?? null,
+      image_url: r.image_url ?? null,
+      created_at: safeISO(r.created_at),
+      all_day: r.all_day ?? null,
+      age: r.age ?? null,
+      organizer_email: r.organizer_email ?? null,
+      source: "db",
+    };
+  });
+}
+
+async function loadCsvEvents(csvPath: string, fromISO: string, toISO: string, category?: string, city?: string, allAges?: boolean, canon?: Map<string, string>): Promise<EventRow[]> {
+  let rows: string[][] = [];
+  try {
+    const raw = await readFile(csvPath, "utf8");
+    rows = parseCsv(raw);
+  } catch {
+    return [];
+  }
+  if (rows.length < 2) return [];
+
   const header = rows[0].map(h => h.trim().toLowerCase());
-  const getIdx = (name: string) => header.indexOf(name);
-  const idx = {
-    title: getIdx("title"),
-    description: getIdx("description"),
-    starts_at: getIdx("starts_at"),
-    ends_at: getIdx("ends_at"),
-    category: getIdx("category"),
-    location_name: getIdx("location_name"),
-    city: getIdx("city"),
-    address: getIdx("address"),
-    ticket_url: getIdx("ticket_url"),
-    image_url: getIdx("image_url"),
-    all_day: getIdx("all_day"),
-    age: getIdx("age"),
-    organizer_email: getIdx("organizer_email"),
-  };
+  const idx = (name: string) => header.indexOf(name);
 
   const out: EventRow[] = [];
-  for (let r = 1; r < rows.length; r++) {
-    const row = rows[r];
-    if (!row || row.length === 0) continue;
-    const title = row[idx.title] || "";
-    const starts_at = toISO(row[idx.starts_at] || "") || new Date().toISOString();
-    const ends_at = toISO(row[idx.ends_at] || "");
-    const all_day = toBoolLoose(row[idx.all_day]);
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
 
-    const ev: EventRow = {
-      id: `csv-${r}-${starts_at}`, // deterministic-ish
+    const title = r[idx("title")] || r[idx("name")] || r[idx("event_title")] || "";
+    const starts_at = safeISO(r[idx("starts_at")] || r[idx("start")] || r[idx("start_time")] || r[idx("start_datetime")]);
+    if (!title || !starts_at) continue;
+
+    const ends_at = safeISO(r[idx("ends_at")] || r[idx("end")] || r[idx("end_time")] || r[idx("end_datetime")]);
+    const rawCat = r[idx("category")] || r[idx("type")] || "";
+    const normalized = canon ? normalizeCategory(rawCat, canon) : (rawCat || null);
+
+    // Apply filters (category is checked against normalized catalog name)
+    const cityVal = (r[idx("city")] || "").trim() || null;
+    if (city && cityVal !== city) continue;
+    if (category && normalized !== category) continue;
+
+    // date range on starts_at
+    const ts = new Date(starts_at).getTime();
+    if (ts < new Date(fromISO).getTime() || ts > new Date(toISO).getTime()) continue;
+
+    const all_day = boolFrom(r[idx("all_day")] || r[idx("is_all_day")]);
+    const age = r[idx("age")] || null;
+    if (allAges && age && !/^all ages$/i.test(age)) {
+      // if filtering for All ages, skip when age is present and not "All ages"
+      continue;
+    }
+
+    out.push({
+      id: `csv-${i}`,
       title,
-      description: row[idx.description] || null,
+      description: r[idx("description")] || r[idx("details")] || null,
       starts_at,
       ends_at,
-      category: row[idx.category] || null,
-      location_name: row[idx.location_name] || null,
-      city: row[idx.city] || null,
-      address: row[idx.address] || null,
-      ticket_url: row[idx.ticket_url] || null,
-      image_url: row[idx.image_url] || null,
+      category: normalized, // ← normalized to catalog (or null)
+      location_name: r[idx("location_name")] || r[idx("venue")] || r[idx("location")] || null,
+      city: cityVal,
+      address: r[idx("address")] || null,
+      ticket_url: r[idx("ticket_url")] || r[idx("source_url")] || r[idx("url")] || null,
+      image_url: r[idx("image_url")] || null,
+      created_at: null,
       all_day,
-      age: row[idx.age] || null,
-      organizer_email: row[idx.organizer_email] || null,
-      _source: "csv",
-    };
-    out.push(ev);
+      age,
+      organizer_email: r[idx("organizer_email")] || r[idx("organizer")] || null,
+      source: "csv",
+    });
   }
   return out;
 }
 
-function applyFilters(items: EventRow[], qs: URLSearchParams): EventRow[] {
-  const from = toISO(qs.get("from")) || new Date().toISOString();
-  const to = toISO(qs.get("to"));
-  const category = (qs.get("category") || "").trim().toLowerCase();
-  const city = (qs.get("city") || "").trim().toLowerCase();
-  const allAges = (qs.get("all_ages") || "").toLowerCase() === "true";
-
-  return items.filter(ev => {
-    if (new Date(ev.starts_at).getTime() < new Date(from).getTime()) return false;
-    if (to && new Date(ev.starts_at).getTime() > new Date(to).getTime()) return false;
-    if (category && (ev.category || "").toLowerCase() !== category) return false;
-    if (city && (ev.city || "").toLowerCase() !== city) return false;
-    if (allAges) {
-      const a = (ev.age || "").toLowerCase();
-      if (a && a !== "all ages" && a !== "all-ages" && a !== "allages") return false;
-    }
-    return true;
-  });
-}
-
-/* ----------------------------- route ----------------------------- */
+/* -------------------------------- route --------------------------------- */
 export async function GET(req: Request) {
   try {
-    const qs = new URL(req.url).searchParams;
+    const url = new URL(req.url);
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
+    const category = (url.searchParams.get("category") || "").trim() || null;
+    const city = (url.searchParams.get("city") || "").trim() || null;
+    const allAges = (url.searchParams.get("all_ages") || "").toLowerCase() === "true";
 
-    // 1) DB events
-    const supabase = supabaseServer();
-    const { data: dbRows, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("starts_at", { ascending: true });
-    if (error) throw new Error(error.message);
-
-    const dbEvents: EventRow[] = (dbRows || []).map((e: any) => ({
-      id: e.id,
-      title: e.title,
-      description: e.description ?? null,
-      starts_at: toISO(e.starts_at) || new Date().toISOString(),
-      ends_at: toISO(e.ends_at),
-      category: e.category ?? null,
-      location_name: e.location_name ?? null,
-      city: e.city ?? null,
-      address: e.address ?? null,
-      ticket_url: e.ticket_url ?? null,
-      image_url: e.image_url ?? null,
-      all_day: typeof e.all_day === "boolean" ? e.all_day : toBoolLoose(e.all_day),
-      age: e.age ?? null,
-      organizer_email: e.organizer_email ?? null,
-      _source: "db",
-    }));
-
-    // 2) CSV events from public/events.csv
-    let csvEvents: EventRow[] = [];
-    try {
-      const p = path.join(process.cwd(), "public", "events.csv");
-      const raw = await readFile(p, "utf8");
-      const rows = parseCsv(raw);
-      csvEvents = csvToEvents(rows);
-    } catch (err) {
-      // If the CSV is missing, keep going with DB only
-      console.warn("CSV read failed (ok to ignore if not using CSV):", (err as any)?.message || err);
-      csvEvents = [];
+    if (!from || !to) {
+      return new Response(JSON.stringify({ error: "Missing from/to" }), {
+        status: 400, headers: { "Content-Type": "application/json" },
+      });
     }
 
-    // 3) merge + filter
-    const merged = [...dbEvents, ...csvEvents].sort(
+    // 1) load catalog and build canonical map
+    const { list: catalogList, canon } = await loadCatalog();
+
+    // If caller passed a category, only accept it if it’s in the catalog
+    const normalizedFilter = category
+      ? (canon.get(category.toLowerCase()) ?? "__INVALID__")
+      : null;
+    if (normalizedFilter === "__INVALID__") {
+      // Return empty set if filtering by a non-catalog category
+      return new Response(JSON.stringify({ items: [] }), {
+        headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+      });
+    }
+
+    // 2) fetch from DB
+    const dbItems = await loadDbEvents(from, to, normalizedFilter ?? undefined, city ?? undefined, allAges, canon);
+
+    // 3) fetch from CSV
+    const csvPath = path.join(process.cwd(), "public", "events.csv");
+    const csvItems = await loadCsvEvents(csvPath, from, to, normalizedFilter ?? undefined, city ?? undefined, allAges, canon);
+
+    // 4) union + sort
+    const items: EventRow[] = [...dbItems, ...csvItems].sort(
       (a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime()
     );
 
-    const filtered = applyFilters(merged, qs);
-
-    return new Response(JSON.stringify({ items: filtered }), {
+    // 5) Done
+    return new Response(JSON.stringify({ items, catalog: catalogList }), {
       headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e?.message || "failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+      status: 500, headers: { "Content-Type": "application/json" },
     });
   }
 }
