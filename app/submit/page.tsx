@@ -27,10 +27,8 @@ export default function SubmitEventPage() {
     e.preventDefault();
     setBusy(true);
     setMsg(null);
-
     const formEl = e.currentTarget as HTMLFormElement;
     const payload = Object.fromEntries(new FormData(formEl).entries());
-
     try {
       const res = await fetch("/api/submit-event", {
         method: "POST",
@@ -38,11 +36,8 @@ export default function SubmitEventPage() {
         body: JSON.stringify(payload),
         cache: "no-store",
       });
-
-      const ct = res.headers.get("content-type") || "";
-      const data = ct.includes("application/json") ? await res.json() : {};
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error((data as any)?.error || res.statusText);
-
       setMsg("✅ Submitted for review. Thanks!");
       (formRef.current ?? formEl).reset();
     } catch (err: any) {
@@ -93,7 +88,6 @@ export default function SubmitEventPage() {
             <input name="address" className="border p-2 w-full" />
           </div>
 
-          {/* Category from catalog ONLY (required) */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium">Category *</label>
             <select
@@ -123,6 +117,16 @@ export default function SubmitEventPage() {
           <div>
             <label className="block text-sm font-medium">Image URL</label>
             <input type="url" name="image_url" className="border p-2 w-full" />
+          </div>
+
+          {/* NEW: music/media links */}
+          <div>
+            <label className="block text-sm font-medium">YouTube URL (band/artist)</label>
+            <input type="url" name="youtube_url" className="border p-2 w-full" placeholder="https://www.youtube.com/watch?v=..." />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Spotify URL (track/artist)</label>
+            <input type="url" name="spotify_url" className="border p-2 w-full" placeholder="https://open.spotify.com/..." />
           </div>
         </div>
 
