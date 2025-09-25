@@ -16,6 +16,8 @@ export type EventRow = {
   all_day?: boolean | null;
   age?: string | null;
   organizer_email?: string | null;
+  youtube_url?: string | null;
+  spotify_url?: string | null;
 };
 
 function fmtDateTime(iso?: string | null) {
@@ -57,6 +59,8 @@ export default function EventCard({ ev }: { ev: EventRow }) {
           {ev.description && <p className="text-sm mt-2 line-clamp-3">{ev.description}</p>}
           <div className="mt-2 flex flex-wrap gap-3 text-sm">
             {ev.ticket_url && <a className="underline" href={ev.ticket_url} target="_blank" rel="noreferrer">Tickets</a>}
+            {ev.youtube_url && <a className="underline" href={ev.youtube_url} target="_blank" rel="noreferrer">YouTube</a>}
+            {ev.spotify_url && <a className="underline" href={ev.spotify_url} target="_blank" rel="noreferrer">Spotify</a>}
             {ev.organizer_email && <a className="underline" href={`mailto:${ev.organizer_email}`}>Email organizer</a>}
           </div>
         </div>
