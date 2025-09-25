@@ -1,6 +1,6 @@
 // app/api/submit-event/route.ts
 import { NextResponse } from "next/server";
-import { supabaseServer } from "../../../lib/supabaseServer";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 function toIso(s?: string | null) {
   if (!s) return null;
@@ -23,7 +23,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Required fields
     const title = (body.title || "").trim();
     const description = (body.description || "").trim();
     const location_name = (body.location_name || "").trim();
@@ -62,6 +61,8 @@ export async function POST(req: Request) {
         city: body.city ?? null,
         all_day,
         category,
+        youtube_url: body.youtube_url ?? null,
+        spotify_url: body.spotify_url ?? null,
         status: "pending",
       }]);
 
