@@ -11,10 +11,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {/* Top strip */}
         <div className="w-full h-1" style={{ background: "linear-gradient(90deg, var(--lis-ocean), var(--lis-tram))" }} />
 
-        {/* Hero */}
         <header className="relative">
           <div className="relative h-56 md:h-72 lg:h-80 overflow-hidden">
             <img
@@ -31,18 +29,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <nav className="hidden md:flex gap-3">
                 <Link className="btn bg-white/90 hover:bg-white" href="/calendar">Calendar</Link>
                 <Link className="btn bg-white/90 hover:bg-white" href="/events">Events</Link>
+                <Link className="btn bg-white/90 hover:bg-white" href="/categories">Categories</Link>
                 <Link className="btn bg-white/90 hover:bg-white" href="/submit">Submit</Link>
               </nav>
             </div>
           </div>
-          {/* Tile underline */}
           <div className="h-2" style={{ backgroundImage: "linear-gradient(90deg, var(--lis-tile) 33%, transparent 0%)", backgroundSize: "16px 3px", backgroundRepeat: "repeat-x" }} />
         </header>
 
-        {/* Main */}
         <main className="flex-1">{children}</main>
 
-        {/* Footer with tiled texture */}
         <footer className="mt-12">
           <div className="relative">
             <div className="absolute inset-0 opacity-[0.08]" style={{
@@ -63,6 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <ul className="space-y-1 text-sm">
                       <li><Link href="/calendar">Calendar</Link></li>
                       <li><Link href="/events">Events</Link></li>
+                      <li><Link href="/categories">Categories</Link></li>
                       <li><Link href="/submit">Submit an event</Link></li>
                     </ul>
                   </div>
