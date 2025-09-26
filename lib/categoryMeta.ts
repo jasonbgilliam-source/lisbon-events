@@ -1,20 +1,18 @@
-// lib/categoryMeta.ts
 export type CategoryMeta = {
-  name: string;           // Canonical catalog name
-  slug: string;           // URL slug
-  heroImage: string;      // /public path
+  name: string;
+  slug: string;
+  heroImage: string;
   embeds?: Array<
     | { type: "youtube"; url: string; title?: string }
-    | { type: "html"; html: string; title?: string } // blogger or custom embed
+    | { type: "html"; html: string; title?: string }
   >;
 };
 
-// Simple slugify that keeps only a-z0-9- and collapses dashes
 export function slugify(name: string) {
   return name
     .toLowerCase()
     .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")    // remove diacritics
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .replace(/--+/g, "-");
@@ -24,7 +22,6 @@ export function buildCatalogIndex(catalog: string[]) {
   const list: CategoryMeta[] = catalog.map((name) => ({
     name,
     slug: slugify(name),
-    // map a default image per category name; swap these filenames as you like
     heroImage:
       name.toLowerCase().includes("music") || name.toLowerCase().includes("night")
         ? "/images/cat-music.jpg"
@@ -37,10 +34,9 @@ export function buildCatalogIndex(catalog: string[]) {
         : name.toLowerCase().includes("sport")
         ? "/images/cat-sports.jpg"
         : "/images/lisbon-skyline.jpg",
-    embeds: [], // can be filled in via augmentCategoryEmbeds below
+    embeds: [],
   }));
 
-  // Optional: add curated embeds by name (examples—edit/expand freely)
   function augmentCategoryEmbeds(meta: CategoryMeta) {
     const n = meta.name.toLowerCase();
     if (n.includes("music") || n.includes("night")) {
