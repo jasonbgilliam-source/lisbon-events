@@ -27,7 +27,7 @@ export default function PrivacyPage() {
       <h2 className="text-lg font-semibold mt-6 mb-2">Your Rights</h2>
       <p className="mb-4">
         You may request access, correction, deletion, and portability of your personal data, or object to/limit processing.
-        To exercise these rights, email us at <a href="mailto:info@yourdomain.com" className="underline">info@yourdomain.com</a>.
+        To exercise these rights, email us at <a href="mailto:jason.b.gilliam@gmail.com" className="underline">jason.b.gilliam@gmail.com</a>.
       </p>
 
       <h2 className="text-lg font-semibold mt-6 mb-2">Cookies & Consent</h2>
@@ -45,7 +45,7 @@ export default function PrivacyPage() {
 
       <h2 className="text-lg font-semibold mt-6 mb-2">Contact</h2>
       <p>
-        If you have questions, please contact: <a href="mailto:info@yourdomain.com" className="underline">info@yourdomain.com</a>.
+        If you have questions, please contact: <a href="mailto:jason.b.gilliam@gmail.com" className="underline">jason.b.gilliam@gmail.com</a>.
       </p>
     </main>
   );
