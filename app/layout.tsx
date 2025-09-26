@@ -1,6 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import CookieConsent from "./components/CookieConsent";
+import Analytics from "./components/Analytics";
 
 export const metadata: Metadata = {
   title: "Lisbon Events",
@@ -11,8 +13,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
+        {/* GA loader if already accepted previously */}
+        <Analytics />
+        {/* Cookie banner */}
+        <CookieConsent />
+
+        {/* Top strip */}
         <div className="w-full h-1" style={{ background: "linear-gradient(90deg, var(--lis-ocean), var(--lis-tram))" }} />
 
+        {/* Hero */}
         <header className="relative">
           <div className="relative h-56 md:h-72 lg:h-80 overflow-hidden">
             <img
@@ -37,8 +46,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="h-2" style={{ backgroundImage: "linear-gradient(90deg, var(--lis-tile) 33%, transparent 0%)", backgroundSize: "16px 3px", backgroundRepeat: "repeat-x" }} />
         </header>
 
+        {/* Main */}
         <main className="flex-1">{children}</main>
 
+        {/* Footer with tiled texture */}
         <footer className="mt-12">
           <div className="relative">
             <div className="absolute inset-0 opacity-[0.08]" style={{
@@ -61,6 +72,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <li><Link href="/events">Events</Link></li>
                       <li><Link href="/categories">Categories</Link></li>
                       <li><Link href="/submit">Submit an event</Link></li>
+                      <li><Link href="/privacy">Privacy & Cookies</Link></li>
+                      <li>
+                        {/* Manage Cookies = wipe choice and reload so banner re-appears */}
+                        <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            localStorage.removeItem("cookie-consent");
+                            location.reload();
+                          }}
+                        >
+                          Manage Cookies
+                        </a>
+                      </li>
                     </ul>
                   </div>
                   <div>
