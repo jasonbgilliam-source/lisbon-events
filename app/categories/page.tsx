@@ -50,7 +50,6 @@ export default function CategoriesLanding() {
         ))}
       </div>
 
-      {/* Sample gated embeds area */}
       <section className="mt-10">
         <div className="tile-rule text-lg font-semibold mb-3">From the blogs</div>
         <p className="text-sm text-gray-700 mb-3">Handpicked posts and clips that match each scene.</p>
