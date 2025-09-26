@@ -3,9 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { buildCatalogIndex } from "@/lib/categoryMeta";
+import ConsentGate from "@/app/components/ConsentGate";
 
 export default function CategoriesLanding() {
-  const [cats, setCats] = React.useState<string[]>([]);
   const [cards, setCards] = React.useState<{ name: string; slug: string; img: string }[]>([]);
 
   React.useEffect(() => {
@@ -14,7 +14,6 @@ export default function CategoriesLanding() {
         const res = await fetch("/api/categories/list", { cache: "no-store" });
         const j = await res.json();
         const list: string[] = j.categories || [];
-        setCats(list);
         const { list: metas } = buildCatalogIndex(list);
         setCards(metas.map(m => ({ name: m.name, slug: m.slug, img: m.heroImage })));
       } catch {}
@@ -51,33 +50,42 @@ export default function CategoriesLanding() {
         ))}
       </div>
 
-      {/* Optional blogger embeds by category—feature a few */}
+      {/* Sample gated embeds area */}
       <section className="mt-10">
         <div className="tile-rule text-lg font-semibold mb-3">From the blogs</div>
-        <p className="text-sm text-gray-700 mb-3">
-          Handpicked posts and clips that match each scene — updated regularly.
-        </p>
+        <p className="text-sm text-gray-700 mb-3">Handpicked posts and clips that match each scene.</p>
         <div className="grid md:grid-cols-2 gap-4">
-          {/* Example embeds; you can swap these or load them from categoryMeta if you want */}
-          <div className="card p-3">
-            <div className="text-sm font-medium mb-2">Music — Featured Set</div>
-            <div className="aspect-video">
-              <iframe
-                className="w-full h-full rounded-xl"
-                src="https://www.youtube.com/embed/5qap5aO4i9A"
-                title="Lisbon Live Mix"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+          <ConsentGate label="Enable cookies to view this YouTube feature.">
+            <div className="card p-3">
+              <div className="text-sm font-medium mb-2">Music — Featured Set</div>
+              <div className="aspect-video">
+                <iframe
+                  className="w-full h-full rounded-xl"
+                  src="https://www.youtube.com/embed/5qap5aO4i9A"
+                  title="Lisbon Live Mix"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             </div>
-          </div>
-          <div className="card p-3">
-            <div className="text-sm font-medium mb-2">Food — Local Favorite</div>
-            <div className="overflow-hidden">
-              <iframe src="https://www.instagram.com/p/CsJb3xbL7Xy/embed" width="400" height="480" frameBorder="0" scrolling="no" allowTransparency={true}></iframe>
+          </ConsentGate>
+
+          <ConsentGate label="Enable cookies to view this embed.">
+            <div className="card p-3">
+              <div className="text-sm font-medium mb-2">Food — Local Favorite</div>
+              <div className="overflow-hidden">
+                <iframe
+                  src="https://www.instagram.com/p/CsJb3xbL7Xy/embed"
+                  width="400"
+                  height="480"
+                  frameBorder="0"
+                  scrolling="no"
+                  allowTransparency={true}
+                />
+              </div>
             </div>
-          </div>
+          </ConsentGate>
         </div>
       </section>
     </main>
