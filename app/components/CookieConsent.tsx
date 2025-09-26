@@ -1,57 +1,66 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
+/**
+ * Stores consent in localStorage as "accepted" | "rejected".
+ * Dispatches a "cookie-consent" CustomEvent whenever the value changes.
+ */
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
-  const [consent, setConsent] = useState<string | null>(null);
+  const [choice, setChoice] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("cookie-consent");
     if (!stored) setShow(true);
-    else setConsent(stored);
+    else setChoice(stored);
   }, []);
 
-  function handleChoice(choice: "accepted" | "rejected") {
-    localStorage.setItem("cookie-consent", choice);
-    setConsent(choice);
-    setShow(false);
+  useEffect(() => {
     if (choice === "accepted") {
-      // load Google Analytics or other tracking
-      const script = document.createElement("script");
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`;
-      script.async = true;
-      document.body.appendChild(script);
+      // Load GA only if we have an ID and only after consent
+      const gaId = process.env.NEXT_PUBLIC_GA_ID;
+      if (gaId) {
+        // gtag loader
+        const s1 = document.createElement("script");
+        s1.async = true;
+        s1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+        document.head.appendChild(s1);
 
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ (window as any).dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', process.env.NEXT_PUBLIC_GA_ID);
+        // gtag config
+        const s2 = document.createElement("script");
+        s2.innerHTML = `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${gaId}', { anonymize_ip: true });
+        `;
+        document.head.appendChild(s2);
+      }
     }
+  }, [choice]);
+
+  function setConsent(v: "accepted" | "rejected") {
+    localStorage.setItem("cookie-consent", v);
+    setChoice(v);
+    setShow(false);
+    window.dispatchEvent(new CustomEvent("cookie-consent", { detail: v }));
   }
 
   if (!show) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4 z-50">
-      <p className="text-sm mb-3">
-        We use cookies to improve your experience and analyze site traffic.
-        You can accept or reject optional cookies.{" "}
-        <a href="/privacy" className="underline">Learn more</a>.
-      </p>
-      <div className="flex gap-2">
-        <button
-          onClick={() => handleChoice("rejected")}
-          className="px-4 py-2 border rounded"
-        >
-          Reject
-        </button>
-        <button
-          onClick={() => handleChoice("accepted")}
-          className="px-4 py-2 bg-[var(--lis-ocean)] text-white rounded"
-        >
-          Accept
-        </button>
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg">
+      <div className="max-w-5xl mx-auto p-4">
+        <p className="text-sm">
+          We use optional cookies for analytics and to display third-party media (YouTube/Spotify).
+          You can accept or reject now, and change your mind anytime in “Manage Cookies”.
+          Read our <a href="/privacy" className="underline">Privacy & Cookie Policy</a>.
+        </p>
+        <div className="mt-3 flex gap-2">
+          <button className="btn" onClick={() => setConsent("rejected")}>Reject</button>
+          <button className="btn bg-[var(--lis-ocean)] text-white border-transparent" onClick={() => setConsent("accepted")}>Accept</button>
+        </div>
       </div>
     </div>
   );
