@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { buildCatalogIndex } from "@/lib/categoryMeta";
-import ConsentGate from "@/app/components/ConsentGate";
+import ConsentGate from "../components/ConsentGate";
 
 export default function CategoriesLanding() {
   const [cards, setCards] = React.useState<{ name: string; slug: string; img: string }[]>([]);
