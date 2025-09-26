@@ -17,7 +17,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Load catalog meta for this slug
   React.useEffect(() => {
     (async () => {
       try {
@@ -41,7 +40,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
     })();
   }, [slug]);
 
-  // Fetch events for this category
   async function load() {
     setLoading(true); setError(null);
     try {
@@ -72,7 +70,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
 
   return (
     <main className="max-w-7xl mx-auto p-0">
-      {/* hero */}
       <div className="relative h-48 md:h-64 lg:h-72">
         <img src={hero} alt={categoryName} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -83,7 +80,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6">
-        {/* embeds */}
         {embeds.length > 0 && (
           <section className="mb-8">
             <div className="tile-rule text-lg font-semibold mb-3">Fresh from the scene</div>
@@ -114,7 +110,6 @@ export default function CategoryPage({ params }: { params: { slug: string } }) {
           </section>
         )}
 
-        {/* events */}
         <section>
           <div className="tile-rule text-lg font-semibold mb-3">Listings</div>
           {error && <p className="text-red-700 mb-3">Error: {error}</p>}
