@@ -1,1 +1,0 @@
-export const metadata={title:'Privacy Policy – Lisbon 360'}; export default function Page(){return(<div className='prose max-w-3xl'><h1>Privacy Policy</h1><p>We collect the minimum data needed to operate this site.</p><h2>Contact</h2><p><a href='mailto:privacy@example.com'>privacy@example.com</a></p></div>);}
