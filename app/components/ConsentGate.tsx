@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 /**
  * Renders children only when localStorage("cookie-consent") === "accepted".
- * Otherwise shows a friendly placeholder with “Accept cookies” button.
+ * Otherwise shows a friendly placeholder with an “Accept cookies” button.
  */
 export default function ConsentGate({
   children,
