@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { buildCatalogIndex } from "@/lib/categoryMeta";
-import EventCard, { type EventRow } from "//components/EventCard";
-import ConsentGate from "/app/components/ConsentGate";
+import EventCard, { type EventRow } from "@/app/components/EventCard";
+import ConsentGate from "@/app/components/ConsentGate";
 
 function toISODateOnly(d: Date) { return d.toISOString().slice(0, 10); }
 
