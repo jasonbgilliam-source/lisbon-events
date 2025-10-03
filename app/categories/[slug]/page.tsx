@@ -1,7 +1,7 @@
 // app/categories/[slug]/page.tsx
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
-import ConsentGate from "@/components/ConsentGate";
+import ConsentGate from "@/app/components/ConsentGate";
 
 interface CategoryPageProps {
   params: { slug: string };
