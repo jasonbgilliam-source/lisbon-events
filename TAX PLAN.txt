@@ -1,0 +1,90 @@
+Page 1
+
+Line A: Principal business activity → Educational Services
+
+Line B: Business code → 611000
+
+Line C: Name → Pathways Academy An International E
+
+Line D: EIN → 92-3743165
+
+Line E: Address → 17 Osprey Circle, Palm Coast, FL 32137
+
+Line F: Total assets → (leave blank if under $250,000, as in 2023)
+
+Line J: Number of partners → 2
+
+Income Section
+
+Line 1a Gross receipts → 4,650
+
+Line 1b Returns & allowances → 4,137
+
+Line 1c Balance → 513
+
+Line 8 Total income → 513
+
+Deductions Section
+
+Line 21 Other deductions → 1,939 (attach statement)
+
+Line 22 Total deductions → 1,939
+
+Computation
+
+Line 23 Ordinary business income (loss) → –1,426
+
+📑 Other Deductions Statement (Attachment)
+
+Label it: “Form 1065, Line 21 – Other Deductions”
+
+Website/Email/Domain Fees → 739.95
+
+Delaware Registered Agent → 199.00
+
+Tax Preparation Fees → 700.00
+
+Delaware Franchise (LLC) Tax → 300.00
+
+Total → 1,938.95
+
+(Round to 1,939 on the 1065 form itself.)
+
+📑 Schedule K-1 (Form 1065)
+
+Since you file jointly, you only need to retain one partner copy for your records, but for IRS purposes, both partners still appear.
+
+Part I – Information about the partnership
+
+Item A: Partnership EIN → 92-3743165
+
+Item B: Partnership name/address → Pathways Academy An International E, 17 Osprey Circle, Palm Coast, FL 32137
+
+Item C: IRS Center → Ogden, UT
+
+Part II – Information about the partner
+
+Item E: Partner name/address → Jason Gilliam (first K-1) / Tatiana Gilliam (second K-1), both with the Palm Coast address.
+
+Item J: Share of profit/loss/capital → Beginning 50% / Ending 50%
+
+Part III – Partner’s share of income
+
+Box 1 (Ordinary business income/loss) → Jason: –713, Tatiana: –713
+
+(Everything else blank.)
+--------------
+
+📑 Florida Business Tax Summary
+
+Prepare just like 2023:
+
+Gross receipts: 513.00
+
+Deductions: 1,938.95
+
+Net income (loss): –1,425.95
+
+Balance due: 0.00
+-----------
+

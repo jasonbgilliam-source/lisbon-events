@@ -1,0 +1,1 @@
+'use client'; export default function AdSlot({slotId}:{slotId:string}){return(<div className='card' style={{textAlign:'center',margin:'1rem 0'}}><div style={{fontSize:12,letterSpacing:2,color:'#777'}}>ADVERTISEMENT</div><div>Ad Slot: {slotId}</div></div>)}
