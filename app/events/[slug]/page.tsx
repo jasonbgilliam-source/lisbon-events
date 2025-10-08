@@ -39,11 +39,14 @@ export default function EventDetailPage() {
           }, {});
         });
 
+        // ✅ normalize slug type
+        const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
+
         // Match event by slug (title lowercased with hyphens)
         const found = data.find(
           (e) =>
             e.title?.toLowerCase().replace(/\s+/g, "-") ===
-            decodeURIComponent(slug)
+            decodeURIComponent(slugStr)
         );
 
         if (found) setEvent(found);
