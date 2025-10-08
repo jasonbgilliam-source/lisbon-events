@@ -67,7 +67,7 @@ export default function CategoryPage() {
   };
 
   const categoryName =
-    st slugStr = Array.isArray(slug) ? slug[0] : slug || "";
+    const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
 const categoryName =
   slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Category";
   return (
