@@ -7,7 +7,7 @@ import Microlink from "@microlink/react";
 
 export default function CategoryPage() {
   const { slug } = useParams();
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -33,7 +33,11 @@ export default function CategoryPage() {
               source_url: cols[12],
             };
           })
-          .filter((e) => e.category?.toLowerCase().replace(/\s+/g, "-") === slug);
+          .filter(
+            (e) =>
+              e.category?.toLowerCase().replace(/\s+/g, "-") ===
+              (Array.isArray(slug) ? slug[0] : slug)
+          );
 
         setEvents(parsed);
       } catch (err) {
@@ -53,6 +57,7 @@ export default function CategoryPage() {
         />
       );
     }
+
     // fallback category image
     const categorySlug = event.category?.toLowerCase().replace(/\s+/g, "-");
     return (
@@ -66,10 +71,12 @@ export default function CategoryPage() {
     );
   };
 
-  const categoryName =
+  // ✅ Correct declaration order
   const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
   const categoryName =
-    slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Category";
+    slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ||
+    "Category";
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
