@@ -67,9 +67,9 @@ export default function CategoryPage() {
   };
 
   const categoryName =
-    const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
-const categoryName =
-  slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Category";
+  const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
+  const categoryName =
+    slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Category";
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
