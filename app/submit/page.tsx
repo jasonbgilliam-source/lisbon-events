@@ -1,6 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+// ✅ Initialize Supabase (replace with your public keys if needed)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function SubmitEventPage() {
   const [form, setForm] = useState({
@@ -19,6 +25,30 @@ export default function SubmitEventPage() {
   });
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  // ✅ Load categories from Supabase on mount
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        setLoadingCategories(true);
+        const { data, error } = await supabase
+          .from("category_catalog")
+          .select("name")
+          .order("name", { ascending: true });
+
+        if (error) throw error;
+        setCategories(data.map((r: any) => r.name));
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -78,7 +108,6 @@ export default function SubmitEventPage() {
             { name: "address", label: "Address", type: "text" },
             { name: "price", label: "Price", type: "text" },
             { name: "age", label: "Age Restriction", type: "text" },
-            { name: "category", label: "Category", type: "text" },
             { name: "organizer", label: "Organizer", type: "text" },
             { name: "source_url", label: "Event Website or Source", type: "url" },
           ].map((f) => (
@@ -97,6 +126,30 @@ export default function SubmitEventPage() {
               />
             </div>
           ))}
+
+          {/* ✅ Category Dropdown */}
+          <div>
+            <label className="block font-semibold mb-1" htmlFor="category">
+              Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              required
+              value={form.category}
+              onChange={handleChange}
+              className="w-full border border-orange-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c94917]"
+            >
+              <option value="">
+                {loadingCategories ? "Loading categories..." : "Select a category"}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <div>
             <label className="block font-semibold mb-1" htmlFor="description">
