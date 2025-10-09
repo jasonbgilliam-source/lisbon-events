@@ -1,1 +1,0 @@
-export const metadata={title:'About – Lisbon 360'}; export default function Page(){return(<div className='prose max-w-3xl'><h1>About Lisbon 360</h1><p>Community-powered guide to events & eats in Lisbon.</p><p>Contact: <a href='mailto:hello@example.com'>hello@example.com</a></p></div>);}

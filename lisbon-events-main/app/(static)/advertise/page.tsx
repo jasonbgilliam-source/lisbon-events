@@ -1,1 +1,0 @@
-export const metadata={title:'Advertise – Lisbon 360'}; export default function Page(){return(<div className='prose max-w-3xl'><h1>Advertise on Lisbon 360</h1><ul><li>Sponsored events (pinned)</li><li>Display ads</li><li>Newsletter placements</li></ul><p>Email <a href='mailto:ads@example.com'>ads@example.com</a> for the media kit.</p></div>);}
