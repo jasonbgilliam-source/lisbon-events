@@ -6,7 +6,6 @@ import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
 // 🟠 Prevent static caching
-export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 // ✅ Initialize Supabase
