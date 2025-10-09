@@ -3,8 +3,7 @@ export default function Footer() {
     <footer
       className="bg-[#fff8f2] border-t border-orange-200 py-10"
       style={{
-        backgroundImage:
-          "url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Azulejos_Lisboa.jpg/1600px-Azulejos_Lisboa.jpg')",
+        backgroundImage: "url('/images/tiles-lisbon.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
