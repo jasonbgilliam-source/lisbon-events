@@ -22,8 +22,7 @@ export default function RootLayout({
           <div
             className="relative h-[400px] bg-cover bg-center"
             style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1505765050516-f72dcac9c60b?auto=format&fit=crop&w=1400&q=80')",
+              backgroundImage: "url('/images/hero-lisbon.jpg')",
             }}
           >
             <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white px-4">
