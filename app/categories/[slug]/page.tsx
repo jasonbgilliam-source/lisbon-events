@@ -33,11 +33,7 @@ export default function CategoryPage() {
               source_url: cols[12],
             };
           })
-          .filter(
-            (e) =>
-              e.category?.toLowerCase().replace(/\s+/g, "-") ===
-              (Array.isArray(slug) ? slug[0] : slug)
-          );
+          .filter((e) => e.category?.toLowerCase().replace(/\s+/g, "-") === String(slug));
 
         setEvents(parsed);
       } catch (err) {
@@ -69,10 +65,10 @@ export default function CategoryPage() {
     );
   };
 
+  // ✅ Fix for the type error
   const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
   const categoryName =
-    slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ||
-    "Category";
+    slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) || "Category";
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
@@ -84,6 +80,7 @@ export default function CategoryPage() {
           Discover {categoryName.toLowerCase()} happenings around Lisbon.
         </p>
 
+        {/* Event Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event, idx) => (
             <a
