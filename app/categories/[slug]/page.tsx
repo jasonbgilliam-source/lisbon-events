@@ -57,8 +57,6 @@ export default function CategoryPage() {
         />
       );
     }
-
-    // fallback category image
     const categorySlug = event.category?.toLowerCase().replace(/\s+/g, "-");
     return (
       <Image
@@ -71,7 +69,7 @@ export default function CategoryPage() {
     );
   };
 
-  // ✅ Correct declaration order
+  // ✅ normalize slug
   const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
   const categoryName =
     slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ||
