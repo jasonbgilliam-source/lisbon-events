@@ -1,123 +1,136 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Microlink from "@microlink/react";
+import Link from "next/link";
+import Image from "next/image";
+import { createClient } from "@supabase/supabase-js";
+
+// ✅ Initialize Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type Event = {
+  id: number;
   title: string;
-  start?: string;
-  end?: string;
-  venue?: string;
+  starts_at: string | null;
+  ends_at: string | null;
+  location_name?: string;
   city?: string;
-  address?: string;
-  price?: string;
-  age?: string;
   category?: string;
   description?: string;
-  organizer?: string;
+  image_url?: string;
   source_url?: string;
+  status?: string;
 };
 
-export default function CategoryPage() {
-  const { slug } = useParams();
+export default function CategoryDetailPage() {
+  const params = useParams();
+  const slug = decodeURIComponent(params.slug as string);
   const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch("/events.csv");
-        const text = await res.text();
-        const rows = text.split("\n").slice(1);
-        const parsed = rows
-          .map((r) => {
-            const cols = r.split(",");
-            return {
-              title: cols[0],
-              start: cols[1],
-              end: cols[2],
-              venue: cols[4],
-              city: cols[5],
-              address: cols[6],
-              price: cols[7],
-              age: cols[8],
-              category: cols[9],
-              description: cols[10],
-              organizer: cols[11],
-              source_url: cols[12],
-            };
-          })
-          .filter(
-            (e) =>
-              e.category?.toLowerCase().replace(/\s+/g, "-") ===
-              (Array.isArray(slug) ? slug[0] : slug)
-          );
+        setLoading(true);
+        const categoryName = slug.replace(/-/g, " ");
 
-        setEvents(parsed);
+        const { data, error } = await supabase
+          .from("events") // or "event_submissions" if that's your table
+          .select("*")
+          .eq("category", categoryName)
+          .order("starts_at", { ascending: true });
+
+        if (error) throw error;
+        // only show approved / published events
+        const filtered = data.filter(
+          (e: any) =>
+            !e.status ||
+            e.status === "approved" ||
+            e.status === "published" ||
+            e.status === "active"
+        );
+
+        setEvents(filtered);
       } catch (err) {
-        console.error("Error loading events:", err);
+        console.error("Error loading events for category:", err);
+      } finally {
+        setLoading(false);
       }
     }
+
     fetchEvents();
   }, [slug]);
 
-  // ✅ Normalize slug safely
-  const slugStr: string =
-    typeof slug === "string" ? slug : Array.isArray(slug) ? slug[0] : "";
-
-  const categoryName: string =
-    slugStr
-      ? slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-      : "Category";
-
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-6">
-          {categoryName} Events
+      <section className="max-w-6xl mx-auto px-4 py-10">
+        <h1 className="text-4xl font-bold text-center mb-2 capitalize">
+          {slug.replace(/-/g, " ")}
         </h1>
         <p className="text-center text-gray-600 mb-10">
-          Discover {categoryName.toLowerCase()} happenings around Lisbon.
+          {loading
+            ? "Loading events..."
+            : `${events.length} event${events.length === 1 ? "" : "s"} found`}
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event, idx) => (
-            <a
-              key={idx}
-              href={event.source_url || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
-            >
-              {event.source_url && (
-                <Microlink
-                  url={event.source_url}
-                  size="large"
-                  style={{ borderRadius: "1rem" }}
-                />
-              )}
-              <div className="p-5">
-                <h2 className="text-2xl font-semibold mb-1">{event.title}</h2>
-                <p className="text-sm text-gray-600 mb-2">
-                  {event.start} • {event.venue} • {event.city}
-                </p>
-                <p className="text-sm text-gray-800 line-clamp-3">
-                  {event.description}
-                </p>
-                {event.price && (
-                  <p className="mt-2 text-sm font-semibold text-orange-700">
-                    {event.price}
-                  </p>
-                )}
-              </div>
-            </a>
-          ))}
-        </div>
-
-        {events.length === 0 && (
-          <p className="text-center mt-10 text-gray-600 italic">
-            No events found for this category.
+        {loading ? (
+          <p className="text-center text-gray-600 italic">Loading…</p>
+        ) : events.length === 0 ? (
+          <p className="text-center text-gray-600 italic">
+            No events yet in this category.
           </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="bg-white shadow-md hover:shadow-lg border border-orange-200 rounded-2xl overflow-hidden transition transform hover:-translate-y-1"
+              >
+                <div className="relative w-full h-56">
+                  <Image
+                    src={event.image_url || "/images/default.jpg"}
+                    alt={event.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-5">
+                  <h2 className="text-xl font-semibold mb-2">
+                    {event.title || "Untitled Event"}
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-1">
+                    {event.location_name || "Location TBA"}
+                    {event.city ? `, ${event.city}` : ""}
+                  </p>
+                  {event.starts_at && (
+                    <p className="text-sm text-gray-600 mb-3">
+                      {new Date(event.starts_at).toLocaleDateString("en-GB", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-700 mb-3 line-clamp-3">
+                    {event.description || "No description available."}
+                  </p>
+                  {event.source_url && (
+                    <Link
+                      href={event.source_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[#c94917] font-semibold hover:underline"
+                    >
+                      Event Details →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </section>
     </main>
