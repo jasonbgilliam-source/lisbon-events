@@ -69,7 +69,7 @@ export default function CategoryPage() {
     );
   };
 
-  // ✅ normalize slug
+  // ✅ normalize slug safely
   const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
   const categoryName =
     slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ||
