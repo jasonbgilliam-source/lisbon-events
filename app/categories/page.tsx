@@ -78,8 +78,8 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = `/images/${slug}.jpg`; // ✅ Use your GitHub public images
-              const fallbackPath = `/images/default.jpg`;
+              const imagePath = `/images/${slug}.jpeg`; // ✅ Use your GitHub public images
+              const fallbackPath = `/images/default.jpeg`;
 
               return (
                 <Link
