@@ -91,7 +91,7 @@ export default function CategoryDetailPage() {
               >
                 <div className="relative w-full h-56">
                   <Image
-                    src={event.image_url || "/images/default.jpg"}
+                    src={event.image_url || "/images/default.jpeg"}
                     alt={event.title}
                     fill
                     className="object-cover"
