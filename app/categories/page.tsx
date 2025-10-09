@@ -58,6 +58,11 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  const getImagePath = (slug: string) => {
+    // try .jpeg first, fallback to .jpg
+    return `/images/${slug}.jpeg`;
+  };
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -78,8 +83,8 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = `/images/${slug}.jpeg`; // ✅ Use your GitHub public images
-              const fallbackPath = `/images/default.jpeg`;
+              const imagePath = getImagePath(slug);
+              const fallbackPath = "/images/default.jpeg";
 
               return (
                 <Link
@@ -88,15 +93,13 @@ export default function CategoriesPage() {
                   className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
                 >
                   <div className="relative w-full h-56">
-                    <Image
+                    {/* ✅ Use native <img> for reliable fallback */}
+                    <img
                       src={imagePath}
                       alt={cat.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover rounded-t-2xl"
+                      className="object-cover rounded-t-2xl w-full h-full"
                       onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = fallbackPath;
+                        (e.target as HTMLImageElement).src = fallbackPath;
                       }}
                     />
                   </div>
