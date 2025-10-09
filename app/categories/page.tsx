@@ -5,7 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
-// ✅ Initialize Supabase (using your public anon key)
+// 🟠 Prevent static caching
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
+// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -24,29 +28,22 @@ export default function CategoriesPage() {
       try {
         setLoading(true);
 
-        // ✅ Get all events (only published ones if you have a status column)
         const { data, error } = await supabase
-          .from("events") // or "event_submissions" if that's your source
-          .select("category, status");
+          .from("events")
+          .select("category");
 
         if (error) throw error;
 
-        // ✅ Filter to only approved / published events
-        const validEvents = data.filter(
-          (e: any) =>
-            e.category &&
-            e.category.trim() !== "" &&
-            (!e.status || e.status === "approved" || e.status === "published")
+        const valid = data.filter(
+          (e: any) => e.category && e.category.trim() !== ""
         );
 
-        // ✅ Count occurrences by category
         const counts: Record<string, number> = {};
-        validEvents.forEach((e: any) => {
+        valid.forEach((e: any) => {
           const name = e.category.trim();
           counts[name] = (counts[name] || 0) + 1;
         });
 
-        // ✅ Convert to array and sort alphabetically
         const list = Object.entries(counts)
           .map(([name, count]) => ({ name, count }))
           .sort((a, b) => a.name.localeCompare(b.name));
@@ -82,20 +79,28 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imageSlug = slug || "default";
+              const imagePath = `/images/${slug}.jpg`; // ✅ Use your GitHub public images
+              const fallbackPath = `/images/default.jpg`;
+
               return (
                 <Link
                   key={slug}
                   href={`/categories/${slug}`}
                   className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
                 >
-                  <Image
-                    src={`/images/${imageSlug}.jpg`}
-                    alt={cat.name}
-                    width={400}
-                    height={250}
-                    className="rounded-2xl object-cover w-full h-56"
-                  />
+                  <div className="relative w-full h-56">
+                    <Image
+                      src={imagePath}
+                      alt={cat.name}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover rounded-t-2xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = fallbackPath;
+                      }}
+                    />
+                  </div>
                   <div className="p-5">
                     <h2 className="text-2xl font-semibold mb-1">{cat.name}</h2>
                     <p className="text-sm text-gray-600">
