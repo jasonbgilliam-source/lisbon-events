@@ -2,12 +2,26 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import Microlink from "@microlink/react";
+
+type Event = {
+  title: string;
+  start?: string;
+  end?: string;
+  venue?: string;
+  city?: string;
+  address?: string;
+  price?: string;
+  age?: string;
+  category?: string;
+  description?: string;
+  organizer?: string;
+  source_url?: string;
+};
 
 export default function CategoryPage() {
   const { slug } = useParams();
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -33,7 +47,11 @@ export default function CategoryPage() {
               source_url: cols[12],
             };
           })
-          .filter((e) => e.category?.toLowerCase().replace(/\s+/g, "-") === String(slug));
+          .filter(
+            (e) =>
+              e.category?.toLowerCase().replace(/\s+/g, "-") ===
+              (Array.isArray(slug) ? slug[0] : slug)
+          );
 
         setEvents(parsed);
       } catch (err) {
@@ -43,39 +61,15 @@ export default function CategoryPage() {
     fetchEvents();
   }, [slug]);
 
-  const getImageForEvent = (event: any) => {
-    if (event.source_url) {
-      return (
-        <Microlink
-          url={event.source_url}
-          size="large"
-          style={{ borderRadius: "1rem" }}
-        />
-      );
-    }
-    const categorySlug = event.category?.toLowerCase().replace(/\s+/g, "-");
-    return (
-      <Image
-        src={`/images/${categorySlug || "default"}.jpg`}
-        alt={event.title}
-        width={400}
-        height={250}
-        className="rounded-2xl object-cover w-full h-56"
-      />
-    );
-  };
+  // ✅ Normalize slug safely
+  const slugStr: string =
+    typeof slug === "string" ? slug : Array.isArray(slug) ? slug[0] : "";
 
-  // ✅ Fix for the type error
-  const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
-// Normalize slug to a guaranteed string
-const slugStr: string =
-  typeof slug === "string" ? slug : Array.isArray(slug) ? slug[0] : "";
+  const categoryName: string =
+    slugStr
+      ? slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+      : "Category";
 
-// Safely format category name
-const categoryName: string =
-  slugStr
-    ? slugStr.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-    : "Category";
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -86,7 +80,6 @@ const categoryName: string =
           Discover {categoryName.toLowerCase()} happenings around Lisbon.
         </p>
 
-        {/* Event Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event, idx) => (
             <a
@@ -96,7 +89,13 @@ const categoryName: string =
               rel="noopener noreferrer"
               className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
             >
-              <div className="relative">{getImageForEvent(event)}</div>
+              {event.source_url && (
+                <Microlink
+                  url={event.source_url}
+                  size="large"
+                  style={{ borderRadius: "1rem" }}
+                />
+              )}
               <div className="p-5">
                 <h2 className="text-2xl font-semibold mb-1">{event.title}</h2>
                 <p className="text-sm text-gray-600 mb-2">
