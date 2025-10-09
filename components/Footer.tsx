@@ -1,16 +1,18 @@
 export default function Footer() {
   return (
     <footer
-      className="border-t border-orange-200 py-10"
+      className="relative border-t border-orange-200 py-10"
       style={{
-        backgroundColor: "#f7efe3",
-        backgroundImage:
-          "url('/images/azulejo-tan.jpg')", // ← your muted tan tile stored in /public/images/
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+        backgroundColor: "#f7efe3", // warm tan base
+        backgroundImage: `
+          linear-gradient(45deg, rgba(190,160,120,0.15) 25%, transparent 25%, transparent 75%, rgba(190,160,120,0.15) 75%, rgba(190,160,120,0.15)),
+          linear-gradient(45deg, rgba(190,160,120,0.15) 25%, transparent 25%, transparent 75%, rgba(190,160,120,0.15) 75%, rgba(190,160,120,0.15))
+        `,
+        backgroundSize: "80px 80px",
+        backgroundPosition: "0 0, 40px 40px",
       }}
     >
-      <div className="bg-[#fff8f2]/85 backdrop-blur-sm py-8">
+      <div className="bg-[#fff8f2]/90 backdrop-blur-sm py-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-center sm:text-left px-6">
           <div>
             <h3 className="font-bold text-lg mb-2 text-[#40210f]">
