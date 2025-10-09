@@ -1,138 +1,80 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import LayoutWrapper from "@/components/LayoutWrapper";
-
-const categories = [
-  {
-    name: "Music",
-    slug: "music",
-    description: "Concerts, jam sessions, fado, and live performances.",
-    image: "/images/music.jpg",
-  },
-  {
-    name: "Art & Exhibitions",
-    slug: "art",
-    description: "Gallery openings, street art, installations, and more.",
-    image: "/images/art.jpg",
-  },
-  {
-    name: "Food & Wine",
-    slug: "food",
-    description: "Markets, pop-ups, tastings, and foodie festivals.",
-    image: "/images/food.jpg",
-  },
-  {
-    name: "Film & Cinema",
-    slug: "film",
-    description: "Screenings, film fests, and open-air cinemas.",
-    image: "/images/film.jpg",
-  },
-  {
-    name: "Family & Community",
-    slug: "family",
-    description: "Workshops, fairs, and family-friendly happenings.",
-    image: "/images/family.jpg",
-  },
-  {
-    name: "Nightlife & Culture",
-    slug: "nightlife",
-    description: "Parties, DJ sets, theater, and cultural nights.",
-    image: "/images/nightlife.jpg",
-  },
-];
 
 export default function HomePage() {
   return (
-    <LayoutWrapper>
+    <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       {/* Hero Banner */}
-      <div className="relative w-full h-[400px] overflow-hidden">
-        <img
-          src="/hero-lisbon.jpg"
-          alt="Lisbon cityscape"
-          className="object-cover w-full h-full"
-        />
-        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-center text-white">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 drop-shadow-lg font-[Montserrat]">
+      <section
+        className="relative bg-cover bg-center h-[400px]"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1505765050516-f72dcac9c60b?auto=format&fit=crop&w=1400&q=80')",
+        }}
+      >
+        <div className="absolute inset-0 bg-black bg-opacity-30" />
+        <div className="relative z-10 flex flex-col justify-center items-center h-full text-center text-white px-4">
+          <h1 className="text-5xl font-bold mb-3 drop-shadow-lg">
             Lisbon Events
           </h1>
-          <p className="text-lg md:text-xl drop-shadow font-[Open Sans]">
+          <p className="text-xl drop-shadow-md">
             Discover concerts, food festivals, art shows, and more.
           </p>
-          <div className="mt-5 flex gap-3">
-            <Link
-              href="/categories"
-              className="px-5 py-2 rounded-full bg-white text-gray-800 font-semibold hover:bg-gray-100 transition"
-            >
-              Browse Events
+          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            <Link href="/calendar">
+              <button className="bg-white text-[#40210f] px-5 py-2 rounded-full font-semibold hover:bg-orange-100 transition">
+                Calendar
+              </button>
             </Link>
-            <Link
-              href="/add"
-              className="px-5 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-            >
-              Submit an Event
+            <Link href="/events">
+              <button className="bg-white text-[#40210f] px-5 py-2 rounded-full font-semibold hover:bg-orange-100 transition">
+                Events
+              </button>
+            </Link>
+            <Link href="/categories">
+              <button className="bg-white text-[#40210f] px-5 py-2 rounded-full font-semibold hover:bg-orange-100 transition">
+                Categories
+              </button>
+            </Link>
+            <Link href="/submit">
+              <button className="bg-white text-[#40210f] px-5 py-2 rounded-full font-semibold hover:bg-orange-100 transition">
+                Submit
+              </button>
             </Link>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Introduction */}
-      <section className="text-center my-10 px-4">
-        <h2 className="text-2xl font-semibold text-[#b84b22] mb-2 font-[Montserrat]">
-          What’s on in Lisbon
-        </h2>
-        <p className="text-gray-700 max-w-2xl mx-auto font-[Open Sans]">
-          Curated happenings across the city — markets, concerts, festivals, and
-          more. Filter by category, date, or vibe.
+      {/* Intro Section */}
+      <section className="max-w-5xl mx-auto py-10 px-6 text-center">
+        <h2 className="text-2xl font-semibold mb-3">What’s on in Lisbon</h2>
+        <p className="text-gray-700 mb-6">
+          Discover concerts, food festivals, markets and more. Share your event
+          in minutes.
         </p>
-      </section>
-
-      {/* Category Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 pb-12 max-w-6xl mx-auto">
-        {categories.map((cat) => (
+        <div className="flex flex-wrap justify-center gap-4">
           <Link
-            key={cat.slug}
-            href={`/categories/${cat.slug}`}
-            className="group rounded-xl overflow-hidden border border-[#f1e4d0] bg-[#fffaf5] shadow hover:shadow-lg hover:-translate-y-1 transition"
+            href="/events"
+            className="bg-orange-100 text-[#40210f] px-6 py-2 rounded-full font-semibold hover:bg-orange-200 transition"
           >
-            <img
-              src={cat.image}
-              alt={cat.name}
-              className="w-full h-48 object-cover group-hover:opacity-90"
-            />
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-[#b84b22] mb-1 font-[Montserrat]">
-                {cat.name}
-              </h3>
-              <p className="text-sm text-gray-700 font-[Open Sans]">
-                {cat.description}
-              </p>
-            </div>
+            Browse Events
           </Link>
-        ))}
-      </section>
-
-      {/* Optional Embeds (Calendar + Blog) */}
-      <section className="px-4 mb-16">
-        <div className="max-w-5xl mx-auto space-y-8">
-          {/* Calendar Embed */}
-          <div className="rounded-2xl overflow-hidden border border-[#f1e4d0] shadow-sm bg-white">
-            <iframe
-              src="https://calendar.google.com/calendar/embed?src=your_public_calendar_id&mode=AGENDA"
-              className="w-full h-[600px]"
-              style={{ border: 0 }}
-            ></iframe>
-          </div>
-
-          {/* Blogger Embed */}
-          <div className="rounded-2xl overflow-hidden border border-[#f1e4d0] shadow-sm bg-white">
-            <iframe
-              src="https://your-blogger-url.blogspot.com"
-              className="w-full h-[800px]"
-              style={{ border: 0 }}
-            ></iframe>
-          </div>
+          <Link
+            href="/submit"
+            className="bg-orange-100 text-[#40210f] px-6 py-2 rounded-full font-semibold hover:bg-orange-200 transition"
+          >
+            Submit an Event
+          </Link>
         </div>
       </section>
-    </LayoutWrapper>
+
+      {/* Ad Slot placeholder */}
+      <div className="max-w-4xl mx-auto my-8 text-center border-t border-b border-orange-200 py-3 text-gray-500 uppercase tracking-wide text-sm">
+        Advertisement — Ad Slot: home-top
+      </div>
+    </main>
   );
 }
+
