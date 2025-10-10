@@ -130,8 +130,8 @@ export default function SubmitEventPage() {
                 value={
                   f.name === "price" && form.is_free
                     ? "Free"
-                    : form[f.name as keyof typeof form]
-                }
+                    : String(form[f.name as keyof typeof form] ?? "")
+                } // ✅ coerced to string
                 onChange={handleChange}
                 className={`w-full border border-orange-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c94917] ${
                   f.disabled ? "bg-gray-100 cursor-not-allowed" : ""
@@ -154,7 +154,7 @@ export default function SubmitEventPage() {
                 setForm({
                   ...form,
                   is_free: value,
-                  price: value ? "Free" : "", // ✅ auto-fill/reset price
+                  price: value ? "Free" : "",
                 });
               }}
               className="w-full border border-orange-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c94917]"
