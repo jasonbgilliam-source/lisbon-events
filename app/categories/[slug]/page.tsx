@@ -56,21 +56,23 @@ export default function CategoryDetailPage() {
     fetchEvents();
   }, [categoryName]);
 
-  const getEventImage = (event: EventItem) => {
-    // YouTube thumbnail
-    if (event.youtube_url && event.youtube_url.includes("youtube.com")) {
-      const match = event.youtube_url.match(/v=([^&]+)/);
-      if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
-    }
-
-    // Spotify preview image (if any)
-    if (event.spotify_url && event.spotify_url.includes("spotify.com")) {
-      return "/images/spotify-placeholder.jpeg";
-    }
-
-    // Category image
-    const slug = event.category.toLowerCase().replace(/\s+/g, "-");
+  const getCategoryImage = (category: string) => {
+    const slug = category.toLowerCase().replace(/\s+/g, "-");
     return `/images/${slug}.jpeg`;
+  };
+
+  // Extract YouTube video ID for embed
+  const getYouTubeEmbed = (url: string) => {
+    const match = url.match(/(?:v=|be\/)([^&]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
+  // Extract Spotify embed URL
+  const getSpotifyEmbed = (url: string) => {
+    if (!url.includes("spotify.com")) return null;
+    return url
+      .replace("open.spotify.com", "open.spotify.com/embed")
+      .split("?")[0];
   };
 
   return (
@@ -92,35 +94,60 @@ export default function CategoryDetailPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((event) => {
-              const imagePath = getEventImage(event);
               const fallback = "/images/default.jpeg";
+              const youtubeEmbed = event.youtube_url
+                ? getYouTubeEmbed(event.youtube_url)
+                : null;
+              const spotifyEmbed = event.spotify_url
+                ? getSpotifyEmbed(event.spotify_url)
+                : null;
+              const categoryImage = getCategoryImage(event.category);
+
               return (
                 <div
                   key={event.id}
                   className="bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
                 >
-                  <div className="relative w-full h-56">
-                    <Image
-                      src={imagePath}
-                      alt={event.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover rounded-t-2xl"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = fallback;
-                      }}
-                    />
+                  <div className="relative w-full h-56 bg-gray-100">
+                    {youtubeEmbed ? (
+                      <iframe
+                        src={youtubeEmbed}
+                        className="w-full h-full"
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                        title={event.title}
+                      ></iframe>
+                    ) : spotifyEmbed ? (
+                      <iframe
+                        src={spotifyEmbed}
+                        className="w-full h-full"
+                        allow="encrypted-media"
+                        title={event.title}
+                      ></iframe>
+                    ) : (
+                      <Image
+                        src={categoryImage}
+                        alt={event.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover rounded-t-2xl"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = fallback;
+                        }}
+                      />
+                    )}
                   </div>
+
                   <div className="p-5">
-                    <h2 className="text-xl font-semibold mb-1">
-                      {event.title}
-                    </h2>
+                    <h2 className="text-xl font-semibold mb-1">{event.title}</h2>
                     <p className="text-sm text-gray-600 mb-2">
                       {event.location_name || event.city || ""}
                     </p>
                     {event.description && (
-                      <p className="text-sm line-clamp-3">{event.description}</p>
+                      <p className="text-sm text-gray-700 line-clamp-3">
+                        {event.description}
+                      </p>
                     )}
                     {event.ticket_url && (
                       <Link
