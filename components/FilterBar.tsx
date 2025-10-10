@@ -78,8 +78,9 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
   };
 
   return (
-    <div className="bg-[#fff1e8] border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
-      <div className="flex flex-wrap gap-3 items-center justify-start">
+    <div className="bg-[#fff1e8] border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm sticky top-0 z-30 backdrop-blur-md bg-opacity-95">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+
         {/* 🔍 Search */}
         <input
           type="text"
@@ -87,7 +88,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           placeholder="Search events..."
           value={filters.search}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-48 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         />
 
         {/* 🎭 Category */}
@@ -95,7 +96,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           name="category"
           value={filters.category}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-40 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -110,7 +111,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           name="city"
           value={filters.city}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-36 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         >
           <option value="">All Cities</option>
           {cities.map((city) => (
@@ -125,7 +126,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           name="dateRange"
           value={filters.dateRange}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-36 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         >
           <option value="">Any Date</option>
           <option value="today">Today</option>
@@ -133,24 +134,12 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <option value="month">This Month</option>
         </select>
 
-        {/* 🆓 Free Only */}
-        <label className="flex items-center gap-1 text-sm">
-          <input
-            type="checkbox"
-            name="is_free"
-            checked={!!filters.is_free}
-            onChange={handleChange}
-            className="accent-[#c94917]"
-          />
-          Free Only
-        </label>
-
         {/* 💶 Price Range */}
         <select
           name="priceRange"
           value={filters.priceRange}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-36 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         >
           <option value="">Any Price</option>
           <option value="under10">Under €10</option>
@@ -163,7 +152,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           name="age"
           value={filters.age}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-32 focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
         >
           <option value="">All Ages</option>
           <option value="16">16+</option>
@@ -171,12 +160,26 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <option value="21">21+</option>
         </select>
 
-        {/* ❌ Clear */}
+        {/* 🆓 Free Only */}
+        <label className="flex items-center gap-2 text-sm border border-orange-200 rounded-lg p-2 bg-white shadow-sm">
+          <input
+            type="checkbox"
+            name="is_free"
+            checked={!!filters.is_free}
+            onChange={handleChange}
+            className="accent-[#c94917]"
+          />
+          <span className="font-medium text-[#40210f]">Free Only</span>
+        </label>
+      </div>
+
+      {/* ❌ Clear */}
+      <div className="flex justify-end mt-4">
         <button
           onClick={handleClear}
-          className="ml-auto bg-[#c94917] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#a53f12] transition"
+          className="bg-[#c94917] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#a53f12] transition"
         >
-          Clear
+          Clear Filters
         </button>
       </div>
     </div>
