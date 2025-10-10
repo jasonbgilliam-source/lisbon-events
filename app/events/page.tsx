@@ -91,12 +91,12 @@ export default function EventsPage() {
     loadCSV();
   }, []);
 
-  // 🟠 Load categories from Supabase category_catalog (✅ fixed)
+  // 🟠 Load categories from Supabase category_catalog
   useEffect(() => {
     async function loadCategories() {
       try {
         const { data, error } = await supabase
-          .from("category_catalog") // ✅ underscore instead of hyphen
+          .from("category_catalog")
           .select("name");
 
         console.log("🟡 Supabase category_catalog result:", { data, error });
