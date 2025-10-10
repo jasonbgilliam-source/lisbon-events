@@ -117,21 +117,25 @@ export default function EventsPage() {
 
   // 🧠 Apply filters whenever selections change
   useEffect(() => {
-    console.log("🧠 Selected categories:", selectedCategories);
+    const normalizedSelected = selectedCategories.map((c) =>
+      c.toLowerCase().trim()
+    );
+
+    console.log("🧠 Selected categories:", normalizedSelected);
     console.log(
       "🧠 Sample event categories:",
       events.slice(0, 10).map((e) => e.category)
     );
 
     const filtered = events.filter((e) => {
-      const normalizedEventCat = e.category?.toLowerCase().trim();
-      const normalizedSelected = selectedCategories.map((c) =>
-        c.toLowerCase().trim()
-      );
+      const eventCats = (e.category || "")
+        .split(",")
+        .map((c) => c.toLowerCase().trim())
+        .filter(Boolean);
 
       const categoryMatch =
-        selectedCategories.length === 0 ||
-        (normalizedEventCat && normalizedSelected.includes(normalizedEventCat));
+        normalizedSelected.length === 0 ||
+        eventCats.some((cat) => normalizedSelected.includes(cat));
 
       const priceBucket = getPriceBucket(e.price);
       const priceMatch =
