@@ -95,7 +95,12 @@ export default function EventsPage() {
   useEffect(() => {
     async function loadCategories() {
       try {
-        const { data, error } = await supabase.from("category-catalog").select("name");
+        const { data, error } = await supabase
+          .from("category-catalog")
+          .select("name");
+
+        console.log("🟡 Supabase category-catalog result:", { data, error });
+
         if (error) throw error;
 
         const sortedNames = (data || [])
