@@ -21,6 +21,8 @@ type EventItem = {
   location_name?: string;
   city?: string;
   address?: string;
+  price?: string;
+  age?: string;
   ticket_url?: string;
   youtube_url?: string;
   spotify_url?: string;
@@ -73,6 +75,15 @@ export default function CategoryDetailPage() {
       .split("?")[0];
   };
 
+  const formatDateTime = (iso?: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleString("en-GB", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-8">
       <div className="max-w-6xl mx-auto">
@@ -106,6 +117,7 @@ export default function CategoryDetailPage() {
                   key={event.id}
                   className="bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
                 >
+                  {/* 🎬 Media Section */}
                   <div className="relative w-full h-56 bg-[#fff1e8] flex items-center justify-center">
                     {youtubeEmbed ? (
                       <div className="rounded-xl overflow-hidden border border-orange-300 shadow-inner bg-[#fff8f2]">
@@ -143,24 +155,45 @@ export default function CategoryDetailPage() {
                     )}
                   </div>
 
+                  {/* 📝 Info Section */}
                   <div className="p-5">
-                    <h2 className="text-xl font-semibold mb-1">{event.title}</h2>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {event.location_name || event.city || ""}
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
+                      {event.title}
+                    </h2>
+
+                    {/* Venue + Timing */}
+                    <p className="text-sm text-gray-600 mb-1">
+                      📍 {event.location_name || "Venue TBA"}
                     </p>
+                    <p className="text-sm text-gray-600 mb-1">
+                      🕒 {formatDateTime(event.starts_at)}
+                      {event.ends_at ? ` – ${formatDateTime(event.ends_at)}` : ""}
+                    </p>
+
+                    {/* Price & Age */}
+                    <p className="text-sm text-gray-700 mb-1">
+                      💶 {event.price ? event.price : "Free or not listed"}
+                    </p>
+                    <p className="text-sm text-gray-700 mb-3">
+                      🚸 {event.age ? `${event.age}+` : "All ages"}
+                    </p>
+
+                    {/* Description */}
                     {event.description && (
-                      <p className="text-sm text-gray-700 line-clamp-3">
+                      <p className="text-sm text-gray-800 mb-3 line-clamp-3">
                         {event.description}
                       </p>
                     )}
+
+                    {/* Ticket link */}
                     {event.ticket_url && (
                       <Link
                         href={event.ticket_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[#c94917] text-sm mt-2 inline-block"
+                        className="text-[#c94917] text-sm font-medium underline"
                       >
-                        View Event →
+                        🎟️ View Event →
                       </Link>
                     )}
                   </div>
