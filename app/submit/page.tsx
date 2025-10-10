@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// ✅ Initialize Supabase (replace with your public keys if needed)
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -11,42 +10,35 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export default function SubmitEventPage() {
   const [form, setForm] = useState({
     title: "",
-    start: "",
-    end: "",
-    venue: "",
-    city: "",
-    address: "",
-    price: "",
-    age: "",
-    category: "",
     description: "",
-    organizer: "",
-    source_url: "",
+    starts_at: "",
+    ends_at: "",
+    location_name: "",
+    address: "",
+    city: "",
+    age: "",
+    price: "",
+    category: "",
+    organizer_email: "",
+    ticket_url: "",
+    image_url: "",
+    youtube_url: "",
+    spotify_url: "",
   });
 
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [categories, setCategories] = useState<string[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [status, setStatus] =
+    useState<"idle" | "loading" | "success" | "error">("idle");
 
-  // ✅ Load categories from Supabase on mount
+  // ✅ Load categories from Supabase
   useEffect(() => {
     async function loadCategories() {
-      try {
-        setLoadingCategories(true);
-        const { data, error } = await supabase
-          .from("category_catalog")
-          .select("name")
-          .order("name", { ascending: true });
-
-        if (error) throw error;
-        setCategories(data.map((r: any) => r.name));
-      } catch (err) {
-        console.error("Failed to load categories:", err);
-      } finally {
-        setLoadingCategories(false);
-      }
+      const { data, error } = await supabase
+        .from("category_catalog")
+        .select("name");
+      if (error) console.error(error);
+      else setCategories(data.map((c: any) => c.name));
     }
-
     loadCategories();
   }, []);
 
@@ -59,30 +51,34 @@ export default function SubmitEventPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
-
     try {
-      const res = await fetch("/api/submit", {
+      const res = await fetch("/api/submit-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      if (!res.ok) throw new Error("Failed");
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to submit");
       setStatus("success");
       setForm({
         title: "",
-        start: "",
-        end: "",
-        venue: "",
-        city: "",
-        address: "",
-        price: "",
-        age: "",
-        category: "",
         description: "",
-        organizer: "",
-        source_url: "",
+        starts_at: "",
+        ends_at: "",
+        location_name: "",
+        address: "",
+        city: "",
+        age: "",
+        price: "",
+        category: "",
+        organizer_email: "",
+        ticket_url: "",
+        image_url: "",
+        youtube_url: "",
+        spotify_url: "",
       });
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus("error");
     }
   };
@@ -94,22 +90,25 @@ export default function SubmitEventPage() {
           Submit an Event
         </h1>
         <p className="mb-6">
-          Share your Lisbon event with the community! Fill in the details below.
+          Share your Lisbon event with the community! Fill in all details below.
           Submissions are reviewed before publishing.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {[
             { name: "title", label: "Event Title", type: "text", required: true },
-            { name: "start", label: "Start Date", type: "datetime-local", required: true },
-            { name: "end", label: "End Date", type: "datetime-local" },
-            { name: "venue", label: "Venue", type: "text" },
+            { name: "starts_at", label: "Start Date/Time", type: "datetime-local", required: true },
+            { name: "ends_at", label: "End Date/Time", type: "datetime-local" },
+            { name: "location_name", label: "Venue", type: "text", required: true },
             { name: "city", label: "City", type: "text" },
             { name: "address", label: "Address", type: "text" },
             { name: "price", label: "Price", type: "text" },
             { name: "age", label: "Age Restriction", type: "text" },
-            { name: "organizer", label: "Organizer", type: "text" },
-            { name: "source_url", label: "Event Website or Source", type: "url" },
+            { name: "organizer_email", label: "Organizer Email", type: "email", required: true },
+            { name: "ticket_url", label: "Ticket URL", type: "url" },
+            { name: "image_url", label: "Event Image URL", type: "url" },
+            { name: "youtube_url", label: "YouTube URL", type: "url" },
+            { name: "spotify_url", label: "Spotify URL", type: "url" },
           ].map((f) => (
             <div key={f.name}>
               <label className="block font-semibold mb-1" htmlFor={f.name}>
@@ -127,7 +126,7 @@ export default function SubmitEventPage() {
             </div>
           ))}
 
-          {/* ✅ Category Dropdown */}
+          {/* ✅ Category dropdown */}
           <div>
             <label className="block font-semibold mb-1" htmlFor="category">
               Category
@@ -140,9 +139,7 @@ export default function SubmitEventPage() {
               onChange={handleChange}
               className="w-full border border-orange-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c94917]"
             >
-              <option value="">
-                {loadingCategories ? "Loading categories..." : "Select a category"}
-              </option>
+              <option value="">Select a category</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
@@ -151,6 +148,7 @@ export default function SubmitEventPage() {
             </select>
           </div>
 
+          {/* Description */}
           <div>
             <label className="block font-semibold mb-1" htmlFor="description">
               Description
@@ -159,31 +157,32 @@ export default function SubmitEventPage() {
               id="description"
               name="description"
               rows={4}
+              required
               value={form.description}
               onChange={handleChange}
               className="w-full border border-orange-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#c94917]"
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={status === "loading"}
-            className="w-full bg-[#c94917] text-white py-2 rounded-lg font-semibold hover:bg-[#a53f12]"
+            className="w-full bg-[#c94917] text-white py-2 rounded-lg font-semibold hover:bg-[#a53f12] transition"
           >
-            {status === "loading" ? "Submitting..." : "Submit Event"}
+            {status === "loading"
+              ? "Submitting..."
+              : status === "success"
+              ? "✅ Submitted!"
+              : "Submit Event"}
           </button>
-        </form>
 
-        {status === "success" && (
-          <p className="mt-4 text-green-700 font-medium">
-            ✅ Event submitted successfully!
-          </p>
-        )}
-        {status === "error" && (
-          <p className="mt-4 text-red-600 font-medium">
-            ❌ Something went wrong. Please try again.
-          </p>
-        )}
+          {status === "error" && (
+            <p className="mt-4 text-red-600 font-medium">
+              ❌ Something went wrong. Please check your entries and try again.
+            </p>
+          )}
+        </form>
       </div>
     </main>
   );
