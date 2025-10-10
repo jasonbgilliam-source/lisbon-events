@@ -27,7 +27,7 @@ type Event = {
 
 export default function CategoryDetailPage() {
   const params = useParams();
-  const slug = decodeURIComponent(params.slug as string);
+  const categoryName = decodeURIComponent(params.slug as string); // ✅ use exact category name
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,16 +35,16 @@ export default function CategoryDetailPage() {
     async function fetchEvents() {
       try {
         setLoading(true);
-        const categoryName = slug.replace(/-/g, " ");
 
         const { data, error } = await supabase
-          .from("events") // or "event_submissions" if that's your table
+          .from("events")
           .select("*")
           .eq("category", categoryName)
           .order("starts_at", { ascending: true });
 
         if (error) throw error;
-        // only show approved / published events
+
+        // ✅ Filter approved / published / active
         const filtered = data.filter(
           (e: any) =>
             !e.status ||
@@ -62,14 +62,12 @@ export default function CategoryDetailPage() {
     }
 
     fetchEvents();
-  }, [slug]);
+  }, [categoryName]);
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-4xl font-bold text-center mb-2 capitalize">
-          {slug.replace(/-/g, " ")}
-        </h1>
+        <h1 className="text-4xl font-bold text-center mb-2">{categoryName}</h1>
         <p className="text-center text-gray-600 mb-10">
           {loading
             ? "Loading events..."
