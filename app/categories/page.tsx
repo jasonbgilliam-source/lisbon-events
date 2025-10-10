@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
 // 🟠 Prevent static caching
@@ -58,8 +57,8 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  const getImagePath = (slug: string) => {
-    // try .jpeg first, fallback to .jpg
+  const getImagePath = (name: string) => {
+    const slug = name.toLowerCase().replace(/\s+/g, "-");
     return `/images/${slug}.jpeg`;
   };
 
@@ -82,18 +81,17 @@ export default function CategoriesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => {
-              const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = getImagePath(slug);
+              const encodedName = encodeURIComponent(cat.name);
+              const imagePath = getImagePath(cat.name);
               const fallbackPath = "/images/default.jpeg";
 
               return (
                 <Link
-                  key={slug}
-                  href={`/categories/${slug}`}
+                  key={encodedName}
+                  href={`/categories/${encodedName}`}
                   className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
                 >
                   <div className="relative w-full h-56">
-                    {/* ✅ Use native <img> for reliable fallback */}
                     <img
                       src={imagePath}
                       alt={cat.name}
