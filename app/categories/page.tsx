@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
-// 🟠 Prevent static caching
 export const dynamic = "force-dynamic";
 
 // ✅ Initialize Supabase
@@ -27,19 +27,18 @@ export default function CategoriesPage() {
         setLoading(true);
 
         const { data, error } = await supabase
-          .from("events")
-          .select("category");
+          .from("event_submissions")
+          .select("category, status")
+          .eq("status", "approved");
 
         if (error) throw error;
 
-        const valid = data.filter(
-          (e: any) => e.category && e.category.trim() !== ""
-        );
-
         const counts: Record<string, number> = {};
-        valid.forEach((e: any) => {
-          const name = e.category.trim();
-          counts[name] = (counts[name] || 0) + 1;
+        (data || []).forEach((e: any) => {
+          if (e.category && e.category.trim() !== "") {
+            const name = e.category.trim();
+            counts[name] = (counts[name] || 0) + 1;
+          }
         });
 
         const list = Object.entries(counts)
@@ -56,11 +55,6 @@ export default function CategoriesPage() {
 
     fetchCategories();
   }, []);
-
-  const getImagePath = (name: string) => {
-    const slug = name.toLowerCase().replace(/\s+/g, "-");
-    return `/images/${slug}.jpeg`;
-  };
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
@@ -81,23 +75,26 @@ export default function CategoriesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {categories.map((cat) => {
-              const encodedName = encodeURIComponent(cat.name);
-              const imagePath = getImagePath(cat.name);
-              const fallbackPath = "/images/default.jpeg";
+              const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
+              const imagePath = `/images/${slug}.jpeg`;
+              const fallbackPath = `/images/default.jpeg`;
 
               return (
                 <Link
-                  key={encodedName}
-                  href={`/categories/${encodedName}`}
+                  key={slug}
+                  href={`/categories/${slug}`}
                   className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
                 >
                   <div className="relative w-full h-56">
-                    <img
+                    <Image
                       src={imagePath}
                       alt={cat.name}
-                      className="object-cover rounded-t-2xl w-full h-full"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover rounded-t-2xl"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = fallbackPath;
+                        const target = e.target as HTMLImageElement;
+                        target.src = fallbackPath;
                       }}
                     />
                   </div>
