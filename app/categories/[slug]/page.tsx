@@ -1,61 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
+
+export const dynamic = "force-dynamic";
 
 // ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-type Event = {
-  id: number;
+type EventItem = {
+  id: string;
   title: string;
-  starts_at: string | null;
-  ends_at: string | null;
+  description?: string;
+  category: string;
   location_name?: string;
   city?: string;
-  category?: string;
-  description?: string;
-  image_url?: string;
-  source_url?: string;
-  status?: string;
+  address?: string;
+  ticket_url?: string;
+  youtube_url?: string;
+  spotify_url?: string;
+  starts_at?: string;
+  ends_at?: string;
 };
 
 export default function CategoryDetailPage() {
-  const params = useParams();
-  const categoryName = decodeURIComponent(params.slug as string); // ✅ use exact category name
-  const [events, setEvents] = useState<Event[]>([]);
+  const { slug } = useParams();
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const categoryName = slug.toString().replace(/-/g, " ");
 
   useEffect(() => {
     async function fetchEvents() {
       try {
         setLoading(true);
-
         const { data, error } = await supabase
-          .from("events")
+          .from("event_submissions")
           .select("*")
-          .eq("category", categoryName)
-          .order("starts_at", { ascending: true });
+          .eq("status", "approved")
+          .ilike("category", categoryName);
 
         if (error) throw error;
-
-        // ✅ Filter approved / published / active
-        const filtered = data.filter(
-          (e: any) =>
-            !e.status ||
-            e.status === "approved" ||
-            e.status === "published" ||
-            e.status === "active"
-        );
-
-        setEvents(filtered);
+        setEvents(data || []);
       } catch (err) {
-        console.error("Error loading events for category:", err);
+        console.error("Error loading events:", err);
       } finally {
         setLoading(false);
       }
@@ -64,73 +56,89 @@ export default function CategoryDetailPage() {
     fetchEvents();
   }, [categoryName]);
 
+  const getEventImage = (event: EventItem) => {
+    // YouTube thumbnail
+    if (event.youtube_url && event.youtube_url.includes("youtube.com")) {
+      const match = event.youtube_url.match(/v=([^&]+)/);
+      if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+    }
+
+    // Spotify preview image (if any)
+    if (event.spotify_url && event.spotify_url.includes("spotify.com")) {
+      return "/images/spotify-placeholder.jpeg";
+    }
+
+    // Category image
+    const slug = event.category.toLowerCase().replace(/\s+/g, "-");
+    return `/images/${slug}.jpeg`;
+  };
+
   return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-4xl font-bold text-center mb-2">{categoryName}</h1>
-        <p className="text-center text-gray-600 mb-10">
-          {loading
-            ? "Loading events..."
-            : `${events.length} event${events.length === 1 ? "" : "s"} found`}
-        </p>
+    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <Link
+          href="/categories"
+          className="text-[#c94917] underline text-sm mb-6 inline-block"
+        >
+          ← Back to Categories
+        </Link>
+
+        <h1 className="text-4xl font-bold mb-6 capitalize">{categoryName}</h1>
 
         {loading ? (
-          <p className="text-center text-gray-600 italic">Loading…</p>
+          <p>Loading events…</p>
         ) : events.length === 0 ? (
-          <p className="text-center text-gray-600 italic">
-            No events yet in this category.
-          </p>
+          <p className="text-gray-600 italic">No events found in this category.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white shadow-md hover:shadow-lg border border-orange-200 rounded-2xl overflow-hidden transition transform hover:-translate-y-1"
-              >
-                <div className="relative w-full h-56">
-                  <Image
-                    src={event.image_url || "/images/default.jpeg"}
-                    alt={event.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-5">
-                  <h2 className="text-xl font-semibold mb-2">
-                    {event.title || "Untitled Event"}
-                  </h2>
-                  <p className="text-sm text-gray-600 mb-1">
-                    {event.location_name || "Location TBA"}
-                    {event.city ? `, ${event.city}` : ""}
-                  </p>
-                  {event.starts_at && (
-                    <p className="text-sm text-gray-600 mb-3">
-                      {new Date(event.starts_at).toLocaleDateString("en-GB", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {events.map((event) => {
+              const imagePath = getEventImage(event);
+              const fallback = "/images/default.jpeg";
+              return (
+                <div
+                  key={event.id}
+                  className="bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
+                >
+                  <div className="relative w-full h-56">
+                    <Image
+                      src={imagePath}
+                      alt={event.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover rounded-t-2xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = fallback;
+                      }}
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h2 className="text-xl font-semibold mb-1">
+                      {event.title}
+                    </h2>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {event.location_name || event.city || ""}
                     </p>
-                  )}
-                  <p className="text-sm text-gray-700 mb-3 line-clamp-3">
-                    {event.description || "No description available."}
-                  </p>
-                  {event.source_url && (
-                    <Link
-                      href={event.source_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#c94917] font-semibold hover:underline"
-                    >
-                      Event Details →
-                    </Link>
-                  )}
+                    {event.description && (
+                      <p className="text-sm line-clamp-3">{event.description}</p>
+                    )}
+                    {event.ticket_url && (
+                      <Link
+                        href={event.ticket_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#c94917] text-sm mt-2 inline-block"
+                      >
+                        View Event →
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
-      </section>
+      </div>
     </main>
   );
 }
