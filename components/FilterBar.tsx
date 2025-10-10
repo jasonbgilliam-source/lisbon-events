@@ -23,28 +23,46 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
   // ✅ Load categories & cities
   useEffect(() => {
     async function loadOptions() {
-      const { data: catData } = await supabase.from("category_catalog").select("name");
-      if (catData) setCategories(catData.map((c: any) => c.name));
+      try {
+        const { data: catData } = await supabase.from("category_catalog").select("name");
+        if (catData) setCategories(catData.map((c: any) => c.name));
 
-      const { data: eventData } = await supabase.from("event_submissions").select("city").eq("status", "approved");
-      if (eventData) {
-        const uniqueCities = Array.from(new Set(eventData.map((e: any) => e.city).filter(Boolean)));
-        setCities(uniqueCities);
+        const { data: eventData } = await supabase
+          .from("event_submissions")
+          .select("city")
+          .eq("status", "approved");
+        if (eventData) {
+          const uniqueCities = Array.from(
+            new Set(eventData.map((e: any) => e.city).filter(Boolean))
+          );
+          setCities(uniqueCities);
+        }
+      } catch (err) {
+        console.error("Error loading filter data:", err);
       }
     }
     loadOptions();
   }, []);
 
+  // ✅ Handle change safely (fixes TypeScript error)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+    const target = e.target;
+    const name = target.name;
+    const value =
+      target instanceof HTMLInputElement && target.type === "checkbox"
+        ? target.checked
+        : target.value;
+
     const newFilters = {
       ...filters,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     };
+
     setFilters(newFilters);
     onFilter(newFilters);
   };
 
+  // ✅ Reset filters
   const handleClear = () => {
     const cleared = {
       search: "",
@@ -120,7 +138,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <input
             type="checkbox"
             name="is_free"
-            checked={filters.is_free}
+            checked={!!filters.is_free}
             onChange={handleChange}
             className="accent-[#c94917]"
           />
