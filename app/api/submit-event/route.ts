@@ -61,9 +61,9 @@ export async function POST(req: Request) {
         city: body.city ?? null,
         all_day,
         category,
-        is_free: body.is_free ?? false,
         youtube_url: body.youtube_url ?? null,
         spotify_url: body.spotify_url ?? null,
+        is_free: body.is_free ?? false,
         status: "pending",
       }]);
 
