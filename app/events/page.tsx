@@ -99,8 +99,6 @@ export default function EventsPage() {
           .from("category_catalog")
           .select("name");
 
-        console.log("🟡 Supabase category_catalog result:", { data, error });
-
         if (error) throw error;
 
         const sortedNames = (data || [])
@@ -119,10 +117,21 @@ export default function EventsPage() {
 
   // 🧠 Apply filters whenever selections change
   useEffect(() => {
+    console.log("🧠 Selected categories:", selectedCategories);
+    console.log(
+      "🧠 Sample event categories:",
+      events.slice(0, 10).map((e) => e.category)
+    );
+
     const filtered = events.filter((e) => {
+      const normalizedEventCat = e.category?.toLowerCase().trim();
+      const normalizedSelected = selectedCategories.map((c) =>
+        c.toLowerCase().trim()
+      );
+
       const categoryMatch =
         selectedCategories.length === 0 ||
-        (e.category && selectedCategories.includes(e.category));
+        (normalizedEventCat && normalizedSelected.includes(normalizedEventCat));
 
       const priceBucket = getPriceBucket(e.price);
       const priceMatch =
@@ -130,6 +139,8 @@ export default function EventsPage() {
 
       return categoryMatch && priceMatch;
     });
+
+    console.log("✅ Filtered events count:", filtered.length);
 
     setFilteredEvents(filtered);
   }, [selectedCategories, selectedPrices, events]);
