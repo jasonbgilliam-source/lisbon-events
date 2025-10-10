@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Microlink from "@microlink/react";
 import dayjs from "dayjs";
+import { createClient } from "@supabase/supabase-js";
 
 type EventItem = {
   title: string;
@@ -19,6 +20,11 @@ type EventItem = {
   organizer?: string;
   source_url?: string;
 };
+
+// ✅ Supabase init
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -68,12 +74,6 @@ export default function EventsPage() {
         setEvents(data);
         setFilteredEvents(data);
 
-        // 🟠 Unique Categories
-        const uniqueCats = Array.from(
-          new Set(data.map((e) => e.category).filter(Boolean))
-        );
-        setCategories(uniqueCats);
-
         // 🟢 Unique Price Buckets
         const uniquePrices = Array.from(
           new Set(
@@ -89,6 +89,27 @@ export default function EventsPage() {
     }
 
     loadCSV();
+  }, []);
+
+  // 🟠 Load categories from Supabase category-catalog
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const { data, error } = await supabase.from("category-catalog").select("name");
+        if (error) throw error;
+
+        const sortedNames = (data || [])
+          .map((c) => c.name)
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b));
+
+        setCategories(sortedNames);
+      } catch (err) {
+        console.error("Error loading category catalog:", err);
+      }
+    }
+
+    loadCategories();
   }, []);
 
   // 🧠 Apply filters whenever selections change
