@@ -2,290 +2,120 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Microlink from "@microlink/react";
-import dayjs from "dayjs";
+import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
 
-type EventItem = {
-  id: number;
-  title: string;
-  start: string;
-  end?: string;
-  venue?: string;
-  city?: string;
-  address?: string;
-  price?: string;
-  age?: string;
-  category?: string;
-  description?: string;
-  organizer?: string;
-  source_url?: string;
-};
+// 🟠 Prevent static caching
+export const dynamic = "force-dynamic";
 
-// ✅ Supabase init
+// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export default function EventsPage() {
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventItem[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+type CategoryData = {
+  name: string;
+  count: number;
+};
 
-  // 🧠 Helper: categorize price into buckets
-  function getPriceBucket(price: string | undefined): string {
-    if (!price || price.toLowerCase() === "unknown") return "Unknown";
+export default function CategoriesPage() {
+  const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const lower = price.toLowerCase();
-    if (lower.includes("free") || lower.includes("grátis") || lower.includes("0")) {
-      return "Free";
-    }
-
-    const match = lower.match(/\d+/g);
-    if (match) {
-      const nums = match.map(Number);
-      const min = Math.min(...nums);
-      if (min === 0) return "Free";
-      if (min <= 15) return "Under €15";
-      if (min >= 30 && min <= 100) return "€30–100";
-    }
-
-    return "Other";
-  }
-
-  // 🟡 Load events from Supabase (instead of CSV)
   useEffect(() => {
-    async function loadEvents() {
+    async function fetchCategories() {
       try {
+        setLoading(true);
+
         const { data, error } = await supabase
-          .from("event_submissions")
-          .select("*");
+          .from("events")
+          .select("category");
 
         if (error) throw error;
 
-        console.log("🟢 Loaded events from Supabase:", data?.length);
-
-        const eventsData = data as EventItem[];
-        setEvents(eventsData);
-        setFilteredEvents(eventsData);
-
-        // 🟢 Price buckets
-        const uniquePrices = Array.from(
-          new Set(
-            eventsData
-              .map((e) => getPriceBucket(e.price))
-              .filter((bucket) => bucket && bucket !== "")
-          )
+        const valid = data.filter(
+          (e: any) => e.category && e.category.trim() !== ""
         );
-        setPriceBuckets(uniquePrices);
+
+        const counts: Record<string, number> = {};
+        valid.forEach((e: any) => {
+          const name = e.category.trim();
+          counts[name] = (counts[name] || 0) + 1;
+        });
+
+        const list = Object.entries(counts)
+          .map(([name, count]) => ({ name, count }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+
+        setCategories(list);
       } catch (err) {
-        console.error("Error loading events:", err);
+        console.error("Error loading categories:", err);
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadEvents();
+    fetchCategories();
   }, []);
 
-  // 🟠 Load categories from Supabase category_catalog
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        const { data, error } = await supabase
-          .from("category_catalog")
-          .select("name");
-
-        if (error) throw error;
-
-        const sortedNames = (data || [])
-          .map((c) => c.name)
-          .filter(Boolean)
-          .sort((a, b) => a.localeCompare(b));
-
-        setCategories(sortedNames);
-      } catch (err) {
-        console.error("Error loading category catalog:", err);
-      }
-    }
-
-    loadCategories();
-  }, []);
-
-  // 🧠 Apply filters whenever selections change
-  useEffect(() => {
-    const normalizedSelected = selectedCategories.map((c) =>
-      c.toLowerCase().trim()
-    );
-
-    const filtered = events.filter((e) => {
-      const eventCats = (e.category || "")
-        .split(",")
-        .map((c) => c.toLowerCase().trim())
-        .filter(Boolean);
-
-      const categoryMatch =
-        normalizedSelected.length === 0 ||
-        eventCats.some((cat) => normalizedSelected.includes(cat));
-
-      const priceBucket = getPriceBucket(e.price);
-      const priceMatch =
-        selectedPrices.length === 0 || selectedPrices.includes(priceBucket);
-
-      return categoryMatch && priceMatch;
-    });
-
-    setFilteredEvents(filtered);
-  }, [selectedCategories, selectedPrices, events]);
-
-  // 🛠️ Handlers
-  const toggleCategory = (cat: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
-    );
-  };
-
-  const togglePrice = (bucket: string) => {
-    setSelectedPrices((prev) =>
-      prev.includes(bucket) ? prev.filter((p) => p !== bucket) : [...prev, bucket]
-    );
-  };
-
-  const clearFilters = () => {
-    setSelectedCategories([]);
-    setSelectedPrices([]);
+  const getImagePath = (slug: string) => {
+    // try .jpeg first, fallback to .jpg
+    return `/images/${slug}.jpeg`;
   };
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-3xl font-bold mb-6 text-[#c94917]">All Events</h1>
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-6">
+          Explore by Category
+        </h1>
+        <p className="text-center text-gray-600 mb-10">
+          Choose a Lisbon vibe — from concerts and film to culture and cuisine.
+        </p>
 
-        {/* 🟠 Sticky Filter Toolbar */}
-        <div className="sticky top-0 z-10 bg-[#fff8f2] py-4 mb-8 border-b border-orange-200 shadow-sm">
-          <div className="space-y-4 max-w-6xl mx-auto">
-            {/* Category Filter */}
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Filter by Category</h2>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => toggleCategory(cat)}
-                    className={`px-3 py-1 rounded-full border transition ${
-                      selectedCategories.includes(cat)
-                        ? "bg-[#c94917] text-white border-[#c94917]"
-                        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {loading ? (
+          <p className="text-center text-gray-600 italic">Loading categories…</p>
+        ) : categories.length === 0 ? (
+          <p className="text-center mt-10 text-gray-600 italic">
+            No categories found yet.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {categories.map((cat) => {
+              const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
+              const imagePath = getImagePath(slug);
+              const fallbackPath = "/images/default.jpeg";
 
-            {/* Price Filter */}
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Filter by Price</h2>
-              <div className="flex flex-wrap gap-2">
-                {priceBuckets.map((bucket) => (
-                  <button
-                    key={bucket}
-                    onClick={() => togglePrice(bucket)}
-                    className={`px-3 py-1 rounded-full border transition ${
-                      selectedPrices.includes(bucket)
-                        ? "bg-[#c94917] text-white border-[#c94917]"
-                        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-                    }`}
-                  >
-                    {bucket}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Clear Filters */}
-            {(selectedCategories.length > 0 || selectedPrices.length > 0) && (
-              <div>
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300"
+              return (
+                <Link
+                  key={slug}
+                  href={`/categories/${slug}`}
+                  className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
                 >
-                  Clear Filters ✕
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 🟡 Event Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEvents.map((event, i) => {
-            const eventSlug = event.title
-              ?.toLowerCase()
-              .replace(/\s+/g, "-")
-              .replace(/[^a-z0-9-]/g, "");
-
-            const categoryImage = `/images/${(event.category || "default")
-              .toLowerCase()
-              .replace(/\s+/g, "-")}.jpg`;
-
-            return (
-              <Link
-                href={`/events/${eventSlug}`}
-                key={i}
-                className="bg-white rounded-2xl shadow-md border border-orange-200 overflow-hidden hover:shadow-lg transition"
-              >
-                <div className="h-48 w-full overflow-hidden">
-                  {event.source_url ? (
-                    <Microlink
-                      url={event.source_url}
-                      size="large"
-                      media="image"
-                      style={{ border: "none", width: "100%", height: "100%" }}
-                    />
-                  ) : (
+                  <div className="relative w-full h-56">
+                    {/* ✅ Use native <img> for reliable fallback */}
                     <img
-                      src={categoryImage}
-                      alt={event.title}
-                      className="object-cover w-full h-full"
+                      src={imagePath}
+                      alt={cat.name}
+                      className="object-cover rounded-t-2xl w-full h-full"
                       onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        if (!target.src.endsWith("/images/default.jpg")) {
-                          target.src = "/images/default.jpg";
-                        }
+                        (e.target as HTMLImageElement).src = fallbackPath;
                       }}
                     />
-                  )}
-                </div>
-
-                <div className="p-4 space-y-2">
-                  <h2 className="text-xl font-semibold">{event.title}</h2>
-                  <p className="text-sm text-gray-700">
-                    {dayjs(event.start).format("MMM D")}
-                    {event.end
-                      ? ` – ${dayjs(event.end).format("MMM D, YYYY")}`
-                      : ""}
-                  </p>
-                  {event.venue && (
-                    <p className="text-sm text-gray-600">{event.venue}</p>
-                  )}
-                  <p className="text-sm text-[#c94917] font-medium">
-                    {event.category}
-                  </p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {filteredEvents.length === 0 && (
-          <p className="text-center text-gray-600 italic mt-10">
-            No events found matching your filters.
-          </p>
+                  </div>
+                  <div className="p-5">
+                    <h2 className="text-2xl font-semibold mb-1">{cat.name}</h2>
+                    <p className="text-sm text-gray-600">
+                      {cat.count} event{cat.count === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         )}
       </section>
     </main>
   );
 }
+
