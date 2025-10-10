@@ -28,12 +28,14 @@ type EventItem = {
   spotify_url?: string;
   starts_at?: string;
   ends_at?: string;
+  is_free?: boolean;
 };
 
 export default function CategoryDetailPage() {
   const { slug } = useParams();
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showFreeOnly, setShowFreeOnly] = useState(false);
   const categoryName = slug.toString().replace(/-/g, " ");
 
   useEffect(() => {
@@ -58,6 +60,10 @@ export default function CategoryDetailPage() {
     fetchEvents();
   }, [categoryName]);
 
+  const filteredEvents = showFreeOnly
+    ? events.filter((e) => e.is_free)
+    : events;
+
   const getCategoryImage = (category: string) => {
     const slug = category.toLowerCase().replace(/\s+/g, "-");
     return `/images/${slug}.jpeg`;
@@ -81,6 +87,7 @@ export default function CategoryDetailPage() {
     return d.toLocaleString("en-GB", {
       dateStyle: "medium",
       timeStyle: "short",
+      timeZone: "Europe/Lisbon",
     });
   };
 
@@ -94,15 +101,28 @@ export default function CategoryDetailPage() {
           ← Back to Categories
         </Link>
 
-        <h1 className="text-4xl font-bold mb-6 capitalize">{categoryName}</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+          <h1 className="text-4xl font-bold capitalize">{categoryName}</h1>
+
+          {/* ✅ Free filter toggle */}
+          <label className="flex items-center gap-2 cursor-pointer select-none text-sm">
+            <input
+              type="checkbox"
+              checked={showFreeOnly}
+              onChange={(e) => setShowFreeOnly(e.target.checked)}
+              className="accent-[#c94917] w-4 h-4"
+            />
+            <span>Show Free Events Only</span>
+          </label>
+        </div>
 
         {loading ? (
           <p>Loading events…</p>
-        ) : events.length === 0 ? (
+        ) : filteredEvents.length === 0 ? (
           <p className="text-gray-600 italic">No events found in this category.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event) => {
+            {filteredEvents.map((event) => {
               const fallback = "/images/default.jpeg";
               const youtubeEmbed = event.youtube_url
                 ? getYouTubeEmbed(event.youtube_url)
@@ -115,9 +135,16 @@ export default function CategoryDetailPage() {
               return (
                 <div
                   key={event.id}
-                  className="bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
+                  className="relative bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
                 >
-                  {/* 🎬 Media Section */}
+                  {/* 🆓 Free Event badge */}
+                  {event.is_free && (
+                    <div className="absolute top-3 left-3 bg-[#c94917] text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                      FREE EVENT
+                    </div>
+                  )}
+
+                  {/* 🎬 Media */}
                   <div className="relative w-full h-56 bg-[#fff1e8] flex items-center justify-center">
                     {youtubeEmbed ? (
                       <div className="rounded-xl overflow-hidden border border-orange-300 shadow-inner bg-[#fff8f2]">
@@ -155,13 +182,12 @@ export default function CategoryDetailPage() {
                     )}
                   </div>
 
-                  {/* 📝 Info Section */}
+                  {/* 📝 Info */}
                   <div className="p-5">
                     <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
                       {event.title}
                     </h2>
 
-                    {/* Venue + Timing */}
                     <p className="text-sm text-gray-600 mb-1">
                       📍 {event.location_name || "Venue TBA"}
                     </p>
@@ -170,22 +196,24 @@ export default function CategoryDetailPage() {
                       {event.ends_at ? ` – ${formatDateTime(event.ends_at)}` : ""}
                     </p>
 
-                    {/* Price & Age */}
                     <p className="text-sm text-gray-700 mb-1">
-                      💶 {event.price ? event.price : "Free or not listed"}
+                      💶{" "}
+                      {event.is_free
+                        ? "Free"
+                        : event.price
+                        ? event.price
+                        : "Not listed"}
                     </p>
                     <p className="text-sm text-gray-700 mb-3">
                       🚸 {event.age ? `${event.age}+` : "All ages"}
                     </p>
 
-                    {/* Description */}
                     {event.description && (
                       <p className="text-sm text-gray-800 mb-3 line-clamp-3">
                         {event.description}
                       </p>
                     )}
 
-                    {/* Ticket link */}
                     {event.ticket_url && (
                       <Link
                         href={event.ticket_url}
