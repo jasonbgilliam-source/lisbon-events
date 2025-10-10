@@ -94,12 +94,10 @@ export default function EventsPage() {
   // 🧠 Apply filters whenever selections change
   useEffect(() => {
     const filtered = events.filter((e) => {
-      // Category filter
       const categoryMatch =
         selectedCategories.length === 0 ||
         (e.category && selectedCategories.includes(e.category));
 
-      // Price filter
       const priceBucket = getPriceBucket(e.price);
       const priceMatch =
         selectedPrices.length === 0 || selectedPrices.includes(priceBucket);
@@ -133,59 +131,61 @@ export default function EventsPage() {
       <section className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-6 text-[#c94917]">All Events</h1>
 
-        {/* 🟠 Filters */}
-        <div className="mb-8 space-y-4">
-          {/* Category Filter */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Filter by Category</h2>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => toggleCategory(cat)}
-                  className={`px-3 py-1 rounded-full border transition ${
-                    selectedCategories.includes(cat)
-                      ? "bg-[#c94917] text-white border-[#c94917]"
-                      : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Price Filter */}
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Filter by Price</h2>
-            <div className="flex flex-wrap gap-2">
-              {priceBuckets.map((bucket) => (
-                <button
-                  key={bucket}
-                  onClick={() => togglePrice(bucket)}
-                  className={`px-3 py-1 rounded-full border transition ${
-                    selectedPrices.includes(bucket)
-                      ? "bg-[#c94917] text-white border-[#c94917]"
-                      : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-                  }`}
-                >
-                  {bucket}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Clear Filters */}
-          {(selectedCategories.length > 0 || selectedPrices.length > 0) && (
+        {/* 🟠 Sticky Filter Toolbar */}
+        <div className="sticky top-0 z-10 bg-[#fff8f2] py-4 mb-8 border-b border-orange-200 shadow-sm">
+          <div className="space-y-4 max-w-6xl mx-auto">
+            {/* Category Filter */}
             <div>
-              <button
-                onClick={clearFilters}
-                className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300"
-              >
-                Clear Filters ✕
-              </button>
+              <h2 className="text-lg font-semibold mb-2">Filter by Category</h2>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => toggleCategory(cat)}
+                    className={`px-3 py-1 rounded-full border transition ${
+                      selectedCategories.includes(cat)
+                        ? "bg-[#c94917] text-white border-[#c94917]"
+                        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
+
+            {/* Price Filter */}
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Filter by Price</h2>
+              <div className="flex flex-wrap gap-2">
+                {priceBuckets.map((bucket) => (
+                  <button
+                    key={bucket}
+                    onClick={() => togglePrice(bucket)}
+                    className={`px-3 py-1 rounded-full border transition ${
+                      selectedPrices.includes(bucket)
+                        ? "bg-[#c94917] text-white border-[#c94917]"
+                        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+                    }`}
+                  >
+                    {bucket}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Clear Filters */}
+            {(selectedCategories.length > 0 || selectedPrices.length > 0) && (
+              <div>
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300"
+                >
+                  Clear Filters ✕
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 🟡 Event Cards */}
