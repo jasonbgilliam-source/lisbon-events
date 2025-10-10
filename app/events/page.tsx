@@ -119,12 +119,6 @@ export default function EventsPage() {
       c.toLowerCase().trim()
     );
 
-    console.log("🧠 Selected categories:", normalizedSelected);
-    console.log(
-      "🧠 Sample event categories:",
-      events.slice(0, 10).map((e) => e.category)
-    );
-
     const filtered = events.filter((e) => {
       const eventCats = (e.category || "")
         .split(",")
@@ -141,8 +135,6 @@ export default function EventsPage() {
 
       return categoryMatch && priceMatch;
     });
-
-    console.log("✅ Filtered events count:", filtered.length);
 
     setFilteredEvents(filtered);
   }, [selectedCategories, selectedPrices, events]);
@@ -235,8 +227,7 @@ export default function EventsPage() {
               .replace(/\s+/g, "-")
               .replace(/[^a-z0-9-]/g, "");
 
-            const hasURL = Boolean(event.source_url);
-            const fallbackImg = `/images/${(event.category || "default")
+            const categoryImage = `/images/${(event.category || "default")
               .toLowerCase()
               .replace(/\s+/g, "-")}.jpg`;
 
@@ -247,21 +238,24 @@ export default function EventsPage() {
                 className="bg-white rounded-2xl shadow-md border border-orange-200 overflow-hidden hover:shadow-lg transition"
               >
                 <div className="h-48 w-full overflow-hidden">
-                  {hasURL ? (
+                  {event.source_url ? (
                     <Microlink
-                      url={event.source_url!}
+                      url={event.source_url}
                       size="large"
                       media="image"
                       style={{ border: "none", width: "100%", height: "100%" }}
                     />
                   ) : (
                     <img
-                      src={fallbackImg}
+                      src={categoryImage}
                       alt={event.title}
                       className="object-cover w-full h-full"
-                      onError={(e) =>
-                        ((e.target as HTMLImageElement).src = "/images/default.jpg")
-                      }
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        if (!target.src.endsWith("/images/default.jpg")) {
+                          target.src = "/images/default.jpg";
+                        }
+                      }}
                     />
                   )}
                 </div>
