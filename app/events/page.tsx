@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { createClient } from "@supabase/supabase-js";
 
 type EventItem = {
+  id: number;
   title: string;
   start: string;
   end?: string;
@@ -55,29 +56,26 @@ export default function EventsPage() {
     return "Other";
   }
 
-  // 🟡 Load events from CSV
+  // 🟡 Load events from Supabase (instead of CSV)
   useEffect(() => {
-    async function loadCSV() {
+    async function loadEvents() {
       try {
-        const res = await fetch("/events.csv");
-        const text = await res.text();
-        const lines = text.split("\n").filter((l) => l.trim() !== "");
-        const headers = lines[0].split(",").map((h) => h.trim());
-        const data = lines.slice(1).map((line) => {
-          const cols = line.split(",");
-          return headers.reduce((acc: any, key, i) => {
-            acc[key] = cols[i]?.trim();
-            return acc;
-          }, {});
-        });
+        const { data, error } = await supabase
+          .from("event_submissions")
+          .select("*");
 
-        setEvents(data);
-        setFilteredEvents(data);
+        if (error) throw error;
 
-        // 🟢 Unique Price Buckets
+        console.log("🟢 Loaded events from Supabase:", data?.length);
+
+        const eventsData = data as EventItem[];
+        setEvents(eventsData);
+        setFilteredEvents(eventsData);
+
+        // 🟢 Price buckets
         const uniquePrices = Array.from(
           new Set(
-            data
+            eventsData
               .map((e) => getPriceBucket(e.price))
               .filter((bucket) => bucket && bucket !== "")
           )
@@ -88,7 +86,7 @@ export default function EventsPage() {
       }
     }
 
-    loadCSV();
+    loadEvents();
   }, []);
 
   // 🟠 Load categories from Supabase category_catalog
