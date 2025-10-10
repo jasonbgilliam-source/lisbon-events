@@ -24,8 +24,32 @@ export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<EventItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [priceBuckets, setPriceBuckets] = useState<string[]>([]);
+  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
 
+  // 🧠 Helper: categorize price into buckets
+  function getPriceBucket(price: string | undefined): string {
+    if (!price || price.toLowerCase() === "unknown") return "Unknown";
+
+    const lower = price.toLowerCase();
+    if (lower.includes("free") || lower.includes("grátis") || lower.includes("0")) {
+      return "Free";
+    }
+
+    const match = lower.match(/\d+/g);
+    if (match) {
+      const nums = match.map(Number);
+      const min = Math.min(...nums);
+      if (min === 0) return "Free";
+      if (min <= 15) return "Under €15";
+      if (min >= 30 && min <= 100) return "€30–100";
+    }
+
+    return "Other";
+  }
+
+  // 🟡 Load events from CSV
   useEffect(() => {
     async function loadCSV() {
       try {
@@ -44,10 +68,21 @@ export default function EventsPage() {
         setEvents(data);
         setFilteredEvents(data);
 
+        // 🟠 Unique Categories
         const uniqueCats = Array.from(
           new Set(data.map((e) => e.category).filter(Boolean))
         );
         setCategories(uniqueCats);
+
+        // 🟢 Unique Price Buckets
+        const uniquePrices = Array.from(
+          new Set(
+            data
+              .map((e) => getPriceBucket(e.price))
+              .filter((bucket) => bucket && bucket !== "")
+          )
+        );
+        setPriceBuckets(uniquePrices);
       } catch (err) {
         console.error("Error loading events:", err);
       }
@@ -56,13 +91,41 @@ export default function EventsPage() {
     loadCSV();
   }, []);
 
-  const handleCategoryChange = (cat: string) => {
-    setSelectedCategory(cat);
-    if (cat === "All") {
-      setFilteredEvents(events);
-    } else {
-      setFilteredEvents(events.filter((e) => e.category === cat));
-    }
+  // 🧠 Apply filters whenever selections change
+  useEffect(() => {
+    const filtered = events.filter((e) => {
+      // Category filter
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        (e.category && selectedCategories.includes(e.category));
+
+      // Price filter
+      const priceBucket = getPriceBucket(e.price);
+      const priceMatch =
+        selectedPrices.length === 0 || selectedPrices.includes(priceBucket);
+
+      return categoryMatch && priceMatch;
+    });
+
+    setFilteredEvents(filtered);
+  }, [selectedCategories, selectedPrices, events]);
+
+  // 🛠️ Handlers
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const togglePrice = (bucket: string) => {
+    setSelectedPrices((prev) =>
+      prev.includes(bucket) ? prev.filter((p) => p !== bucket) : [...prev, bucket]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setSelectedPrices([]);
   };
 
   return (
@@ -70,34 +133,62 @@ export default function EventsPage() {
       <section className="max-w-6xl mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-6 text-[#c94917]">All Events</h1>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          <button
-            onClick={() => handleCategoryChange("All")}
-            className={`px-3 py-1 rounded-full border ${
-              selectedCategory === "All"
-                ? "bg-[#c94917] text-white"
-                : "bg-white border-[#c94917] text-[#c94917] hover:bg-orange-50"
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleCategoryChange(cat)}
-              className={`px-3 py-1 rounded-full border ${
-                selectedCategory === cat
-                  ? "bg-[#c94917] text-white"
-                  : "bg-white border-[#c94917] text-[#c94917] hover:bg-orange-50"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* 🟠 Filters */}
+        <div className="mb-8 space-y-4">
+          {/* Category Filter */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Filter by Category</h2>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => toggleCategory(cat)}
+                  className={`px-3 py-1 rounded-full border transition ${
+                    selectedCategories.includes(cat)
+                      ? "bg-[#c94917] text-white border-[#c94917]"
+                      : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Filter */}
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Filter by Price</h2>
+            <div className="flex flex-wrap gap-2">
+              {priceBuckets.map((bucket) => (
+                <button
+                  key={bucket}
+                  onClick={() => togglePrice(bucket)}
+                  className={`px-3 py-1 rounded-full border transition ${
+                    selectedPrices.includes(bucket)
+                      ? "bg-[#c94917] text-white border-[#c94917]"
+                      : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+                  }`}
+                >
+                  {bucket}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Clear Filters */}
+          {(selectedCategories.length > 0 || selectedPrices.length > 0) && (
+            <div>
+              <button
+                onClick={clearFilters}
+                className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300"
+              >
+                Clear Filters ✕
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Event Cards */}
+        {/* 🟡 Event Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.map((event, i) => {
             const eventSlug = event.title
@@ -158,7 +249,7 @@ export default function EventsPage() {
 
         {filteredEvents.length === 0 && (
           <p className="text-center text-gray-600 italic mt-10">
-            No events found in this category.
+            No events found matching your filters.
           </p>
         )}
       </section>
