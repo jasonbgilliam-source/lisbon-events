@@ -61,13 +61,11 @@ export default function CategoryDetailPage() {
     return `/images/${slug}.jpeg`;
   };
 
-  // Extract YouTube video ID for embed
   const getYouTubeEmbed = (url: string) => {
     const match = url.match(/(?:v=|be\/)([^&]+)/);
     return match ? `https://www.youtube.com/embed/${match[1]}` : null;
   };
 
-  // Extract Spotify embed URL
   const getSpotifyEmbed = (url: string) => {
     if (!url.includes("spotify.com")) return null;
     return url
@@ -108,22 +106,28 @@ export default function CategoryDetailPage() {
                   key={event.id}
                   className="bg-white shadow-md rounded-2xl overflow-hidden border border-orange-200 hover:shadow-xl transition transform hover:-translate-y-1"
                 >
-                  <div className="relative w-full h-56 bg-gray-100">
+                  <div className="relative w-full h-56 bg-[#fff1e8] flex items-center justify-center">
                     {youtubeEmbed ? (
-                      <iframe
-                        src={youtubeEmbed}
-                        className="w-full h-full"
-                        allow="autoplay; encrypted-media"
-                        allowFullScreen
-                        title={event.title}
-                      ></iframe>
+                      <div className="rounded-xl overflow-hidden border border-orange-300 shadow-inner bg-[#fff8f2]">
+                        <iframe
+                          src={youtubeEmbed}
+                          className="w-[320px] h-[180px] md:w-[400px] md:h-[225px]"
+                          allow="autoplay; encrypted-media"
+                          allowFullScreen
+                          title={event.title}
+                        ></iframe>
+                      </div>
                     ) : spotifyEmbed ? (
-                      <iframe
-                        src={spotifyEmbed}
-                        className="w-full h-full"
-                        allow="encrypted-media"
-                        title={event.title}
-                      ></iframe>
+                      <div className="rounded-xl overflow-hidden border border-orange-300 shadow-inner bg-[#fff8f2] p-1">
+                        <iframe
+                          src={spotifyEmbed}
+                          width="100%"
+                          height="152"
+                          frameBorder="0"
+                          allow="encrypted-media"
+                          title={event.title}
+                        ></iframe>
+                      </div>
                     ) : (
                       <Image
                         src={categoryImage}
