@@ -20,7 +20,6 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
     age: "",
   });
 
-  // ✅ Load categories & cities
   useEffect(() => {
     async function loadOptions() {
       try {
@@ -44,7 +43,6 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
     loadOptions();
   }, []);
 
-  // ✅ Handle change safely (fixes TypeScript error)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const target = e.target;
     const name = target.name;
@@ -53,16 +51,11 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
         ? target.checked
         : target.value;
 
-    const newFilters = {
-      ...filters,
-      [name]: value,
-    };
-
+    const newFilters = { ...filters, [name]: value };
     setFilters(newFilters);
     onFilter(newFilters);
   };
 
-  // ✅ Reset filters
   const handleClear = () => {
     const cleared = {
       search: "",
@@ -78,25 +71,23 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
   };
 
   return (
-    <div className="bg-[#fff1e8] border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm sticky top-0 z-30 backdrop-blur-md bg-opacity-95">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+    <div className="bg-[#fff1e8] border border-orange-200 rounded-xl p-2 mb-6 shadow-sm sticky top-0 z-30 backdrop-blur-md bg-opacity-95">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 text-sm">
 
-        {/* 🔍 Search */}
         <input
           type="text"
           name="search"
           placeholder="Search events..."
           value={filters.search}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         />
 
-        {/* 🎭 Category */}
         <select
           name="category"
           value={filters.category}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -106,12 +97,11 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           ))}
         </select>
 
-        {/* 🏙️ City */}
         <select
           name="city"
           value={filters.city}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         >
           <option value="">All Cities</option>
           {cities.map((city) => (
@@ -121,12 +111,11 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           ))}
         </select>
 
-        {/* 📅 Date Range */}
         <select
           name="dateRange"
           value={filters.dateRange}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         >
           <option value="">Any Date</option>
           <option value="today">Today</option>
@@ -134,12 +123,11 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <option value="month">This Month</option>
         </select>
 
-        {/* 💶 Price Range */}
         <select
           name="priceRange"
           value={filters.priceRange}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         >
           <option value="">Any Price</option>
           <option value="under10">Under €10</option>
@@ -147,12 +135,11 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <option value="30plus">Over €30</option>
         </select>
 
-        {/* 🚸 Age Restriction */}
         <select
           name="age"
           value={filters.age}
           onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-2 w-full focus:ring-2 focus:ring-[#c94917]"
+          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
         >
           <option value="">All Ages</option>
           <option value="16">16+</option>
@@ -160,8 +147,7 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
           <option value="21">21+</option>
         </select>
 
-        {/* 🆓 Free Only */}
-        <label className="flex items-center gap-2 text-sm border border-orange-200 rounded-lg p-2 bg-white shadow-sm">
+        <label className="flex items-center gap-2 text-xs border border-orange-200 rounded-lg p-1.5 bg-white shadow-sm">
           <input
             type="checkbox"
             name="is_free"
@@ -173,11 +159,10 @@ export default function FilterBar({ onFilter }: { onFilter: (filters: any) => vo
         </label>
       </div>
 
-      {/* ❌ Clear */}
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-end mt-2">
         <button
           onClick={handleClear}
-          className="bg-[#c94917] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#a53f12] transition"
+          className="bg-[#c94917] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#a53f12] transition"
         >
           Clear Filters
         </button>
