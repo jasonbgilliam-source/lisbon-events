@@ -19,8 +19,8 @@ export default function BulkUploadPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [stage, setStage] = useState<"upload" | "review" | "done">("upload");
 
+  // ✅ Load categories for dropdowns and template
   useEffect(() => {
-    // Load categories from Supabase for dropdowns
     async function loadCategories() {
       const { data, error } = await supabase.from("category_catalog").select("name");
       if (error) console.error(error);
@@ -29,7 +29,7 @@ export default function BulkUploadPage() {
     loadCategories();
   }, []);
 
-  // --- Handle CSV upload and preview parsing ---
+  // ✅ Handle CSV upload and parse preview
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -44,7 +44,6 @@ export default function BulkUploadPage() {
       complete: (results) => {
         const rows = results.data as EventRow[];
 
-        // Trim whitespace
         const cleanRows = rows.map((r) =>
           Object.fromEntries(
             Object.entries(r).map(([k, v]) => [k.trim(), typeof v === "string" ? v.trim() : v])
@@ -63,14 +62,14 @@ export default function BulkUploadPage() {
     });
   }
 
-  // --- Handle in-table edits for invalid categories ---
+  // ✅ Allow inline category correction
   function updateCategory(index: number, newCategory: string) {
     const updated = [...preview];
     updated[index].category = newCategory;
     setPreview(updated);
   }
 
-  // --- Validate categories and insert to Supabase ---
+  // ✅ Validate categories and upload
   async function handleConfirmUpload() {
     setUploading(true);
     setStatus("");
@@ -96,13 +95,23 @@ export default function BulkUploadPage() {
     setUploading(false);
   }
 
-  function downloadTemplate() {
+  // ✅ Download CSV template with categories appended
+  async function downloadTemplate() {
+    const { data, error } = await supabase.from("category_catalog").select("name");
+    const catList = error ? [] : data.map((c: any) => c.name);
+
     const templateHeaders = [
       "title","description","starts_at","ends_at","location_name","address",
       "city","category","price","age","organizer_email","ticket_url",
       "image_url","youtube_url","spotify_url","is_free"
     ];
-    const blob = new Blob([templateHeaders.join(",")], { type: "text/csv;charset=utf-8;" });
+
+    const categoriesText = `\n\n# Allowed categories:\n# ${catList.join(", ")}`;
+
+    const blob = new Blob([templateHeaders.join(",") + categoriesText], {
+      type: "text/csv;charset=utf-8;",
+    });
+
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -149,7 +158,7 @@ export default function BulkUploadPage() {
           <div className="mt-6">
             <h2 className="text-xl font-semibold mb-3">Review Your Upload</h2>
             <p className="text-sm text-gray-600 mb-4">
-              Please check your data below. Invalid categories are highlighted in red — select a valid category from the dropdown before confirming.
+              Invalid categories are highlighted in red — select a valid one before confirming.
             </p>
 
             <div className="overflow-x-auto border rounded-lg max-h-[60vh] overflow-y-auto">
@@ -227,7 +236,9 @@ export default function BulkUploadPage() {
 
         {stage === "done" && (
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-green-700 mb-3">Upload Complete!</h2>
+            <h2 className="text-xl font-semibold text-green-700 mb-3">
+              Upload Complete!
+            </h2>
             <p className="text-sm mb-5">{status}</p>
             <button
               onClick={() => {
