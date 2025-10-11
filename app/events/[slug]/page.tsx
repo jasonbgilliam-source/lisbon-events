@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Microlink from "@microlink/react";
 import dayjs from "dayjs";
+import FilterBar from "@/components/FilterBar";
 
 type EventItem = {
   title: string;
@@ -73,6 +74,7 @@ export default function EventDetailPage() {
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-orange-200 overflow-hidden">
         <div className="bg-[#f9e0d0] px-6 py-4 border-b border-orange-300">
           <h1 className="text-3xl font-bold mb-1">{event.title}</h1>
+          <FilterBar onFilter={(filters) => console.log("filters", filters)} />
           <p className="text-[#b85c2a] text-sm">{event.category}</p>
         </div>
 
