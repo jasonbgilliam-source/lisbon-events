@@ -36,6 +36,7 @@ export default function EventsPage() {
   const [filters, setFilters] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
+  // 🟠 Load events from Supabase
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -56,7 +57,7 @@ export default function EventsPage() {
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
 
-  // 🧠 Filtering logic (same as before)
+  // 🧠 Filtering logic
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       const start = dayjs(e.starts_at);
@@ -120,7 +121,7 @@ export default function EventsPage() {
           Upcoming Events in Lisbon
         </h1>
 
-        {/* Filter Bar */}
+        {/* 🟠 Filter Bar */}
         <FilterBar onFilter={setFilters} />
 
         {loading ? (
@@ -132,16 +133,20 @@ export default function EventsPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {filteredEvents.map((e) => {
+              // 🖼️ Use event-specific image first, then category fallback, then default
               const imgSrc =
-                e.image_url ||
-                `/images/${e.category?.toLowerCase().replace(/\s+/g, "-") || "default"}.jpeg`;
+                e.image_url && e.image_url.trim() !== ""
+                  ? e.image_url
+                  : e.category
+                  ? `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`
+                  : "/images/default.jpeg";
 
               return (
                 <div
                   key={e.id}
                   className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
                 >
-                  {/* Image section */}
+                  {/* 🖼️ Image */}
                   <div className="relative w-full sm:w-56 h-40 sm:h-auto">
                     <Image
                       src={imgSrc}
@@ -155,7 +160,7 @@ export default function EventsPage() {
                     />
                   </div>
 
-                  {/* Content section */}
+                  {/* 📋 Event content */}
                   <div className="flex-1 p-5">
                     <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
                     <p className="text-sm text-gray-700 mb-1">
@@ -177,7 +182,7 @@ export default function EventsPage() {
                       </p>
                     )}
 
-                    {/* Links */}
+                    {/* 🔗 External Links */}
                     <div className="mt-3 flex flex-wrap gap-3">
                       {e.youtube_url && (
                         <a
