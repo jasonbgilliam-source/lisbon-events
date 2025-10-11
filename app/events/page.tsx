@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
+import FilterBar from "@/components/FilterBar";
 
 // 🟠 Prevent static caching
 export const dynamic = "force-dynamic";
@@ -69,6 +70,7 @@ export default function CategoriesPage() {
         <h1 className="text-4xl font-bold text-center mb-6">
           Explore by Category
         </h1>
+        <FilterBar onFilter={(filters) => console.log("filters", filters)} />
         <p className="text-center text-gray-600 mb-10">
           Choose a Lisbon vibe — from concerts and film to culture and cuisine.
         </p>
