@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
+import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
