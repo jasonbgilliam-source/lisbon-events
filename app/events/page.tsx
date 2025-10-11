@@ -1,11 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
 import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
+
+dayjs.extend(isBetween);
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -30,6 +33,7 @@ type EventItem = {
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [filters, setFilters] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   // 🟠 Load events from Supabase
@@ -55,6 +59,64 @@ export default function EventsPage() {
     return dayjs(dateStr).format("MMM D, YYYY h:mm A");
   };
 
+  // 🧠 Filter logic
+  const filteredEvents = useMemo(() => {
+    return events.filter((e) => {
+      const start = dayjs(e.starts_at);
+      const now = dayjs();
+
+      // Search
+      if (
+        filters.search &&
+        !`${e.title} ${e.description} ${e.location_name}`
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Category
+      if (filters.category && e.category !== filters.category) return false;
+
+      // City
+      if (filters.city && e.city !== filters.city) return false;
+
+      // Date range
+      if (filters.dateRange === "today" && !start.isSame(now, "day")) return false;
+      if (
+        filters.dateRange === "week" &&
+        !start.isBetween(now.startOf("week"), now.endOf("week"), null, "[]")
+      )
+        return false;
+      if (
+        filters.dateRange === "month" &&
+        !start.isBetween(now.startOf("month"), now.endOf("month"), null, "[]")
+      )
+        return false;
+
+      // Free Only
+      if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
+        return false;
+
+      // Price Range
+      if (filters.priceRange === "under10") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num > 10) return false;
+      } else if (filters.priceRange === "10to30") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 10 || num > 30) return false;
+      } else if (filters.priceRange === "30plus") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 30) return false;
+      }
+
+      // Age Restriction
+      if (filters.age && e.age && !e.age.includes(filters.age)) return false;
+
+      return true;
+    });
+  }, [events, filters]);
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-6xl mx-auto">
@@ -63,17 +125,17 @@ export default function EventsPage() {
         </h1>
 
         {/* 🟠 Filter Bar */}
-        <FilterBar onFilter={(filters) => console.log("filters", filters)} />
+        <FilterBar onFilter={setFilters} />
 
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
-        ) : events.length === 0 ? (
+        ) : filteredEvents.length === 0 ? (
           <p className="text-center text-gray-600 mt-10 italic">
-            No events found.
+            No events match your filters.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            {events.map((e) => {
+            {filteredEvents.map((e) => {
               const imgSrc =
                 e.image_url ||
                 `/images/${e.category?.toLowerCase().replace(/\s+/g, "-") || "default"}.jpeg`;
