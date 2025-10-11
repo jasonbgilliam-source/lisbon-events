@@ -32,12 +32,20 @@ export default function RootLayout({
               <p className="text-base drop-shadow-md mb-3">
                 Discover concerts, food festivals, art shows, and more.
               </p>
+
+              {/* Navigation Bar */}
               <nav className="flex flex-wrap justify-center gap-2">
                 <Link
                   href="/featured"
                   className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
                 >
                   Featured
+                </Link>
+                <Link
+                  href="/discover"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Discover
                 </Link>
                 <Link
                   href="/calendar"
@@ -71,7 +79,7 @@ export default function RootLayout({
         {/* Page Content */}
         <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
 
-        {/* Footer Component */}
+        {/* Footer */}
         <Footer />
       </body>
     </html>
