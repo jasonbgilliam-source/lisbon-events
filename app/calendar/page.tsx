@@ -177,7 +177,8 @@ export default function CalendarPage() {
           ))}
         </div>
 
-       <div className="grid grid-cols-7 gap-3 mb-8">
+
+<div className="grid grid-cols-7 gap-3 mb-8">
   {[...paddedDays, ...daysInMonth].map((day, i) => {
     if (!day) return <div key={`pad-${i}`} />;
 
@@ -186,24 +187,21 @@ export default function CalendarPage() {
       dayjs(e.starts_at).isSame(day, "day")
     );
 
-    // Determine range highlights (this week / this month)
-    let inRange = false;
+    let highlight = false;
+
     if (filters.dateRange === "week") {
       const weekStart = dayjs().startOf("week");
       const weekEnd = dayjs().endOf("week");
-      inRange = day.isBetween(weekStart, weekEnd, null, "[]");
+      if (day.isBetween(weekStart, weekEnd, null, "[]") && hasEvents) highlight = true;
     } else if (filters.dateRange === "month") {
       const monthStart = dayjs().startOf("month");
       const monthEnd = dayjs().endOf("month");
-      inRange = day.isBetween(monthStart, monthEnd, null, "[]");
+      if (day.isBetween(monthStart, monthEnd, null, "[]") && hasEvents) highlight = true;
     }
 
     let bgClass = "bg-gray-100 text-gray-400";
-
-    if (isSelected) {
+    if (isSelected || highlight) {
       bgClass = "bg-[#c94917] text-white border-[#c94917]";
-    } else if (inRange && hasEvents) {
-      bgClass = "bg-[#fdeee5] text-[#40210f] border-orange-200";
     } else if (hasEvents) {
       bgClass = "bg-white hover:bg-orange-50 border-orange-200";
     }
@@ -219,6 +217,8 @@ export default function CalendarPage() {
     );
   })}
 </div>
+
+        
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : eventsForSelectedDate.length === 0 ? (
