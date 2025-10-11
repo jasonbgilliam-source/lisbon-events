@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
+import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
@@ -103,6 +104,7 @@ export default function CategoryDetailPage() {
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
           <h1 className="text-4xl font-bold capitalize">{categoryName}</h1>
+          <FilterBar onFilter={(filters) => console.log("filters", filters)} />
 
           {/* ✅ Free filter toggle */}
           <label className="flex items-center gap-2 cursor-pointer select-none text-sm">
