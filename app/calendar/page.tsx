@@ -2,10 +2,13 @@
 
 import React, { useEffect, useState, useMemo } from "react";
 import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
 import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
 import Image from "next/image";
 import Link from "next/link";
+
+dayjs.extend(isBetween);
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -110,6 +113,20 @@ export default function CalendarPage() {
     dayjs(e.starts_at).isSame(selectedDate, "day")
   );
 
+  const now = dayjs();
+  const rangeStart =
+    filters.dateRange === "week"
+      ? now.startOf("week")
+      : filters.dateRange === "month"
+      ? now.startOf("month")
+      : null;
+  const rangeEnd =
+    filters.dateRange === "week"
+      ? now.endOf("week")
+      : filters.dateRange === "month"
+      ? now.endOf("month")
+      : null;
+
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
 
@@ -167,18 +184,23 @@ export default function CalendarPage() {
             const hasEvents = filteredEvents.some((e) =>
               dayjs(e.starts_at).isSame(day, "day")
             );
+            const inRange =
+              rangeStart && rangeEnd && day.isBetween(rangeStart, rangeEnd, null, "[]");
+
+            let bgClass = "bg-gray-100 text-gray-400";
+            if (isSelected) {
+              bgClass = "bg-[#c94917] text-white border-[#c94917]";
+            } else if (inRange && hasEvents) {
+              bgClass = "bg-[#fdeee5] text-[#40210f] border-orange-200";
+            } else if (hasEvents) {
+              bgClass = "bg-white hover:bg-orange-50 border-orange-200";
+            }
+
             return (
               <div
                 key={day.format("YYYY-MM-DD")}
                 onClick={() => setSelectedDate(day)}
-                className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition 
-                ${
-                  isSelected
-                    ? "bg-[#c94917] text-white border-[#c94917]"
-                    : hasEvents
-                    ? "bg-white hover:bg-orange-50 border-orange-200"
-                    : "bg-gray-100 text-gray-400"
-                }`}
+                className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}
               >
                 {day.date()}
               </div>
