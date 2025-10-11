@@ -62,24 +62,88 @@ export default function BulkUploadPage() {
     });
   }
 
-  // ✅ Allow inline category correction
+  // ✅ Inline category correction
   function updateCategory(index: number, newCategory: string) {
     const updated = [...preview];
     updated[index].category = newCategory;
     setPreview(updated);
   }
 
-  // ✅ Validate categories and upload
+  // ✅ Validation rules
+  function validateRow(row: EventRow) {
+    const errors: string[] = [];
+
+    const required = ["title", "description", "starts_at", "location_name", "category", "organizer_email"];
+    for (const field of required) {
+      if (!row[field] || String(row[field]).trim() === "") {
+        errors.push(`${field} is required`);
+      }
+    }
+
+    // Category check
+    if (row.category && !categories.includes(row.category.trim())) {
+      errors.push(`Invalid category (${row.category})`);
+    }
+
+    // Date format check
+    const datePattern = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+    if (row.starts_at && !datePattern.test(row.starts_at)) {
+      errors.push("starts_at must be in YYYY-MM-DD HH:MM format");
+    }
+    if (row.ends_at && !datePattern.test(row.ends_at)) {
+      errors.push("ends_at must be in YYYY-MM-DD HH:MM format");
+    }
+
+    // Email format check
+    if (row.organizer_email && !/^[^@]+@[^@]+\.[^@]+$/.test(row.organizer_email)) {
+      errors.push("organizer_email is not valid");
+    }
+
+    // is_free logic
+    const freeValues = ["true", "false", "yes", "no", "", null];
+    if (!freeValues.includes(String(row.is_free).toLowerCase())) {
+      errors.push("is_free must be true/false/yes/no");
+    }
+
+    // Price logic
+    if (String(row.is_free).toLowerCase() === "true") {
+      if (row.price && row.price.trim() && row.price.toLowerCase() !== "free") {
+        errors.push("Price must be 'Free' if is_free is true");
+      }
+    } else if (row.price && row.price.trim() !== "") {
+      if (!/^[0-9]+(\.[0-9]+)?( ?(eur|€|usd|$))?$/i.test(row.price)) {
+        errors.push("Price must be numeric or 'Free'");
+      }
+    }
+
+    // URL sanity checks
+    const urlFields = ["ticket_url", "image_url", "youtube_url", "spotify_url"];
+    for (const field of urlFields) {
+      const val = row[field];
+      if (val && !val.startsWith("http")) {
+        errors.push(`${field} must be a valid URL starting with http`);
+      }
+    }
+
+    return errors;
+  }
+
+  // ✅ Confirm upload with validation
   async function handleConfirmUpload() {
     setUploading(true);
     setStatus("");
 
-    const invalidRows = preview.filter(
-      (r) => !categories.includes(r.category?.trim())
-    );
+    const rowsWithErrors = preview.map((r, i) => ({
+      index: i + 1,
+      errors: validateRow(r),
+    })).filter((r) => r.errors.length > 0);
 
-    if (invalidRows.length > 0) {
-      setStatus("❌ Please correct highlighted categories before uploading.");
+    if (rowsWithErrors.length > 0) {
+      const summary = rowsWithErrors
+        .map((r) => `Row ${r.index}: ${r.errors.join("; ")}`)
+        .join("\n");
+      console.warn(summary);
+      setStatus(`❌ Validation failed. Please fix errors before upload.\n\n${summary}`);
       setUploading(false);
       return;
     }
@@ -95,7 +159,7 @@ export default function BulkUploadPage() {
     setUploading(false);
   }
 
-  // ✅ Download CSV template with categories appended
+  // ✅ Download CSV template with validation rules and category list
   async function downloadTemplate() {
     const { data, error } = await supabase.from("category_catalog").select("name");
     const catList = error ? [] : data.map((c: any) => c.name);
@@ -106,11 +170,31 @@ export default function BulkUploadPage() {
       "image_url","youtube_url","spotify_url","is_free"
     ];
 
-    const categoriesText = `\n\n# Allowed categories:\n# ${catList.join(", ")}`;
+    const validationInfo = `
+# --------------------------
+# Lisbon Events – CSV Template Guide
+# --------------------------
+# Required fields: title, description, starts_at, location_name, category, organizer_email
+# Dates must be in format: YYYY-MM-DD HH:MM (24-hour)
+# Example: 2025-11-25 20:00
+# 
+# Price: use "Free" or a numeric value (e.g., 10 EUR)
+# is_free: use true/false/yes/no
+# Age: optional, examples: "All Ages", "18+", "21+"
+# 
+# Category must match one of the following:
+# ${catList.join(", ")}
+# 
+# URL fields (ticket_url, image_url, youtube_url, spotify_url) must start with http or https.
+# Save as UTF-8 CSV before upload.
+# --------------------------
 
-    const blob = new Blob([templateHeaders.join(",") + categoriesText], {
-      type: "text/csv;charset=utf-8;",
-    });
+`;
+
+    const blob = new Blob(
+      [validationInfo + "\n" + templateHeaders.join(",")],
+      { type: "text/csv;charset=utf-8;" }
+    );
 
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -150,7 +234,9 @@ export default function BulkUploadPage() {
                 <p className="text-gray-600 text-sm italic">File: {fileName}</p>
               )}
             </div>
-            <p className="mt-2 text-sm text-gray-700">{uploading ? "Parsing…" : status}</p>
+            <p className="mt-2 text-sm text-gray-700 whitespace-pre-wrap">
+              {uploading ? "Parsing…" : status}
+            </p>
           </>
         )}
 
@@ -226,11 +312,11 @@ export default function BulkUploadPage() {
                 disabled={uploading}
                 className="bg-[#c94917] text-white px-5 py-1.5 rounded-lg hover:bg-[#a53f12] transition"
               >
-                {uploading ? "Uploading…" : "Confirm Upload"}
+                {uploading ? "Validating…" : "Confirm Upload"}
               </button>
             </div>
 
-            <p className="mt-4 text-sm text-gray-700">{status}</p>
+            <p className="mt-4 text-sm text-gray-700 whitespace-pre-wrap">{status}</p>
           </div>
         )}
 
