@@ -34,6 +34,7 @@ export default function FeaturedPage() {
   useEffect(() => {
     async function loadFeatured() {
       setLoading(true);
+
       const todayStart = dayjs().startOf("day").toISOString();
       const todayEnd = dayjs().endOf("day").toISOString();
 
@@ -68,111 +69,138 @@ export default function FeaturedPage() {
     return null;
   };
 
+  // 🧩 Discover-style fallback
+  const DiscoverFallback = () => (
+    <section className="max-w-5xl mx-auto py-16 px-6 text-center">
+      <h2 className="text-3xl font-semibold mb-3">What’s on in Lisbon</h2>
+      <p className="text-gray-700 mb-6 text-lg">
+        Discover concerts, food festivals, markets, and more. Share your event in minutes.
+      </p>
+      <div className="flex flex-wrap justify-center gap-4">
+        <Link
+          href="/events"
+          className="bg-orange-100 text-[#40210f] px-6 py-2 rounded-full font-semibold hover:bg-orange-200 transition"
+        >
+          Browse Events
+        </Link>
+        <Link
+          href="/submit"
+          className="bg-orange-100 text-[#40210f] px-6 py-2 rounded-full font-semibold hover:bg-orange-200 transition"
+        >
+          Submit an Event
+        </Link>
+      </div>
+      <div className="max-w-4xl mx-auto my-10 text-center border-t border-b border-orange-200 py-3 text-gray-500 uppercase tracking-wide text-sm">
+        Advertisement — Ad Slot: home-top
+      </div>
+    </section>
+  );
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
-          🎉 Today’s Featured Events in Lisbon
-        </h1>
-
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : events.length === 0 ? (
-          <p className="text-center text-gray-600 mt-10 italic">
-            No featured events have been submitted for today.
-          </p>
+          <DiscoverFallback />
         ) : (
-          <div className="flex flex-col gap-6 mt-8">
-            {events.map((e) => {
-              let imgSrc: string;
-              if (e.image_url && e.image_url.trim() !== "") {
-                imgSrc = e.image_url;
-              } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
-                imgSrc = getYouTubeThumbnail(e.youtube_url)!;
-              } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
-                imgSrc = getSpotifyThumbnail(e.spotify_url)!;
-              } else if (e.category) {
-                imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
-              } else {
-                imgSrc = "/images/default.jpeg";
-              }
+          <>
+            <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
+              🎉 Today’s Featured Events in Lisbon
+            </h1>
 
-              return (
-                <div
-                  key={e.id}
-                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
-                >
-                  <div className="relative w-full sm:w-56 h-40 sm:h-auto">
-                    <Image
-                      src={imgSrc}
-                      alt={e.title}
-                      fill
-                      className="object-cover"
-                      onError={(ev) => {
-                        const target = ev.target as HTMLImageElement;
-                        target.src = "/images/default.jpeg";
-                      }}
-                    />
-                  </div>
+            <div className="flex flex-col gap-6 mt-8">
+              {events.map((e) => {
+                let imgSrc: string;
+                if (e.image_url && e.image_url.trim() !== "") {
+                  imgSrc = e.image_url;
+                } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
+                  imgSrc = getYouTubeThumbnail(e.youtube_url)!;
+                } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
+                  imgSrc = getSpotifyThumbnail(e.spotify_url)!;
+                } else if (e.category) {
+                  imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+                } else {
+                  imgSrc = "/images/default.jpeg";
+                }
 
-                  <div className="flex-1 p-5">
-                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
-                    <p className="text-sm text-gray-700 mb-1">
-                      📍 {e.location_name || "Location TBA"}
-                    </p>
-                    <p className="text-sm text-gray-700 mb-1">
-                      🕒 {formatDate(e.starts_at)}
-                      {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
-                    </p>
-                    {e.price ? (
-                      <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
-                    ) : (
-                      <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
-                    )}
-                    {e.description && (
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">
-                        {e.description}
+                return (
+                  <div
+                    key={e.id}
+                    className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
+                  >
+                    <div className="relative w-full sm:w-56 h-40 sm:h-auto">
+                      <Image
+                        src={imgSrc}
+                        alt={e.title}
+                        fill
+                        className="object-cover"
+                        onError={(ev) => {
+                          const target = ev.target as HTMLImageElement;
+                          target.src = "/images/default.jpeg";
+                        }}
+                      />
+                    </div>
+
+                    <div className="flex-1 p-5">
+                      <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
+                      <p className="text-sm text-gray-700 mb-1">
+                        📍 {e.location_name || "Location TBA"}
                       </p>
-                    )}
+                      <p className="text-sm text-gray-700 mb-1">
+                        🕒 {formatDate(e.starts_at)}
+                        {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
+                      </p>
+                      {e.price ? (
+                        <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
+                      ) : (
+                        <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
+                      )}
+                      {e.description && (
+                        <p className="text-sm text-gray-700 mt-2 line-clamp-2">
+                          {e.description}
+                        </p>
+                      )}
 
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      {e.youtube_url && (
-                        <a
-                          href={e.youtube_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎥 YouTube
-                        </a>
-                      )}
-                      {e.spotify_url && (
-                        <a
-                          href={e.spotify_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎵 Spotify
-                        </a>
-                      )}
-                      {e.address && (
-                        <Link
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                            e.address
-                          )}`}
-                          target="_blank"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🗺️ Map
-                        </Link>
-                      )}
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {e.youtube_url && (
+                          <a
+                            href={e.youtube_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎥 YouTube
+                          </a>
+                        )}
+                        {e.spotify_url && (
+                          <a
+                            href={e.spotify_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎵 Spotify
+                          </a>
+                        )}
+                        {e.address && (
+                          <Link
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              e.address
+                            )}`}
+                            target="_blank"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🗺️ Map
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
     </main>
