@@ -36,7 +36,6 @@ export default function EventsPage() {
   const [filters, setFilters] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
-  // 🟠 Load events from Supabase
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -114,6 +113,25 @@ export default function EventsPage() {
     });
   }, [events, filters]);
 
+  // 🎞️ Helper: Extract YouTube thumbnail
+  const getYouTubeThumbnail = (url?: string) => {
+    if (!url) return null;
+    const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (match && match[1]) {
+      return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+    }
+    return null;
+  };
+
+  // 🎧 Helper: Spotify thumbnail
+  const getSpotifyThumbnail = (url?: string) => {
+    if (!url) return null;
+    if (url.includes("spotify")) {
+      return "/images/spotify-cover.jpeg"; // optional placeholder for Spotify
+    }
+    return null;
+  };
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-4xl mx-auto">
@@ -133,13 +151,19 @@ export default function EventsPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {filteredEvents.map((e) => {
-              // 🖼️ Use event-specific image first, then category fallback, then default
-              const imgSrc =
-                e.image_url && e.image_url.trim() !== ""
-                  ? e.image_url
-                  : e.category
-                  ? `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`
-                  : "/images/default.jpeg";
+              // 🖼️ Prioritize images: event → YouTube → Spotify → category → default
+              let imgSrc: string;
+              if (e.image_url && e.image_url.trim() !== "") {
+                imgSrc = e.image_url;
+              } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
+                imgSrc = getYouTubeThumbnail(e.youtube_url)!;
+              } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
+                imgSrc = getSpotifyThumbnail(e.spotify_url)!;
+              } else if (e.category) {
+                imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+              } else {
+                imgSrc = "/images/default.jpeg";
+              }
 
               return (
                 <div
@@ -160,7 +184,7 @@ export default function EventsPage() {
                     />
                   </div>
 
-                  {/* 📋 Event content */}
+                  {/* 📋 Event Info */}
                   <div className="flex-1 p-5">
                     <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
                     <p className="text-sm text-gray-700 mb-1">
