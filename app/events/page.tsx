@@ -36,7 +36,6 @@ export default function EventsPage() {
   const [filters, setFilters] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
-  // 🟠 Load events from Supabase
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -54,12 +53,10 @@ export default function EventsPage() {
     loadEvents();
   }, []);
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "";
-    return dayjs(dateStr).format("MMM D, YYYY h:mm A");
-  };
+  const formatDate = (dateStr?: string) =>
+    dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
 
-  // 🧠 Filter logic
+  // 🧠 Filtering logic (same as before)
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       const start = dayjs(e.starts_at);
@@ -71,9 +68,8 @@ export default function EventsPage() {
         !`${e.title} ${e.description} ${e.location_name}`
           .toLowerCase()
           .includes(filters.search.toLowerCase())
-      ) {
+      )
         return false;
-      }
 
       // Category
       if (filters.category && e.category !== filters.category) return false;
@@ -94,11 +90,11 @@ export default function EventsPage() {
       )
         return false;
 
-      // Free Only
+      // Free only
       if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
         return false;
 
-      // Price Range
+      // Price range
       if (filters.priceRange === "under10") {
         const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
         if (num > 10) return false;
@@ -110,7 +106,7 @@ export default function EventsPage() {
         if (num < 30) return false;
       }
 
-      // Age Restriction
+      // Age restriction
       if (filters.age && e.age && !e.age.includes(filters.age)) return false;
 
       return true;
@@ -119,12 +115,12 @@ export default function EventsPage() {
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
-      <section className="max-w-6xl mx-auto">
+      <section className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
           Upcoming Events in Lisbon
         </h1>
 
-        {/* 🟠 Filter Bar */}
+        {/* Filter Bar */}
         <FilterBar onFilter={setFilters} />
 
         {loading ? (
@@ -134,7 +130,7 @@ export default function EventsPage() {
             No events match your filters.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+          <div className="flex flex-col gap-6 mt-8">
             {filteredEvents.map((e) => {
               const imgSrc =
                 e.image_url ||
@@ -143,9 +139,10 @@ export default function EventsPage() {
               return (
                 <div
                   key={e.id}
-                  className="bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition transform hover:-translate-y-1"
+                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
                 >
-                  <div className="relative w-full h-56">
+                  {/* Image section */}
+                  <div className="relative w-full sm:w-56 h-40 sm:h-auto">
                     <Image
                       src={imgSrc}
                       alt={e.title}
@@ -157,41 +154,31 @@ export default function EventsPage() {
                       }}
                     />
                   </div>
-                  <div className="p-5">
-                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
-                      {e.title}
-                    </h2>
 
+                  {/* Content section */}
+                  <div className="flex-1 p-5">
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
                     <p className="text-sm text-gray-700 mb-1">
                       📍 {e.location_name || "Location TBA"}
                     </p>
-
                     <p className="text-sm text-gray-700 mb-1">
                       🕒 {formatDate(e.starts_at)}
                       {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
                     </p>
-
                     {e.price ? (
-                      <p className="text-sm text-gray-700 mb-1">
-                        💶 {e.price}
-                      </p>
+                      <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
                     ) : (
-                      <p className="text-sm text-green-700 font-medium mb-1">
-                        🆓 Free
-                      </p>
+                      <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
                     )}
-
-                    {e.age && (
-                      <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>
-                    )}
-
+                    {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
                     {e.description && (
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-3">
+                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">
                         {e.description}
                       </p>
                     )}
 
-                    <div className="mt-3 flex gap-3">
+                    {/* Links */}
+                    <div className="mt-3 flex flex-wrap gap-3">
                       {e.youtube_url && (
                         <a
                           href={e.youtube_url}
