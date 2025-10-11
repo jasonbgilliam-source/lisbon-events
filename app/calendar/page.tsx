@@ -1,92 +1,149 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import dayjs from "dayjs";
-import "dayjs/locale/en";
+import { createClient } from "@supabase/supabase-js";
+import FilterBar from "@/components/FilterBar";
+import Image from "next/image";
+import Link from "next/link";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type EventItem = {
+  id: number;
   title: string;
-  start: string;
-  end: string;
-  category?: string;
-  venue?: string;
+  description: string;
+  starts_at: string;
+  ends_at?: string;
+  location_name?: string;
+  address?: string;
   city?: string;
-  source_url?: string;
+  price?: string;
+  age?: string;
+  category?: string;
+  image_url?: string;
+  youtube_url?: string;
+  spotify_url?: string;
 };
 
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [filters, setFilters] = useState<any>({});
   const [currentMonth, setCurrentMonth] = useState(dayjs());
-  const [monthEvents, setMonthEvents] = useState<EventItem[]>([]);
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadCSV() {
-      try {
-        const res = await fetch("/events.csv");
-        const text = await res.text();
-        const lines = text.split("\n").filter((l) => l.trim() !== "");
-        const headers = lines[0].split(",").map((h) => h.trim());
-        const data = lines.slice(1).map((line) => {
-          const cols = line.split(",");
-          return headers.reduce((acc: any, key, i) => {
-            acc[key] = cols[i]?.trim();
-            return acc;
-          }, {});
-        });
-        setEvents(data);
-      } catch (err) {
-        console.error("Failed to load events:", err);
-      }
+    async function loadEvents() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("event_submissions")
+        .select("*")
+        .eq("status", "approved")
+        .order("starts_at", { ascending: true });
+      if (!error && data) setEvents(data);
+      setLoading(false);
     }
-    loadCSV();
+    loadEvents();
   }, []);
 
-  useEffect(() => {
-    const startOfMonth = currentMonth.startOf("month");
-    const endOfMonth = currentMonth.endOf("month");
+  const filteredEvents = useMemo(() => {
+    return events.filter((e) => {
+      const start = dayjs(e.starts_at);
+      const now = dayjs();
 
-    const filtered = events.filter((e) => {
-      const start = dayjs(e.start);
-      return start.isAfter(startOfMonth.subtract(1, "day")) && start.isBefore(endOfMonth.add(1, "day"));
+      if (
+        filters.search &&
+        !`${e.title} ${e.description} ${e.location_name}`
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())
+      )
+        return false;
+
+      if (filters.category && e.category !== filters.category) return false;
+      if (filters.city && e.city !== filters.city) return false;
+
+      if (filters.dateRange === "today" && !start.isSame(now, "day")) return false;
+      if (
+        filters.dateRange === "week" &&
+        !start.isBetween(now.startOf("week"), now.endOf("week"), null, "[]")
+      )
+        return false;
+      if (
+        filters.dateRange === "month" &&
+        !start.isBetween(now.startOf("month"), now.endOf("month"), null, "[]")
+      )
+        return false;
+
+      if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
+        return false;
+
+      if (filters.priceRange === "under10") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num > 10) return false;
+      } else if (filters.priceRange === "10to30") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 10 || num > 30) return false;
+      } else if (filters.priceRange === "30plus") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 30) return false;
+      }
+
+      if (filters.age && e.age && !e.age.includes(filters.age)) return false;
+
+      return true;
     });
-    setMonthEvents(filtered);
-  }, [events, currentMonth]);
+  }, [events, filters]);
 
   const daysInMonth = Array.from({ length: currentMonth.daysInMonth() }, (_, i) =>
     currentMonth.date(i + 1)
   );
-
   const firstDayOfMonth = currentMonth.startOf("month").day();
   const paddedDays = Array.from({ length: firstDayOfMonth }, () => null);
 
   const handlePrev = () => setCurrentMonth(currentMonth.subtract(1, "month"));
   const handleNext = () => setCurrentMonth(currentMonth.add(1, "month"));
 
-  const getCategoryColor = (cat: string | undefined) => {
-    if (!cat) return "bg-orange-100 border-orange-300";
-    const colors: Record<string, string> = {
-      Music: "bg-[#F9E0D0] border-[#C94917]",
-      Art: "bg-[#FDF3E6] border-[#E4A663]",
-      Food: "bg-[#FCEAE0] border-[#D76C4A]",
-      Culture: "bg-[#F7F2EE] border-[#B08B74]",
-      Market: "bg-[#FFF7E8] border-[#D4A017]",
-    };
-    return colors[cat] || "bg-orange-100 border-orange-300";
+  const eventsForSelectedDate = filteredEvents.filter((e) =>
+    dayjs(e.starts_at).isSame(selectedDate, "day")
+  );
+
+  const formatDate = (dateStr?: string) =>
+    dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
+
+  const getYouTubeThumbnail = (url?: string) => {
+    if (!url) return null;
+    const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
+  };
+
+  const getSpotifyThumbnail = (url?: string) => {
+    if (!url) return null;
+    if (url.includes("spotify")) return "/images/spotify-cover.jpeg";
+    return null;
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-6xl mx-auto px-4 py-10">
-        <div className="flex justify-between items-center mb-8">
+    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
+      <section className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
+          Lisbon Events Calendar
+        </h1>
+
+        <FilterBar onFilter={setFilters} />
+
+        <div className="flex justify-between items-center mb-6">
           <button
             onClick={handlePrev}
             className="px-3 py-1 border border-[#c94917] text-[#c94917] rounded-lg hover:bg-orange-50"
           >
             ← Prev
           </button>
-          <h1 className="text-3xl font-bold">
+          <h2 className="text-2xl font-semibold">
             {currentMonth.format("MMMM YYYY")}
-          </h1>
+          </h2>
           <button
             onClick={handleNext}
             className="px-3 py-1 border border-[#c94917] text-[#c94917] rounded-lg hover:bg-orange-50"
@@ -103,44 +160,128 @@ export default function CalendarPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-3">
+        <div className="grid grid-cols-7 gap-3 mb-8">
           {[...paddedDays, ...daysInMonth].map((day, i) => {
             if (!day) return <div key={`pad-${i}`} />;
-            const dateEvents = monthEvents.filter((e) =>
-              dayjs(e.start).isSame(day, "day")
+            const isSelected = day.isSame(selectedDate, "day");
+            const hasEvents = filteredEvents.some((e) =>
+              dayjs(e.starts_at).isSame(day, "day")
             );
-
             return (
               <div
                 key={day.format("YYYY-MM-DD")}
-                className="border border-orange-200 rounded-xl p-2 h-28 bg-white shadow-sm hover:shadow-lg transition"
+                onClick={() => setSelectedDate(day)}
+                className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition 
+                ${
+                  isSelected
+                    ? "bg-[#c94917] text-white border-[#c94917]"
+                    : hasEvents
+                    ? "bg-white hover:bg-orange-50 border-orange-200"
+                    : "bg-gray-100 text-gray-400"
+                }`}
               >
-                <div className="font-semibold text-sm mb-1 text-[#40210f]">
-                  {day.date()}
-                </div>
-                <div className="space-y-1 overflow-y-auto max-h-20">
-                  {dateEvents.map((ev, idx) => (
-                    <a
-                      key={idx}
-                      href={`/events?title=${encodeURIComponent(ev.title)}`}
-                      className={`block text-xs border rounded-md px-2 py-1 ${getCategoryColor(
-                        ev.category
-                      )} hover:opacity-80 transition`}
-                      title={ev.title}
-                    >
-                      {ev.title}
-                    </a>
-                  ))}
-                </div>
+                {day.date()}
               </div>
             );
           })}
         </div>
 
-        {monthEvents.length === 0 && (
-          <p className="text-center mt-10 text-gray-600 italic">
-            No events found for this month.
+        {loading ? (
+          <p className="text-center text-gray-600 mt-10">Loading events…</p>
+        ) : eventsForSelectedDate.length === 0 ? (
+          <p className="text-center text-gray-600 mt-10 italic">
+            No events have been submitted for this day.
           </p>
+        ) : (
+          <div className="flex flex-col gap-6 mt-8">
+            {eventsForSelectedDate.map((e) => {
+              let imgSrc: string;
+              if (e.image_url && e.image_url.trim() !== "") {
+                imgSrc = e.image_url;
+              } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
+                imgSrc = getYouTubeThumbnail(e.youtube_url)!;
+              } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
+                imgSrc = getSpotifyThumbnail(e.spotify_url)!;
+              } else if (e.category) {
+                imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+              } else {
+                imgSrc = "/images/default.jpeg";
+              }
+
+              return (
+                <div
+                  key={e.id}
+                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
+                >
+                  <div className="relative w-full sm:w-56 h-40 sm:h-auto">
+                    <Image
+                      src={imgSrc}
+                      alt={e.title}
+                      fill
+                      className="object-cover"
+                      onError={(ev) => {
+                        const target = ev.target as HTMLImageElement;
+                        target.src = "/images/default.jpeg";
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 p-5">
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
+                    <p className="text-sm text-gray-700 mb-1">
+                      📍 {e.location_name || "Location TBA"}
+                    </p>
+                    <p className="text-sm text-gray-700 mb-1">
+                      🕒 {formatDate(e.starts_at)}
+                      {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
+                    </p>
+                    {e.price ? (
+                      <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
+                    ) : (
+                      <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
+                    )}
+                    {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
+                    {e.description && (
+                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">{e.description}</p>
+                    )}
+
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {e.youtube_url && (
+                        <a
+                          href={e.youtube_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎥 YouTube
+                        </a>
+                      )}
+                      {e.spotify_url && (
+                        <a
+                          href={e.spotify_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎵 Spotify
+                        </a>
+                      )}
+                      {e.address && (
+                        <Link
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            e.address
+                          )}`}
+                          target="_blank"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🗺️ Map
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </section>
     </main>
