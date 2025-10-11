@@ -1,117 +1,169 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
+import dayjs from "dayjs";
 import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
 
-// 🟠 Prevent static caching
-export const dynamic = "force-dynamic";
-
-// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-type CategoryData = {
-  name: string;
-  count: number;
+type EventItem = {
+  id: number;
+  title: string;
+  description: string;
+  starts_at: string;
+  ends_at?: string;
+  location_name?: string;
+  address?: string;
+  city?: string;
+  price?: string;
+  age?: string;
+  category?: string;
+  image_url?: string;
+  youtube_url?: string;
+  spotify_url?: string;
 };
 
-export default function CategoriesPage() {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
+export default function EventsPage() {
+  const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 🟠 Load events from Supabase
   useEffect(() => {
-    async function fetchCategories() {
-      try {
-        setLoading(true);
+    async function loadEvents() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("event_submissions")
+        .select("*")
+        .eq("status", "approved")
+        .order("starts_at", { ascending: true });
 
-        const { data, error } = await supabase
-          .from("events")
-          .select("category");
-
-        if (error) throw error;
-
-        const valid = data.filter(
-          (e: any) => e.category && e.category.trim() !== ""
-        );
-
-        const counts: Record<string, number> = {};
-        valid.forEach((e: any) => {
-          const name = e.category.trim();
-          counts[name] = (counts[name] || 0) + 1;
-        });
-
-        const list = Object.entries(counts)
-          .map(([name, count]) => ({ name, count }))
-          .sort((a, b) => a.name.localeCompare(b.name));
-
-        setCategories(list);
-      } catch (err) {
-        console.error("Error loading categories:", err);
-      } finally {
-        setLoading(false);
-      }
+      if (error) console.error(error);
+      else setEvents(data || []);
+      setLoading(false);
     }
 
-    fetchCategories();
+    loadEvents();
   }, []);
 
-  const getImagePath = (slug: string) => {
-    // try .jpeg first, fallback to .jpg
-    return `/images/${slug}.jpeg`;
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    return dayjs(dateStr).format("MMM D, YYYY h:mm A");
   };
 
   return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-6">
-          Explore by Category
+    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
+      <section className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
+          Upcoming Events in Lisbon
         </h1>
+
+        {/* 🟠 Filter Bar */}
         <FilterBar onFilter={(filters) => console.log("filters", filters)} />
-        <p className="text-center text-gray-600 mb-10">
-          Choose a Lisbon vibe — from concerts and film to culture and cuisine.
-        </p>
 
         {loading ? (
-          <p className="text-center text-gray-600 italic">Loading categories…</p>
-        ) : categories.length === 0 ? (
-          <p className="text-center mt-10 text-gray-600 italic">
-            No categories found yet.
+          <p className="text-center text-gray-600 mt-10">Loading events…</p>
+        ) : events.length === 0 ? (
+          <p className="text-center text-gray-600 mt-10 italic">
+            No events found.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.map((cat) => {
-              const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = getImagePath(slug);
-              const fallbackPath = "/images/default.jpeg";
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+            {events.map((e) => {
+              const imgSrc =
+                e.image_url ||
+                `/images/${e.category?.toLowerCase().replace(/\s+/g, "-") || "default"}.jpeg`;
 
               return (
-                <Link
-                  key={slug}
-                  href={`/categories/${slug}`}
-                  className="bg-white shadow-md hover:shadow-xl rounded-2xl overflow-hidden border border-orange-200 transition transform hover:-translate-y-1"
+                <div
+                  key={e.id}
+                  className="bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition transform hover:-translate-y-1"
                 >
                   <div className="relative w-full h-56">
-                    {/* ✅ Use native <img> for reliable fallback */}
-                    <img
-                      src={imagePath}
-                      alt={cat.name}
-                      className="object-cover rounded-t-2xl w-full h-full"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = fallbackPath;
+                    <Image
+                      src={imgSrc}
+                      alt={e.title}
+                      fill
+                      className="object-cover"
+                      onError={(ev) => {
+                        const target = ev.target as HTMLImageElement;
+                        target.src = "/images/default.jpeg";
                       }}
                     />
                   </div>
                   <div className="p-5">
-                    <h2 className="text-2xl font-semibold mb-1">{cat.name}</h2>
-                    <p className="text-sm text-gray-600">
-                      {cat.count} event{cat.count === 1 ? "" : "s"}
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
+                      {e.title}
+                    </h2>
+
+                    <p className="text-sm text-gray-700 mb-1">
+                      📍 {e.location_name || "Location TBA"}
                     </p>
+
+                    <p className="text-sm text-gray-700 mb-1">
+                      🕒 {formatDate(e.starts_at)}
+                      {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
+                    </p>
+
+                    {e.price ? (
+                      <p className="text-sm text-gray-700 mb-1">
+                        💶 {e.price}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-green-700 font-medium mb-1">
+                        🆓 Free
+                      </p>
+                    )}
+
+                    {e.age && (
+                      <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>
+                    )}
+
+                    {e.description && (
+                      <p className="text-sm text-gray-700 mt-2 line-clamp-3">
+                        {e.description}
+                      </p>
+                    )}
+
+                    <div className="mt-3 flex gap-3">
+                      {e.youtube_url && (
+                        <a
+                          href={e.youtube_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎥 YouTube
+                        </a>
+                      )}
+                      {e.spotify_url && (
+                        <a
+                          href={e.spotify_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎵 Spotify
+                        </a>
+                      )}
+                      {e.address && (
+                        <Link
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            e.address
+                          )}`}
+                          target="_blank"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🗺️ Map
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -120,4 +172,3 @@ export default function CategoriesPage() {
     </main>
   );
 }
-
