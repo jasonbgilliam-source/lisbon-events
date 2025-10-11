@@ -177,37 +177,48 @@ export default function CalendarPage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-3 mb-8">
-          {[...paddedDays, ...daysInMonth].map((day, i) => {
-            if (!day) return <div key={`pad-${i}`} />;
-            const isSelected = day.isSame(selectedDate, "day");
-            const hasEvents = filteredEvents.some((e) =>
-              dayjs(e.starts_at).isSame(day, "day")
-            );
-            const inRange =
-              rangeStart && rangeEnd && day.isBetween(rangeStart, rangeEnd, null, "[]");
+       <div className="grid grid-cols-7 gap-3 mb-8">
+  {[...paddedDays, ...daysInMonth].map((day, i) => {
+    if (!day) return <div key={`pad-${i}`} />;
 
-            let bgClass = "bg-gray-100 text-gray-400";
-            if (isSelected) {
-              bgClass = "bg-[#c94917] text-white border-[#c94917]";
-            } else if (inRange && hasEvents) {
-              bgClass = "bg-[#fdeee5] text-[#40210f] border-orange-200";
-            } else if (hasEvents) {
-              bgClass = "bg-white hover:bg-orange-50 border-orange-200";
-            }
+    const isSelected = day.isSame(selectedDate, "day");
+    const hasEvents = filteredEvents.some((e) =>
+      dayjs(e.starts_at).isSame(day, "day")
+    );
 
-            return (
-              <div
-                key={day.format("YYYY-MM-DD")}
-                onClick={() => setSelectedDate(day)}
-                className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}
-              >
-                {day.date()}
-              </div>
-            );
-          })}
-        </div>
+    // Determine range highlights (this week / this month)
+    let inRange = false;
+    if (filters.dateRange === "week") {
+      const weekStart = dayjs().startOf("week");
+      const weekEnd = dayjs().endOf("week");
+      inRange = day.isBetween(weekStart, weekEnd, null, "[]");
+    } else if (filters.dateRange === "month") {
+      const monthStart = dayjs().startOf("month");
+      const monthEnd = dayjs().endOf("month");
+      inRange = day.isBetween(monthStart, monthEnd, null, "[]");
+    }
 
+    let bgClass = "bg-gray-100 text-gray-400";
+
+    if (isSelected) {
+      bgClass = "bg-[#c94917] text-white border-[#c94917]";
+    } else if (inRange && hasEvents) {
+      bgClass = "bg-[#fdeee5] text-[#40210f] border-orange-200";
+    } else if (hasEvents) {
+      bgClass = "bg-white hover:bg-orange-50 border-orange-200";
+    }
+
+    return (
+      <div
+        key={day.format("YYYY-MM-DD")}
+        onClick={() => setSelectedDate(day)}
+        className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}
+      >
+        {day.date()}
+      </div>
+    );
+  })}
+</div>
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : eventsForSelectedDate.length === 0 ? (
