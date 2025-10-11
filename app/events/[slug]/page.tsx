@@ -1,138 +1,236 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import Microlink from "@microlink/react";
+import Image from "next/image";
+import Link from "next/link";
 import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
 
+dayjs.extend(isBetween);
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 type EventItem = {
+  id: number;
   title: string;
-  start: string;
-  end?: string;
-  venue?: string;
-  city?: string;
+  description: string;
+  starts_at: string;
+  ends_at?: string;
+  location_name?: string;
   address?: string;
+  city?: string;
   price?: string;
   age?: string;
   category?: string;
-  description?: string;
-  organizer?: string;
-  source_url?: string;
+  image_url?: string;
+  youtube_url?: string;
+  spotify_url?: string;
 };
 
-export default function EventDetailPage() {
-  const { slug } = useParams();
-  const [event, setEvent] = useState<EventItem | null>(null);
+export default function CategoryPage() {
+  const { slug } = useParams<{ slug: string }>();
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [filters, setFilters] = useState<any>({});
+  const [loading, setLoading] = useState(true);
 
+  // 🟠 Load events by category
   useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const res = await fetch("/events.csv");
-        const text = await res.text();
-        const lines = text.split("\n").filter((l) => l.trim() !== "");
-        const headers = lines[0].split(",").map((h) => h.trim());
-        const data = lines.slice(1).map((line) => {
-          const cols = line.split(",");
-          return headers.reduce((acc: any, key, i) => {
-            acc[key] = cols[i]?.trim();
-            return acc;
-          }, {});
-        });
+    async function loadCategoryEvents() {
+      setLoading(true);
+      const categoryName = decodeURIComponent(slug.replace(/-/g, " "));
+      const { data, error } = await supabase
+        .from("event_submissions")
+        .select("*")
+        .eq("status", "approved")
+        .eq("category", categoryName)
+        .order("starts_at", { ascending: true });
 
-        // ✅ normalize slug type
-        const slugStr = Array.isArray(slug) ? slug[0] : slug || "";
-
-        // Match event by slug (title lowercased with hyphens)
-        const found = data.find(
-          (e) =>
-            e.title?.toLowerCase().replace(/\s+/g, "-") ===
-            decodeURIComponent(slugStr)
-        );
-
-        if (found) setEvent(found);
-      } catch (err) {
-        console.error("Error loading event:", err);
-      }
+      if (error) console.error(error);
+      else setEvents(data || []);
+      setLoading(false);
     }
-    fetchEvent();
+
+    loadCategoryEvents();
   }, [slug]);
 
-  if (!event)
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-[#fff8f2]">
-        <p className="text-gray-600 italic">Loading event...</p>
-      </main>
-    );
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
+    return dayjs(dateStr).format("MMM D, YYYY h:mm A");
+  };
 
-  const formattedDate = event.end
-    ? `${dayjs(event.start).format("MMM D")}–${dayjs(event.end).format("MMM D, YYYY")}`
-    : dayjs(event.start).format("MMMM D, YYYY");
+  // 🧠 Filter logic (same as /events)
+  const filteredEvents = useMemo(() => {
+    return events.filter((e) => {
+      const start = dayjs(e.starts_at);
+      const now = dayjs();
+
+      // Search
+      if (
+        filters.search &&
+        !`${e.title} ${e.description} ${e.location_name}`
+          .toLowerCase()
+          .includes(filters.search.toLowerCase())
+      )
+        return false;
+
+      // City
+      if (filters.city && e.city !== filters.city) return false;
+
+      // Date range
+      if (filters.dateRange === "today" && !start.isSame(now, "day")) return false;
+      if (
+        filters.dateRange === "week" &&
+        !start.isBetween(now.startOf("week"), now.endOf("week"), null, "[]")
+      )
+        return false;
+      if (
+        filters.dateRange === "month" &&
+        !start.isBetween(now.startOf("month"), now.endOf("month"), null, "[]")
+      )
+        return false;
+
+      // Free Only
+      if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
+        return false;
+
+      // Price Range
+      if (filters.priceRange === "under10") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num > 10) return false;
+      } else if (filters.priceRange === "10to30") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 10 || num > 30) return false;
+      } else if (filters.priceRange === "30plus") {
+        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+        if (num < 30) return false;
+      }
+
+      // Age Restriction
+      if (filters.age && e.age && !e.age.includes(filters.age)) return false;
+
+      return true;
+    });
+  }, [events, filters]);
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg border border-orange-200 overflow-hidden">
-        <div className="bg-[#f9e0d0] px-6 py-4 border-b border-orange-300">
-          <h1 className="text-3xl font-bold mb-1">{event.title}</h1>
-          <FilterBar onFilter={(filters) => console.log("filters", filters)} />
-          <p className="text-[#b85c2a] text-sm">{event.category}</p>
-        </div>
+      <section className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917] capitalize">
+          {slug.replace(/-/g, " ")}
+        </h1>
 
-        <div className="p-6 space-y-4">
-          <p className="text-sm font-semibold text-[#c94917]">{formattedDate}</p>
+        {/* 🟠 Filter Bar */}
+        <FilterBar onFilter={setFilters} />
 
-          {event.venue && (
-            <p className="text-base">
-              📍 {event.venue}
-              {event.city && `, ${event.city}`}
-            </p>
-          )}
-          {event.address && <p className="text-sm text-gray-700">{event.address}</p>}
+        {loading ? (
+          <p className="text-center text-gray-600 mt-10">Loading events…</p>
+        ) : filteredEvents.length === 0 ? (
+          <p className="text-center text-gray-600 mt-10 italic">
+            No events found for this category.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+            {filteredEvents.map((e) => {
+              const imgSrc =
+                e.image_url ||
+                `/images/${e.category?.toLowerCase().replace(/\s+/g, "-") || "default"}.jpeg`;
 
-          {event.description && (
-            <p className="text-gray-800 leading-relaxed">{event.description}</p>
-          )}
+              return (
+                <div
+                  key={e.id}
+                  className="bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition transform hover:-translate-y-1"
+                >
+                  <div className="relative w-full h-56">
+                    <Image
+                      src={imgSrc}
+                      alt={e.title}
+                      fill
+                      className="object-cover"
+                      onError={(ev) => {
+                        const target = ev.target as HTMLImageElement;
+                        target.src = "/images/default.jpeg";
+                      }}
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
+                      {e.title}
+                    </h2>
 
-          <div className="flex flex-wrap gap-4 text-sm mt-4">
-            {event.price && (
-              <span className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-lg">
-                💶 {event.price}
-              </span>
-            )}
-            {event.age && (
-              <span className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-lg">
-                👶 {event.age}
-              </span>
-            )}
-            {event.organizer && (
-              <span className="px-3 py-1 bg-orange-50 border border-orange-200 rounded-lg">
-                🏛 {event.organizer}
-              </span>
-            )}
+                    <p className="text-sm text-gray-700 mb-1">
+                      📍 {e.location_name || "Location TBA"}
+                    </p>
+
+                    <p className="text-sm text-gray-700 mb-1">
+                      🕒 {formatDate(e.starts_at)}
+                      {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
+                    </p>
+
+                    {e.price ? (
+                      <p className="text-sm text-gray-700 mb-1">
+                        💶 {e.price}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-green-700 font-medium mb-1">
+                        🆓 Free
+                      </p>
+                    )}
+
+                    {e.age && (
+                      <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>
+                    )}
+
+                    {e.description && (
+                      <p className="text-sm text-gray-700 mt-2 line-clamp-3">
+                        {e.description}
+                      </p>
+                    )}
+
+                    <div className="mt-3 flex gap-3">
+                      {e.youtube_url && (
+                        <a
+                          href={e.youtube_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎥 YouTube
+                        </a>
+                      )}
+                      {e.spotify_url && (
+                        <a
+                          href={e.spotify_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎵 Spotify
+                        </a>
+                      )}
+                      {e.address && (
+                        <Link
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            e.address
+                          )}`}
+                          target="_blank"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🗺️ Map
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          {/* Microlink snapshot */}
-          {event.source_url ? (
-            <div className="mt-6 border-t border-orange-200 pt-6">
-              <h2 className="text-lg font-semibold mb-2">Event Link Preview</h2>
-              <Microlink url={event.source_url} size="large" />
-            </div>
-          ) : (
-            <div className="mt-6 border-t border-orange-200 pt-6 text-gray-600 italic">
-              No external link available for this event.
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="text-center mt-8">
-        <a
-          href="/events"
-          className="inline-block px-4 py-2 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50"
-        >
-          ← Back to Events
-        </a>
-      </div>
+        )}
+      </section>
     </main>
   );
 }
