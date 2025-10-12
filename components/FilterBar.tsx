@@ -41,23 +41,44 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
     loadCategories();
   }, []);
 
-  const toggle = (value: string, list: string[], setter: any) => {
-    if (list.includes(value)) {
-      setter(list.filter((x) => x !== value));
-    } else {
-      setter([...list, value]);
-    }
-  };
+  // 🧩 Toggle logic + auto-apply
+  const toggle = (value: string, list: string[], setter: any, key: string) => {
+    const newList = list.includes(value)
+      ? list.filter((x) => x !== value)
+      : [...list, value];
 
-  const applyFilters = () => {
+    setter(newList);
     onFilter({
       search,
+      categories: key === "categories" ? newList : category,
+      audience: key === "audience" ? newList : audience,
+      is_free: isFree,
+    });
+  };
+
+  // 🧩 Apply search instantly
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    onFilter({
+      search: value,
       categories: category,
       audience,
       is_free: isFree,
     });
   };
 
+  // 🧩 Apply “Free” instantly
+  const handleFreeChange = (checked: boolean) => {
+    setIsFree(checked);
+    onFilter({
+      search,
+      categories: category,
+      audience,
+      is_free: checked,
+    });
+  };
+
+  // 🧹 Clear all filters
   const clearFilters = () => {
     setSearch("");
     setCategory([]);
@@ -68,44 +89,34 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
 
   return (
     <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
-      {/* 🔍 Search + Buttons */}
+      {/* 🔍 Search */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
         <input
           type="text"
           placeholder="Search events..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearchChange(e.target.value)}
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
         />
-        <div className="flex gap-3">
-          <button
-            onClick={applyFilters}
-            className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
-          >
-            Apply Filters
-          </button>
-          <button
-            onClick={clearFilters}
-            className="px-4 py-2 bg-gray-100 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50 transition"
-          >
-            Clear Filters
-          </button>
-        </div>
+        <button
+          onClick={clearFilters}
+          className="px-4 py-2 bg-gray-100 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50 transition"
+        >
+          Clear Filters
+        </button>
       </div>
 
-      {/* 🎭 Category Filter (from Supabase) */}
+      {/* 🎭 Category Filter */}
       <div className="mb-4">
         <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
         <div className="flex flex-wrap gap-2">
           {allCategories.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">
-              Loading categories…
-            </p>
+            <p className="text-sm text-gray-500 italic">Loading categories…</p>
           ) : (
             allCategories.map((c) => (
               <button
                 key={c}
-                onClick={() => toggle(c, category, setCategory)}
+                onClick={() => toggle(c, category, setCategory, "categories")}
                 className={`px-3 py-1 border rounded-full text-sm transition ${
                   category.includes(c)
                     ? "bg-[#c94917] text-white border-[#c94917]"
@@ -126,7 +137,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           {allAudiences.map((a) => (
             <button
               key={a}
-              onClick={() => toggle(a, audience, setAudience)}
+              onClick={() => toggle(a, audience, setAudience, "audience")}
               className={`px-3 py-1 border rounded-full text-sm transition ${
                 audience.includes(a)
                   ? "bg-[#c94917] text-white border-[#c94917]"
@@ -145,7 +156,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           id="free"
           type="checkbox"
           checked={isFree}
-          onChange={(e) => setIsFree(e.target.checked)}
+          onChange={(e) => handleFreeChange(e.target.checked)}
         />
         <label htmlFor="free" className="text-sm text-gray-700">
           Show only free events
@@ -154,3 +165,4 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
     </div>
   );
 }
+
