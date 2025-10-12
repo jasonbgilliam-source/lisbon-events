@@ -13,78 +13,53 @@ type FilterBarProps = {
 
 export default function FilterBar({ onFilter }: FilterBarProps) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [audience, setAudience] = useState<string[]>([]);
   const [isFree, setIsFree] = useState(false);
   const [allCategories, setAllCategories] = useState<string[]>([]);
 
   const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
-  // 🧭 Load official category list from Supabase category_catalog
+  // 🧭 Load categories from Supabase
   useEffect(() => {
     async function loadCategories() {
       const { data, error } = await supabase
         .from("category_catalog")
         .select("name")
         .order("name", { ascending: true });
-
       if (error) {
         console.error("Error loading categories:", error);
         return;
       }
-
-      const names =
-        data?.map((c: { name: string }) => c.name).filter(Boolean) ?? [];
+      const names = data?.map((c: { name: string }) => c.name).filter(Boolean) ?? [];
       setAllCategories(names);
     }
-
     loadCategories();
   }, []);
 
-  // 🧩 Toggle logic + auto-apply
-  const toggle = (value: string, list: string[], setter: any, key: string) => {
+  // 🧩 Helper to send updates
+  const updateFilters = (updated: Partial<typeof filters>) => {
+    const newFilters = {
+      search,
+      categories,
+      audience,
+      is_free: isFree,
+      ...updated,
+    };
+    onFilter(newFilters);
+  };
+
+  const handleToggle = (
+    value: string,
+    list: string[],
+    setter: React.Dispatch<React.SetStateAction<string[]>>,
+    key: "categories" | "audience"
+  ) => {
     const newList = list.includes(value)
       ? list.filter((x) => x !== value)
       : [...list, value];
-
     setter(newList);
-    onFilter({
-      search,
-      categories: key === "categories" ? newList : category,
-      audience: key === "audience" ? newList : audience,
-      is_free: isFree,
-    });
-  };
-
-  // 🧩 Apply search instantly
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    onFilter({
-      search: value,
-      categories: category,
-      audience,
-      is_free: isFree,
-    });
-  };
-
-  // 🧩 Apply “Free” instantly
-  const handleFreeChange = (checked: boolean) => {
-    setIsFree(checked);
-    onFilter({
-      search,
-      categories: category,
-      audience,
-      is_free: checked,
-    });
-  };
-
-  // 🧹 Clear all filters
-  const clearFilters = () => {
-    setSearch("");
-    setCategory([]);
-    setAudience([]);
-    setIsFree(false);
-    onFilter({});
+    updateFilters({ [key]: newList });
   };
 
   return (
@@ -95,14 +70,23 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           type="text"
           placeholder="Search events..."
           value={search}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            updateFilters({ search: e.target.value });
+          }}
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
         />
         <button
-          onClick={clearFilters}
+          onClick={() => {
+            setSearch("");
+            setCategories([]);
+            setAudience([]);
+            setIsFree(false);
+            onFilter({});
+          }}
           className="px-4 py-2 bg-gray-100 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50 transition"
         >
-          Clear Filters
+          Clear
         </button>
       </div>
 
@@ -111,14 +95,14 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
         <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
         <div className="flex flex-wrap gap-2">
           {allCategories.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">Loading categories…</p>
+            <p className="text-sm text-gray-500 italic">Loading…</p>
           ) : (
             allCategories.map((c) => (
               <button
                 key={c}
-                onClick={() => toggle(c, category, setCategory, "categories")}
+                onClick={() => handleToggle(c, categories, setCategories, "categories")}
                 className={`px-3 py-1 border rounded-full text-sm transition ${
-                  category.includes(c)
+                  categories.includes(c)
                     ? "bg-[#c94917] text-white border-[#c94917]"
                     : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
                 }`}
@@ -137,7 +121,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           {allAudiences.map((a) => (
             <button
               key={a}
-              onClick={() => toggle(a, audience, setAudience, "audience")}
+              onClick={() => handleToggle(a, audience, setAudience, "audience")}
               className={`px-3 py-1 border rounded-full text-sm transition ${
                 audience.includes(a)
                   ? "bg-[#c94917] text-white border-[#c94917]"
@@ -150,13 +134,16 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
         </div>
       </div>
 
-      {/* 🆓 Free Events */}
+      {/* 🆓 Free only */}
       <div className="flex items-center gap-2 mt-3">
         <input
           id="free"
           type="checkbox"
           checked={isFree}
-          onChange={(e) => handleFreeChange(e.target.checked)}
+          onChange={(e) => {
+            setIsFree(e.target.checked);
+            updateFilters({ is_free: e.target.checked });
+          }}
         />
         <label htmlFor="free" className="text-sm text-gray-700">
           Show only free events
@@ -165,4 +152,3 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
     </div>
   );
 }
-
