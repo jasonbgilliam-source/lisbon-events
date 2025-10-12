@@ -15,7 +15,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type EventItem = {
-  id: number;
+  id: number | string;
   title: string;
   description: string;
   starts_at: string;
@@ -35,6 +35,7 @@ export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [filters, setFilters] = useState<any>({});
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadEvents() {
@@ -117,19 +118,13 @@ export default function EventsPage() {
   const getYouTubeThumbnail = (url?: string) => {
     if (!url) return null;
     const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    if (match && match[1]) {
-      return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
-    }
-    return null;
+    return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
   };
 
   // 🎧 Helper: Spotify thumbnail
   const getSpotifyThumbnail = (url?: string) => {
     if (!url) return null;
-    if (url.includes("spotify")) {
-      return "/images/spotify-cover.jpeg"; // optional placeholder for Spotify
-    }
-    return null;
+    return url.includes("spotify") ? "/images/spotify-cover.jpeg" : null;
   };
 
   return (
@@ -151,7 +146,9 @@ export default function EventsPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {filteredEvents.map((e) => {
-              // 🖼️ Prioritize images: event → YouTube → Spotify → category → default
+              const expanded = expandedId === String(e.id);
+
+              // 🖼️ Prioritize images
               let imgSrc: string;
               if (e.image_url && e.image_url.trim() !== "") {
                 imgSrc = e.image_url;
@@ -168,7 +165,10 @@ export default function EventsPage() {
               return (
                 <div
                   key={e.id}
-                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
+                  onClick={() => setExpandedId(expanded ? null : String(e.id))}
+                  className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
+                    expanded ? "scale-[1.02] bg-orange-50" : ""
+                  }`}
                 >
                   {/* 🖼️ Image */}
                   <div className="relative w-full sm:w-56 h-40 sm:h-auto">
@@ -186,7 +186,17 @@ export default function EventsPage() {
 
                   {/* 📋 Event Info */}
                   <div className="flex-1 p-5">
-                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
+                    <div className="flex justify-between items-center mb-1">
+                      <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
+                      <span
+                        className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
+                          expanded ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </div>
+
                     <p className="text-sm text-gray-700 mb-1">
                       📍 {e.location_name || "Location TBA"}
                     </p>
@@ -200,46 +210,54 @@ export default function EventsPage() {
                       <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
                     )}
                     {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
+
+                    {/* Description */}
                     {e.description && (
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">
+                      <p
+                        className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
+                          expanded ? "line-clamp-none" : "line-clamp-2"
+                        }`}
+                      >
                         {e.description}
                       </p>
                     )}
 
-                    {/* 🔗 External Links */}
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      {e.youtube_url && (
-                        <a
-                          href={e.youtube_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎥 YouTube
-                        </a>
-                      )}
-                      {e.spotify_url && (
-                        <a
-                          href={e.spotify_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎵 Spotify
-                        </a>
-                      )}
-                      {e.address && (
-                        <Link
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                            e.address
-                          )}`}
-                          target="_blank"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🗺️ Map
-                        </Link>
-                      )}
-                    </div>
+                    {/* Links only when expanded */}
+                    {expanded && (
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {e.youtube_url && (
+                          <a
+                            href={e.youtube_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎥 YouTube
+                          </a>
+                        )}
+                        {e.spotify_url && (
+                          <a
+                            href={e.spotify_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎵 Spotify
+                          </a>
+                        )}
+                        {e.address && (
+                          <Link
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              e.address
+                            )}`}
+                            target="_blank"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🗺️ Map
+                          </Link>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
