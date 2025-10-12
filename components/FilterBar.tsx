@@ -7,8 +7,15 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+type FilterState = {
+  search?: string;
+  categories?: string[];
+  audience?: string[];
+  is_free?: boolean;
+};
+
 type FilterBarProps = {
-  onFilter: (filters: any) => void;
+  onFilter: (filters: FilterState) => void;
 };
 
 export default function FilterBar({ onFilter }: FilterBarProps) {
@@ -38,8 +45,8 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
   }, []);
 
   // 🧩 Helper to send updates
-  const updateFilters = (updated: Partial<typeof filters>) => {
-    const newFilters = {
+  const updateFilters = (updated: Partial<FilterState>) => {
+    const newFilters: FilterState = {
       search,
       categories,
       audience,
