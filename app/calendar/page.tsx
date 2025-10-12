@@ -24,8 +24,8 @@ type EventItem = {
   address?: string;
   city?: string;
   price?: string;
-  age?: string;
-  category?: string;
+  categories?: string[] | string;
+  audience?: string[] | string;
   image_url?: string;
   youtube_url?: string;
   spotify_url?: string;
@@ -65,8 +65,8 @@ export default function CalendarPage() {
     return events.filter((e) => {
       const start = dayjs(e.starts_at);
       const end = e.ends_at ? dayjs(e.ends_at) : start;
-      const now = dayjs();
 
+      // --- Search filter ---
       if (
         filters.search &&
         !`${e.title} ${e.description} ${e.location_name}`
@@ -74,36 +74,38 @@ export default function CalendarPage() {
           .includes(filters.search.toLowerCase())
       )
         return false;
-      if (filters.category && e.category !== filters.category) return false;
-      if (filters.city && e.city !== filters.city) return false;
 
-      if (filters.dateRange === "today" && !occursOnDay(e, now)) return false;
-      if (
-        filters.dateRange === "week" &&
-        !(
-          end.isAfter(now.startOf("week")) &&
-          start.isBefore(now.endOf("week"))
-        )
-      )
-        return false;
-      if (
-        filters.dateRange === "month" &&
-        !(
-          end.isAfter(now.startOf("month")) &&
-          start.isBefore(now.endOf("month"))
-        )
-      )
-        return false;
+      // --- Categories filter (supports arrays or Supabase array strings) ---
+      if (filters.categories && filters.categories.length > 0) {
+        const eventCats =
+          Array.isArray(e.categories) && e.categories.length
+            ? e.categories.map((c: string) => c.toLowerCase())
+            : typeof e.categories === "string"
+            ? e.categories.replace(/[{}"]/g, "").split(",").map((x) => x.trim().toLowerCase())
+            : [];
+        const match = filters.categories.some((c: string) =>
+          eventCats.includes(c.toLowerCase())
+        );
+        if (!match) return false;
+      }
 
+      // --- Audience filter (same parsing logic) ---
+      if (filters.audience && filters.audience.length > 0) {
+        const eventAud =
+          Array.isArray(e.audience) && e.audience.length
+            ? e.audience.map((a: string) => a.toLowerCase())
+            : typeof e.audience === "string"
+            ? e.audience.replace(/[{}"]/g, "").split(",").map((x) => x.trim().toLowerCase())
+            : [];
+        const match = filters.audience.some((a: string) =>
+          eventAud.includes(a.toLowerCase())
+        );
+        if (!match) return false;
+      }
+
+      // --- Price filter (Free only) ---
       if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
         return false;
-
-      const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-      if (filters.priceRange === "under10" && num > 10) return false;
-      if (filters.priceRange === "10to30" && (num < 10 || num > 30)) return false;
-      if (filters.priceRange === "30plus" && num < 30) return false;
-
-      if (filters.age && e.age && !e.age.includes(filters.age)) return false;
 
       return true;
     });
@@ -217,8 +219,11 @@ export default function CalendarPage() {
                 imgSrc = getYouTubeThumbnail(e.youtube_url)!;
               } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
                 imgSrc = getSpotifyThumbnail(e.spotify_url)!;
-              } else if (e.category) {
-                imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+              } else if (Array.isArray(e.categories) && e.categories.length > 0) {
+                imgSrc = `/images/${e.categories[0].toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+              } else if (typeof e.categories === "string") {
+                const firstCat = e.categories.replace(/[{}"]/g, "").split(",")[0];
+                imgSrc = `/images/${firstCat?.trim().toLowerCase().replace(/\s+/g, "-")}.jpeg`;
               } else {
                 imgSrc = "/images/default.jpeg";
               }
@@ -254,7 +259,17 @@ export default function CalendarPage() {
                     ) : (
                       <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
                     )}
-                    {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
+
+                    {Array.isArray(e.audience) ? (
+                      <p className="text-sm text-gray-700 mb-1">
+                        🎯 Audience: {e.audience.join(", ")}
+                      </p>
+                    ) : typeof e.audience === "string" ? (
+                      <p className="text-sm text-gray-700 mb-1">
+                        🎯 Audience: {e.audience.replace(/[{}"]/g, "").split(",").join(", ")}
+                      </p>
+                    ) : null}
+
                     {e.description && (
                       <p className="text-sm text-gray-700 mt-2 line-clamp-2">{e.description}</p>
                     )}
