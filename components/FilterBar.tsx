@@ -1,171 +1,138 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import React, { useState } from "react";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+type FilterBarProps = {
+  onFilter: (filters: any) => void;
+};
 
-export default function FilterBar({ onFilter }: { onFilter: (filters: any) => void }) {
-  const [categories, setCategories] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [filters, setFilters] = useState({
-    search: "",
-    category: "",
-    city: "",
-    dateRange: "",
-    is_free: false,
-    priceRange: "",
-    age: "",
-  });
+export default function FilterBar({ onFilter }: FilterBarProps) {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<string[]>([]);
+  const [audience, setAudience] = useState<string[]>([]);
+  const [isFree, setIsFree] = useState(false);
 
-  useEffect(() => {
-    async function loadOptions() {
-      try {
-        const { data: catData } = await supabase.from("category_catalog").select("name");
-        if (catData) setCategories(catData.map((c: any) => c.name));
+  // 🟠 Customize these lists anytime
+  const allCategories = [
+    "Music",
+    "Theatre",
+    "Cinema",
+    "Festival",
+    "Market",
+    "Exhibition",
+    "Workshop",
+    "Dance",
+    "Comedy",
+    "Lecture",
+    "Outdoor",
+    "Food & Drink",
+  ];
 
-        const { data: eventData } = await supabase
-          .from("event_submissions")
-          .select("city")
-          .eq("status", "approved");
-        if (eventData) {
-          const uniqueCities = Array.from(
-            new Set(eventData.map((e: any) => e.city).filter(Boolean))
-          );
-          setCities(uniqueCities);
-        }
-      } catch (err) {
-        console.error("Error loading filter data:", err);
-      }
+  const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+
+  const toggle = (value: string, list: string[], setter: any) => {
+    if (list.includes(value)) {
+      setter(list.filter((x) => x !== value));
+    } else {
+      setter([...list, value]);
     }
-    loadOptions();
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target;
-    const name = target.name;
-    const value =
-      target instanceof HTMLInputElement && target.type === "checkbox"
-        ? target.checked
-        : target.value;
-
-    const newFilters = { ...filters, [name]: value };
-    setFilters(newFilters);
-    onFilter(newFilters);
   };
 
-  const handleClear = () => {
-    const cleared = {
-      search: "",
-      category: "",
-      city: "",
-      dateRange: "",
-      is_free: false,
-      priceRange: "",
-      age: "",
-    };
-    setFilters(cleared);
-    onFilter(cleared);
+  const applyFilters = () => {
+    onFilter({
+      search,
+      categories: category,
+      audience,
+      is_free: isFree,
+    });
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setCategory([]);
+    setAudience([]);
+    setIsFree(false);
+    onFilter({});
   };
 
   return (
-    <div className="bg-[#fff1e8] border border-orange-200 rounded-xl p-2 mb-6 shadow-sm sticky top-0 z-30 backdrop-blur-md bg-opacity-95">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 text-sm">
-
+    <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
+      {/* 🔍 Search + Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
         <input
           type="text"
-          name="search"
           placeholder="Search events..."
-          value={filters.search}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
         />
-
-        <select
-          name="category"
-          value={filters.category}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="city"
-          value={filters.city}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
-        >
-          <option value="">All Cities</option>
-          {cities.map((city) => (
-            <option key={city} value={city}>
-              {city}
-            </option>
-          ))}
-        </select>
-
-        <select
-          name="dateRange"
-          value={filters.dateRange}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
-        >
-          <option value="">Any Date</option>
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-        </select>
-
-        <select
-          name="priceRange"
-          value={filters.priceRange}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
-        >
-          <option value="">Any Price</option>
-          <option value="under10">Under €10</option>
-          <option value="10to30">€10–30</option>
-          <option value="30plus">Over €30</option>
-        </select>
-
-        <select
-          name="age"
-          value={filters.age}
-          onChange={handleChange}
-          className="border border-orange-200 rounded-lg p-1.5 w-full focus:ring-1 focus:ring-[#c94917]"
-        >
-          <option value="">All Ages</option>
-          <option value="16">16+</option>
-          <option value="18">18+</option>
-          <option value="21">21+</option>
-        </select>
-
-        <label className="flex items-center gap-2 text-xs border border-orange-200 rounded-lg p-1.5 bg-white shadow-sm">
-          <input
-            type="checkbox"
-            name="is_free"
-            checked={!!filters.is_free}
-            onChange={handleChange}
-            className="accent-[#c94917]"
-          />
-          <span className="font-medium text-[#40210f]">Free Only</span>
-        </label>
+        <div className="flex gap-3">
+          <button
+            onClick={applyFilters}
+            className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
+          >
+            Apply Filters
+          </button>
+          <button
+            onClick={clearFilters}
+            className="px-4 py-2 bg-gray-100 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50 transition"
+          >
+            Clear Filters
+          </button>
+        </div>
       </div>
 
-      <div className="flex justify-end mt-2">
-        <button
-          onClick={handleClear}
-          className="bg-[#c94917] text-white text-xs px-3 py-1.5 rounded-lg hover:bg-[#a53f12] transition"
-        >
-          Clear Filters
-        </button>
+      {/* 🎭 Category Filter */}
+      <div className="mb-4">
+        <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
+        <div className="flex flex-wrap gap-2">
+          {allCategories.map((c) => (
+            <button
+              key={c}
+              onClick={() => toggle(c, category, setCategory)}
+              className={`px-3 py-1 border rounded-full text-sm transition ${
+                category.includes(c)
+                  ? "bg-[#c94917] text-white border-[#c94917]"
+                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+              }`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 👨‍👩‍👧 Audience Filter */}
+      <div className="mb-4">
+        <h3 className="font-semibold text-[#c94917] mb-2">Audience</h3>
+        <div className="flex flex-wrap gap-2">
+          {allAudiences.map((a) => (
+            <button
+              key={a}
+              onClick={() => toggle(a, audience, setAudience)}
+              className={`px-3 py-1 border rounded-full text-sm transition ${
+                audience.includes(a)
+                  ? "bg-[#c94917] text-white border-[#c94917]"
+                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+              }`}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 🆓 Free Events */}
+      <div className="flex items-center gap-2 mt-3">
+        <input
+          id="free"
+          type="checkbox"
+          checked={isFree}
+          onChange={(e) => setIsFree(e.target.checked)}
+        />
+        <label htmlFor="free" className="text-sm text-gray-700">
+          Show only free events
+        </label>
       </div>
     </div>
   );
