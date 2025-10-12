@@ -1,110 +1,121 @@
 "use client";
 
-import * as React from "react";
+import React, { useState } from "react";
 
-export type FilterState = {
-  category: string;
-  city: string;
-  allAges: boolean;
-  from: string; // YYYY-MM-DD
-  to: string;   // YYYY-MM-DD
+type FilterBarProps = {
+  onFilter: (filters: any) => void;
 };
 
-type Props = {
-  value: FilterState;
-  onChange: (next: FilterState) => void;
-  onClear: () => void;
-  // Optional facet options to populate dropdowns. You can pass [] and let users type.
-  categories?: string[];
-  cities?: string[];
-};
+export default function FilterBar({ onFilter }: FilterBarProps) {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<string[]>([]);
+  const [audience, setAudience] = useState<string[]>([]);
+  const [isFree, setIsFree] = useState(false);
 
-export default function FilterBar({
-  value,
-  onChange,
-  onClear,
-  categories = [],
-  cities = [],
-}: Props) {
-  const { category, city, allAges, from, to } = value;
+  // You can edit these lists anytime
+  const allCategories = [
+    "Music",
+    "Theatre",
+    "Cinema",
+    "Festival",
+    "Market",
+    "Exhibition",
+    "Workshop",
+    "Dance",
+    "Comedy",
+    "Lecture",
+    "Outdoor",
+    "Food & Drink",
+  ];
+
+  const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+
+  const toggle = (value: string, list: string[], setter: any) => {
+    if (list.includes(value)) {
+      setter(list.filter((x) => x !== value));
+    } else {
+      setter([...list, value]);
+    }
+  };
+
+  const applyFilters = () => {
+    onFilter({
+      search,
+      categories: category,
+      audience,
+      is_free: isFree,
+    });
+  };
 
   return (
-    <div className="border rounded p-3 mb-4">
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
-        {/* Category (select + free text) */}
-        <div className="md:col-span-2">
-          <label className="block text-xs font-medium mb-1">Category</label>
-          <div className="flex gap-2">
-            <select
-              className="border p-2 w-full"
-              value={category}
-              onChange={(e) => onChange({ ...value, category: e.target.value })}
+    <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search events..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
+        />
+        <button
+          onClick={applyFilters}
+          className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
+        >
+          Apply Filters
+        </button>
+      </div>
+
+      {/* Category Filter */}
+      <div className="mb-3">
+        <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
+        <div className="flex flex-wrap gap-2">
+          {allCategories.map((c) => (
+            <button
+              key={c}
+              onClick={() => toggle(c, category, setCategory)}
+              className={`px-3 py-1 border rounded-full text-sm transition ${
+                category.includes(c)
+                  ? "bg-[#c94917] text-white border-[#c94917]"
+                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+              }`}
             >
-              <option value="">All categories</option>
-              {categories.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-            <input
-              placeholder="or type…"
-              className="border p-2 w-40"
-              value={category}
-              onChange={(e) => onChange({ ...value, category: e.target.value })}
-            />
-          </div>
+              {c}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {/* City */}
-        <div className="md:col-span-1">
-          <label className="block text-xs font-medium mb-1">City</label>
-          <select
-            className="border p-2 w-full"
-            value={city}
-            onChange={(e) => onChange({ ...value, city: e.target.value })}
-          >
-            <option value="">All cities</option>
-            {cities.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+      {/* Audience Filter */}
+      <div className="mb-3">
+        <h3 className="font-semibold text-[#c94917] mb-2">Audience</h3>
+        <div className="flex flex-wrap gap-2">
+          {allAudiences.map((a) => (
+            <button
+              key={a}
+              onClick={() => toggle(a, audience, setAudience)}
+              className={`px-3 py-1 border rounded-full text-sm transition ${
+                audience.includes(a)
+                  ? "bg-[#c94917] text-white border-[#c94917]"
+                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+              }`}
+            >
+              {a}
+            </button>
+          ))}
         </div>
+      </div>
 
-        {/* From / To */}
-        <div className="md:col-span-2 grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-xs font-medium mb-1">From date</label>
-            <input
-              type="date"
-              className="border p-2 w-full"
-              value={from}
-              onChange={(e) => onChange({ ...value, from: e.target.value })}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1">To date</label>
-            <input
-              type="date"
-              className="border p-2 w-full"
-              value={to}
-              onChange={(e) => onChange({ ...value, to: e.target.value })}
-            />
-          </div>
-        </div>
-
-        {/* All ages + Clear */}
-        <div className="md:col-span-1 flex items-end justify-between gap-3">
-          <label className="inline-flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={allAges}
-              onChange={(e) => onChange({ ...value, allAges: e.target.checked })}
-            />
-            All ages
-          </label>
-          <button className="text-sm underline" onClick={onClear}>
-            Clear
-          </button>
-        </div>
+      {/* Free Events Toggle */}
+      <div className="flex items-center gap-2 mt-3">
+        <input
+          id="free"
+          type="checkbox"
+          checked={isFree}
+          onChange={(e) => setIsFree(e.target.checked)}
+        />
+        <label htmlFor="free" className="text-sm text-gray-700">
+          Show only free events
+        </label>
       </div>
     </div>
   );
