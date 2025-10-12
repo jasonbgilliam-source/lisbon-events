@@ -44,6 +44,7 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null); // track which event is expanded
 
   // ---- Fetch Events ----
   useEffect(() => {
@@ -212,6 +213,8 @@ export default function CalendarPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {eventsForSelectedDate.map((e) => {
+              const expanded = expandedId === e.id;
+
               let imgSrc: string;
               if (e.image_url && e.image_url.trim() !== "") {
                 imgSrc = e.image_url;
@@ -231,7 +234,10 @@ export default function CalendarPage() {
               return (
                 <div
                   key={e.id}
-                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
+                  onClick={() => setExpandedId(expanded ? null : e.id)}
+                  className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
+                    expanded ? "scale-[1.02] bg-orange-50" : ""
+                  }`}
                 >
                   <div className="relative w-full sm:w-56 h-40 sm:h-auto">
                     <Image
@@ -270,43 +276,53 @@ export default function CalendarPage() {
                       </p>
                     ) : null}
 
+                    {/* Description */}
                     {e.description && (
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">{e.description}</p>
+                      <p
+                        className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
+                          expanded ? "line-clamp-none" : "line-clamp-2"
+                        }`}
+                      >
+                        {e.description}
+                      </p>
                     )}
 
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      {e.youtube_url && (
-                        <a
-                          href={e.youtube_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎥 YouTube
-                        </a>
-                      )}
-                      {e.spotify_url && (
-                        <a
-                          href={e.spotify_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎵 Spotify
-                        </a>
-                      )}
-                      {e.address && (
-                        <Link
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                            e.address
-                          )}`}
-                          target="_blank"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🗺️ Map
-                        </Link>
-                      )}
-                    </div>
+                    {/* Expanded links */}
+                    {expanded && (
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {e.youtube_url && (
+                          <a
+                            href={e.youtube_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎥 YouTube
+                          </a>
+                        )}
+                        {e.spotify_url && (
+                          <a
+                            href={e.spotify_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🎵 Spotify
+                          </a>
+                        )}
+                        {e.address && (
+                          <Link
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              e.address
+                            )}`}
+                            target="_blank"
+                            className="text-sm text-[#c94917] underline"
+                          >
+                            🗺️ Map
+                          </Link>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
