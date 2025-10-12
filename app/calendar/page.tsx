@@ -31,6 +31,13 @@ type EventItem = {
   spotify_url?: string;
 };
 
+// Helper: returns true if event occurs on this day
+const occursOnDay = (event: EventItem, day: dayjs.Dayjs) => {
+  const start = dayjs(event.starts_at);
+  const end = event.ends_at ? dayjs(event.ends_at) : start;
+  return day.isBetween(start.startOf("day"), end.endOf("day"), null, "[]");
+};
+
 export default function CalendarPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [filters, setFilters] = useState<any>({});
@@ -38,6 +45,7 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [loading, setLoading] = useState(true);
 
+  // ---- Fetch Events ----
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -52,9 +60,11 @@ export default function CalendarPage() {
     loadEvents();
   }, []);
 
+  // ---- Filtering ----
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       const start = dayjs(e.starts_at);
+      const end = e.ends_at ? dayjs(e.ends_at) : start;
       const now = dayjs();
 
       if (
@@ -64,35 +74,34 @@ export default function CalendarPage() {
           .includes(filters.search.toLowerCase())
       )
         return false;
-
       if (filters.category && e.category !== filters.category) return false;
       if (filters.city && e.city !== filters.city) return false;
 
-      if (filters.dateRange === "today" && !start.isSame(now, "day")) return false;
+      if (filters.dateRange === "today" && !occursOnDay(e, now)) return false;
       if (
         filters.dateRange === "week" &&
-        !start.isBetween(now.startOf("week"), now.endOf("week"), null, "[]")
+        !(
+          end.isAfter(now.startOf("week")) &&
+          start.isBefore(now.endOf("week"))
+        )
       )
         return false;
       if (
         filters.dateRange === "month" &&
-        !start.isBetween(now.startOf("month"), now.endOf("month"), null, "[]")
+        !(
+          end.isAfter(now.startOf("month")) &&
+          start.isBefore(now.endOf("month"))
+        )
       )
         return false;
 
       if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
         return false;
 
-      if (filters.priceRange === "under10") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num > 10) return false;
-      } else if (filters.priceRange === "10to30") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num < 10 || num > 30) return false;
-      } else if (filters.priceRange === "30plus") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num < 30) return false;
-      }
+      const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
+      if (filters.priceRange === "under10" && num > 10) return false;
+      if (filters.priceRange === "10to30" && (num < 10 || num > 30)) return false;
+      if (filters.priceRange === "30plus" && num < 30) return false;
 
       if (filters.age && e.age && !e.age.includes(filters.age)) return false;
 
@@ -100,6 +109,7 @@ export default function CalendarPage() {
     });
   }, [events, filters]);
 
+  // ---- Calendar Logic ----
   const daysInMonth = Array.from({ length: currentMonth.daysInMonth() }, (_, i) =>
     currentMonth.date(i + 1)
   );
@@ -109,24 +119,12 @@ export default function CalendarPage() {
   const handlePrev = () => setCurrentMonth(currentMonth.subtract(1, "month"));
   const handleNext = () => setCurrentMonth(currentMonth.add(1, "month"));
 
+  // ---- Events for Selected Day ----
   const eventsForSelectedDate = filteredEvents.filter((e) =>
-    dayjs(e.starts_at).isSame(selectedDate, "day")
+    occursOnDay(e, selectedDate)
   );
 
-  const now = dayjs();
-  const rangeStart =
-    filters.dateRange === "week"
-      ? now.startOf("week")
-      : filters.dateRange === "month"
-      ? now.startOf("month")
-      : null;
-  const rangeEnd =
-    filters.dateRange === "week"
-      ? now.endOf("week")
-      : filters.dateRange === "month"
-      ? now.endOf("month")
-      : null;
-
+  // ---- Utilities ----
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
 
@@ -136,12 +134,10 @@ export default function CalendarPage() {
     return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
   };
 
-  const getSpotifyThumbnail = (url?: string) => {
-    if (!url) return null;
-    if (url.includes("spotify")) return "/images/spotify-cover.jpeg";
-    return null;
-  };
+  const getSpotifyThumbnail = (url?: string) =>
+    url && url.includes("spotify") ? "/images/spotify-cover.jpeg" : null;
 
+  // ---- Render ----
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-6xl mx-auto">
@@ -151,6 +147,7 @@ export default function CalendarPage() {
 
         <FilterBar onFilter={setFilters} />
 
+        {/* Month Navigation */}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={handlePrev}
@@ -158,9 +155,7 @@ export default function CalendarPage() {
           >
             ← Prev
           </button>
-          <h2 className="text-2xl font-semibold">
-            {currentMonth.format("MMMM YYYY")}
-          </h2>
+          <h2 className="text-2xl font-semibold">{currentMonth.format("MMMM YYYY")}</h2>
           <button
             onClick={handleNext}
             className="px-3 py-1 border border-[#c94917] text-[#c94917] rounded-lg hover:bg-orange-50"
@@ -169,6 +164,7 @@ export default function CalendarPage() {
           </button>
         </div>
 
+        {/* Week Headers */}
         <div className="grid grid-cols-7 gap-2 text-center font-semibold mb-2">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
             <div key={d} className="text-[#c94917]">
@@ -177,48 +173,34 @@ export default function CalendarPage() {
           ))}
         </div>
 
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7 gap-3 mb-8">
+          {[...paddedDays, ...daysInMonth].map((day, i) => {
+            if (!day) return <div key={`pad-${i}`} />;
 
-<div className="grid grid-cols-7 gap-3 mb-8">
-  {[...paddedDays, ...daysInMonth].map((day, i) => {
-    if (!day) return <div key={`pad-${i}`} />;
+            const isSelected = day.isSame(selectedDate, "day");
+            const hasEvents = filteredEvents.some((e) => occursOnDay(e, day));
 
-    const isSelected = day.isSame(selectedDate, "day");
-    const hasEvents = filteredEvents.some((e) =>
-      dayjs(e.starts_at).isSame(day, "day")
-    );
+            let bgClass = "bg-gray-100 text-gray-400";
+            if (isSelected) {
+              bgClass = "bg-[#c94917] text-white border-[#c94917]";
+            } else if (hasEvents) {
+              bgClass = "bg-white hover:bg-orange-50 border-orange-200";
+            }
 
-    let highlight = false;
+            return (
+              <div
+                key={day.format("YYYY-MM-DD")}
+                onClick={() => setSelectedDate(day)}
+                className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}
+              >
+                {day.date()}
+              </div>
+            );
+          })}
+        </div>
 
-    if (filters.dateRange === "week") {
-      const weekStart = dayjs().startOf("week");
-      const weekEnd = dayjs().endOf("week");
-      if (day.isBetween(weekStart, weekEnd, null, "[]") && hasEvents) highlight = true;
-    } else if (filters.dateRange === "month") {
-      const monthStart = dayjs().startOf("month");
-      const monthEnd = dayjs().endOf("month");
-      if (day.isBetween(monthStart, monthEnd, null, "[]") && hasEvents) highlight = true;
-    }
-
-    let bgClass = "bg-gray-100 text-gray-400";
-    if (isSelected || highlight) {
-      bgClass = "bg-[#c94917] text-white border-[#c94917]";
-    } else if (hasEvents) {
-      bgClass = "bg-white hover:bg-orange-50 border-orange-200";
-    }
-
-    return (
-      <div
-        key={day.format("YYYY-MM-DD")}
-        onClick={() => setSelectedDate(day)}
-        className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}
-      >
-        {day.date()}
-      </div>
-    );
-  })}
-</div>
-
-        
+        {/* Event List */}
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : eventsForSelectedDate.length === 0 ? (
