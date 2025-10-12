@@ -44,7 +44,7 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null); // track which event is expanded
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // ---- Fetch Events ----
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function CalendarPage() {
       )
         return false;
 
-      // --- Categories filter (supports arrays or Supabase array strings) ---
+      // --- Categories filter ---
       if (filters.categories && filters.categories.length > 0) {
         const eventCats =
           Array.isArray(e.categories) && e.categories.length
@@ -90,7 +90,7 @@ export default function CalendarPage() {
         if (!match) return false;
       }
 
-      // --- Audience filter (same parsing logic) ---
+      // --- Audience filter ---
       if (filters.audience && filters.audience.length > 0) {
         const eventAud =
           Array.isArray(e.audience) && e.audience.length
@@ -104,7 +104,7 @@ export default function CalendarPage() {
         if (!match) return false;
       }
 
-      // --- Price filter (Free only) ---
+      // --- Price filter ---
       if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
         return false;
 
@@ -252,7 +252,17 @@ export default function CalendarPage() {
                     />
                   </div>
                   <div className="flex-1 p-5">
-                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
+                    <div className="flex justify-between items-center mb-1">
+                      <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
+                      <span
+                        className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
+                          expanded ? "rotate-180" : ""
+                        }`}
+                      >
+                        ▼
+                      </span>
+                    </div>
+
                     <p className="text-sm text-gray-700 mb-1">
                       📍 {e.location_name || "Location TBA"}
                     </p>
@@ -276,7 +286,6 @@ export default function CalendarPage() {
                       </p>
                     ) : null}
 
-                    {/* Description */}
                     {e.description && (
                       <p
                         className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
@@ -287,7 +296,6 @@ export default function CalendarPage() {
                       </p>
                     )}
 
-                    {/* Expanded links */}
                     {expanded && (
                       <div className="mt-3 flex flex-wrap gap-3">
                         {e.youtube_url && (
