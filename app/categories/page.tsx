@@ -8,7 +8,7 @@ import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
-// ✅ Supabase init
+// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -18,51 +18,70 @@ type CategoryData = {
   count: number;
 };
 
+// Helper to normalize names (for case and accent differences)
+const normalize = (str: string) =>
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<any>({});
 
-  // 🧭 Fetch categories from Supabase
   useEffect(() => {
     async function fetchCategories() {
       try {
         setLoading(true);
 
-        // Get approved events
+        // 1️⃣ Fetch approved events
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
-          .select("category, status, price, audience")
+          .select("category, status")
           .eq("status", "approved");
 
         if (eventError) throw eventError;
 
-        // Get category catalog (for consistent naming)
+        // 2️⃣ Fetch catalog categories
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
-          .select("name");
+          .select("name")
+          .order("name", { ascending: true });
 
         if (catError) throw catError;
 
-        // Normalize catalog list
         const validCategories = (catalog || []).map((c) => c.name.trim());
+        const normalizedCatalog = validCategories.map(normalize);
 
-        // Count how many events per category
+        // 3️⃣ Count events by category, normalized
         const counts: Record<string, number> = {};
         (events || []).forEach((e: any) => {
           if (e.category && e.category.trim() !== "") {
-            const catName = e.category.trim();
-            if (validCategories.includes(catName)) {
+            const eventCat = normalize(e.category);
+            const idx = normalizedCatalog.indexOf(eventCat);
+            if (idx >= 0) {
+              const catName = validCategories[idx];
               counts[catName] = (counts[catName] || 0) + 1;
+            } else {
+              // handle events with category not in catalog — put in “Other”
+              counts["Other"] = (counts["Other"] || 0) + 1;
             }
           }
         });
 
+        // 4️⃣ Merge results (show all categories from catalog even if count = 0)
         const list = validCategories
           .map((name) => ({
             name,
             count: counts[name] || 0,
           }))
+          .concat(
+            counts["Other"]
+              ? [{ name: "Other", count: counts["Other"] }]
+              : []
+          )
           .sort((a, b) => a.name.localeCompare(b.name));
 
         setCategories(list);
@@ -76,13 +95,8 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  // 🧩 Filter behavior (future-proof — for audience/free filters)
-  const filteredCategories = useMemo(() => {
-    if (!filters || Object.keys(filters).length === 0) return categories;
-    // For now, no filtering logic is applied to the category list,
-    // but this placeholder ensures smooth extension later.
-    return categories;
-  }, [categories, filters]);
+  // 🧩 Filter support (future expansion — no filters yet)
+  const filteredCategories = useMemo(() => categories, [categories, filters]);
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
@@ -91,7 +105,6 @@ export default function CategoriesPage() {
           Explore by Category
         </h1>
 
-        {/* 🧭 Consistent Filter Bar */}
         <FilterBar onFilter={setFilters} />
 
         <p className="text-center text-gray-600 mb-10">
