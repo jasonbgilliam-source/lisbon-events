@@ -31,7 +31,7 @@ type EventItem = {
   spotify_url?: string;
 };
 
-// Helper: returns true if event occurs on this day
+// Helper: event occurs on given date
 const occursOnDay = (event: EventItem, day: dayjs.Dayjs) => {
   const start = dayjs(event.starts_at);
   const end = event.ends_at ? dayjs(event.ends_at) : start;
@@ -44,9 +44,8 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // ---- Fetch Events ----
+  // Load events
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -55,19 +54,19 @@ export default function CalendarPage() {
         .select("*")
         .eq("status", "approved")
         .order("starts_at", { ascending: true });
+
       if (!error && data) setEvents(data);
       setLoading(false);
     }
     loadEvents();
   }, []);
 
-  // ---- Filtering ----
+  // Filtered events reactively update when filters change
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       const start = dayjs(e.starts_at);
-      const end = e.ends_at ? dayjs(e.ends_at) : start;
 
-      // --- Search filter ---
+      // 🔍 Search
       if (
         filters.search &&
         !`${e.title} ${e.description} ${e.location_name}`
@@ -76,13 +75,16 @@ export default function CalendarPage() {
       )
         return false;
 
-      // --- Categories filter ---
+      // 🎭 Category filter
       if (filters.categories && filters.categories.length > 0) {
         const eventCats =
-          Array.isArray(e.categories) && e.categories.length
+          Array.isArray(e.categories)
             ? e.categories.map((c: string) => c.toLowerCase())
             : typeof e.categories === "string"
-            ? e.categories.replace(/[{}"]/g, "").split(",").map((x) => x.trim().toLowerCase())
+            ? e.categories
+                .replace(/[{}"]/g, "")
+                .split(",")
+                .map((x) => x.trim().toLowerCase())
             : [];
         const match = filters.categories.some((c: string) =>
           eventCats.includes(c.toLowerCase())
@@ -90,13 +92,16 @@ export default function CalendarPage() {
         if (!match) return false;
       }
 
-      // --- Audience filter ---
+      // 👨‍👩‍👧 Audience filter
       if (filters.audience && filters.audience.length > 0) {
         const eventAud =
-          Array.isArray(e.audience) && e.audience.length
+          Array.isArray(e.audience)
             ? e.audience.map((a: string) => a.toLowerCase())
             : typeof e.audience === "string"
-            ? e.audience.replace(/[{}"]/g, "").split(",").map((x) => x.trim().toLowerCase())
+            ? e.audience
+                .replace(/[{}"]/g, "")
+                .split(",")
+                .map((x) => x.trim().toLowerCase())
             : [];
         const match = filters.audience.some((a: string) =>
           eventAud.includes(a.toLowerCase())
@@ -104,7 +109,7 @@ export default function CalendarPage() {
         if (!match) return false;
       }
 
-      // --- Price filter ---
+      // 🆓 Free filter
       if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
         return false;
 
@@ -112,7 +117,7 @@ export default function CalendarPage() {
     });
   }, [events, filters]);
 
-  // ---- Calendar Logic ----
+  // Calendar logic
   const daysInMonth = Array.from({ length: currentMonth.daysInMonth() }, (_, i) =>
     currentMonth.date(i + 1)
   );
@@ -122,12 +127,12 @@ export default function CalendarPage() {
   const handlePrev = () => setCurrentMonth(currentMonth.subtract(1, "month"));
   const handleNext = () => setCurrentMonth(currentMonth.add(1, "month"));
 
-  // ---- Events for Selected Day ----
+  // Events for selected day
   const eventsForSelectedDate = filteredEvents.filter((e) =>
     occursOnDay(e, selectedDate)
   );
 
-  // ---- Utilities ----
+  // Helpers
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("MMM D, YYYY h:mm A") : "";
 
@@ -140,7 +145,7 @@ export default function CalendarPage() {
   const getSpotifyThumbnail = (url?: string) =>
     url && url.includes("spotify") ? "/images/spotify-cover.jpeg" : null;
 
-  // ---- Render ----
+  // Render
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-6xl mx-auto">
@@ -148,9 +153,10 @@ export default function CalendarPage() {
           Lisbon Events Calendar
         </h1>
 
+        {/* ✅ Instant filter bar */}
         <FilterBar onFilter={setFilters} />
 
-        {/* Month Navigation */}
+        {/* Month nav */}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={handlePrev}
@@ -167,7 +173,7 @@ export default function CalendarPage() {
           </button>
         </div>
 
-        {/* Week Headers */}
+        {/* Calendar grid */}
         <div className="grid grid-cols-7 gap-2 text-center font-semibold mb-2">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
             <div key={d} className="text-[#c94917]">
@@ -176,7 +182,6 @@ export default function CalendarPage() {
           ))}
         </div>
 
-        {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-3 mb-8">
           {[...paddedDays, ...daysInMonth].map((day, i) => {
             if (!day) return <div key={`pad-${i}`} />;
@@ -203,7 +208,7 @@ export default function CalendarPage() {
           })}
         </div>
 
-        {/* Event List */}
+        {/* Event list */}
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : eventsForSelectedDate.length === 0 ? (
@@ -211,10 +216,8 @@ export default function CalendarPage() {
             No events have been submitted for this day.
           </p>
         ) : (
-          <div className="flex flex-col gap-6 mt-8">
+          <div className="flex flex-col gap-6 mt-8 transition-all">
             {eventsForSelectedDate.map((e) => {
-              const expanded = expandedId === String(e.id); // ✅ fixed type comparison
-
               let imgSrc: string;
               if (e.image_url && e.image_url.trim() !== "") {
                 imgSrc = e.image_url;
@@ -234,10 +237,7 @@ export default function CalendarPage() {
               return (
                 <div
                   key={e.id}
-                  onClick={() => setExpandedId(expanded ? null : String(e.id))}
-                  className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
-                    expanded ? "scale-[1.02] bg-orange-50" : ""
-                  }`}
+                  className="flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition"
                 >
                   <div className="relative w-full sm:w-56 h-40 sm:h-auto">
                     <Image
@@ -251,18 +251,9 @@ export default function CalendarPage() {
                       }}
                     />
                   </div>
-                  <div className="flex-1 p-5">
-                    <div className="flex justify-between items-center mb-1">
-                      <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
-                      <span
-                        className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
-                          expanded ? "rotate-180" : ""
-                        }`}
-                      >
-                        ▼
-                      </span>
-                    </div>
 
+                  <div className="flex-1 p-5">
+                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">{e.title}</h2>
                     <p className="text-sm text-gray-700 mb-1">
                       📍 {e.location_name || "Location TBA"}
                     </p>
@@ -275,62 +266,45 @@ export default function CalendarPage() {
                     ) : (
                       <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
                     )}
-
-                    {Array.isArray(e.audience) ? (
-                      <p className="text-sm text-gray-700 mb-1">
-                        🎯 Audience: {e.audience.join(", ")}
-                      </p>
-                    ) : typeof e.audience === "string" ? (
-                      <p className="text-sm text-gray-700 mb-1">
-                        🎯 Audience: {e.audience.replace(/[{}"]/g, "").split(",").join(", ")}
-                      </p>
-                    ) : null}
-
                     {e.description && (
-                      <p
-                        className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
-                          expanded ? "line-clamp-none" : "line-clamp-2"
-                        }`}
-                      >
+                      <p className="text-sm text-gray-700 mt-2 line-clamp-2">
                         {e.description}
                       </p>
                     )}
 
-                    {expanded && (
-                      <div className="mt-3 flex flex-wrap gap-3">
-                        {e.youtube_url && (
-                          <a
-                            href={e.youtube_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm text-[#c94917] underline"
-                          >
-                            🎥 YouTube
-                          </a>
-                        )}
-                        {e.spotify_url && (
-                          <a
-                            href={e.spotify_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-sm text-[#c94917] underline"
-                          >
-                            🎵 Spotify
-                          </a>
-                        )}
-                        {e.address && (
-                          <Link
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                              e.address
-                            )}`}
-                            target="_blank"
-                            className="text-sm text-[#c94917] underline"
-                          >
-                            🗺️ Map
-                          </Link>
-                        )}
-                      </div>
-                    )}
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {e.youtube_url && (
+                        <a
+                          href={e.youtube_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎥 YouTube
+                        </a>
+                      )}
+                      {e.spotify_url && (
+                        <a
+                          href={e.spotify_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🎵 Spotify
+                        </a>
+                      )}
+                      {e.address && (
+                        <Link
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                            e.address
+                          )}`}
+                          target="_blank"
+                          className="text-sm text-[#c94917] underline"
+                        >
+                          🗺️ Map
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
