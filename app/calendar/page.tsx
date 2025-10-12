@@ -213,7 +213,7 @@ export default function CalendarPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {eventsForSelectedDate.map((e) => {
-              const expanded = expandedId === e.id;
+              const expanded = expandedId === String(e.id); // ✅ fixed type comparison
 
               let imgSrc: string;
               if (e.image_url && e.image_url.trim() !== "") {
@@ -234,7 +234,7 @@ export default function CalendarPage() {
               return (
                 <div
                   key={e.id}
-                  onClick={() => setExpandedId(expanded ? null : e.id)}
+                  onClick={() => setExpandedId(expanded ? null : String(e.id))}
                   className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
                     expanded ? "scale-[1.02] bg-orange-50" : ""
                   }`}
