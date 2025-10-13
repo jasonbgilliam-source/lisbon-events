@@ -15,6 +15,9 @@ interface Event {
   description?: string;
   organizer?: string;
   source_url?: string;
+  image_url?: string;
+  youtube_url?: string;
+  spotify_url?: string;
   tags?: string;
   recurrence_note?: string;
 }
@@ -23,40 +26,62 @@ export default function EventCard({ event }: { event: Event }) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchMicrolink() {
-      if (!event.source_url) {
-        // fallback to category image
-        const categoryImage = `/images/${event.category
-          ?.toLowerCase()
-          .replace(/\s+/g, "-")}.jpg`;
-        setPreviewImage(categoryImage);
+    async function fetchImage() {
+      // ✅ 1. Use Supabase image_url if provided
+      if (event.image_url) {
+        setPreviewImage(event.image_url);
         return;
       }
-      try {
-        const res = await fetch(
-          `https://api.microlink.io?url=${encodeURIComponent(
-            event.source_url
-          )}&screenshot=true&meta=false`
+
+      // ✅ 2. Try YouTube or Spotify preview thumbnails
+      if (event.youtube_url) {
+        const match = event.youtube_url.match(
+          /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
         );
-        const data = await res.json();
-        if (data?.data?.screenshot?.url) {
-          setPreviewImage(data.data.screenshot.url);
-        } else {
-          const categoryImage = `/images/${event.category
-            ?.toLowerCase()
-            .replace(/\s+/g, "-")}.jpg`;
-          setPreviewImage(categoryImage);
+        if (match) {
+          setPreviewImage(`https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`);
+          return;
         }
-      } catch {
-        const categoryImage = `/images/${event.category
-          ?.toLowerCase()
-          .replace(/\s+/g, "-")}.jpg`;
-        setPreviewImage(categoryImage);
       }
+      if (event.spotify_url) {
+        // Spotify thumbnails aren't public, so use Spotify logo placeholder
+        setPreviewImage("/images/spotify-placeholder.jpg");
+        return;
+      }
+
+      // ✅ 3. Try Microlink screenshot if source_url available
+      if (event.source_url) {
+        try {
+          const res = await fetch(
+            `https://api.microlink.io?url=${encodeURIComponent(
+              event.source_url
+            )}&screenshot=true&meta=false`
+          );
+          const data = await res.json();
+          if (data?.data?.screenshot?.url) {
+            setPreviewImage(data.data.screenshot.url);
+            return;
+          }
+        } catch {
+          // continue to fallback
+        }
+      }
+
+      // ✅ 4. Fallback to local category image
+      const categoryImage = `/images/${event.category
+        ?.toLowerCase()
+        .replace(/\s+/g, "-")}.jpg`;
+      setPreviewImage(categoryImage);
     }
 
-    fetchMicrolink();
-  }, [event.source_url, event.category]);
+    fetchImage();
+  }, [
+    event.image_url,
+    event.youtube_url,
+    event.spotify_url,
+    event.source_url,
+    event.category,
+  ]);
 
   const date = new Date(event.start).toLocaleDateString("en-GB", {
     weekday: "short",
