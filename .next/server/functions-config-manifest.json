@@ -1,0 +1,1 @@
+{"version":1,"functions":{"/api/categories/delete":{},"/api/categories/upsert":{},"/api/categories/list":{},"/api/events/facets":{},"/api/events/list":{},"/api/submissions/list":{},"/api/submissions/reject":{},"/api/submissions/approve":{},"/api/submit":{},"/categories":{},"/api/events/combined":{},"/categories/[slug]":{},"/api/submit-event":{}}}
