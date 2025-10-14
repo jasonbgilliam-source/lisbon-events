@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Microlink from "@microlink/react";
-import Image from "next/image";
 
 type EventProps = {
   event: {
@@ -28,7 +27,6 @@ type EventProps = {
 export default function EventCard({ event }: EventProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  // Format date
   const startDate = new Date(event.start);
   const formattedDate = startDate.toLocaleDateString("en-PT", {
     weekday: "short",
@@ -36,14 +34,13 @@ export default function EventCard({ event }: EventProps) {
     day: "numeric",
   });
 
-  // Compute fallback image
+  // default fallback
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
-  // ✅ Determine best image source
   useEffect(() => {
     let img = event.image_url?.trim() || "";
 
-    // --- Fix malformed Supabase / CSV URLs ---
+    // ✅ Fix malformed Supabase / CSV URLs
     if (img) {
       img = img
         .replace("/public/public/", "/images/")
@@ -53,13 +50,16 @@ export default function EventCard({ event }: EventProps) {
           "https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app"
         );
 
-      // If it's still missing domain but looks like a relative path, fix it
+      // Add domain if missing
       if (img.startsWith("/images/")) {
         img = `https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app${img}`;
       }
+
+      // decode if double-encoded
+      img = decodeURIComponent(img);
     }
 
-    // --- YouTube thumbnail fallback ---
+    // ✅ YouTube fallback
     if (!img && event.youtube_url) {
       const match = event.youtube_url.match(
         /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
@@ -69,12 +69,12 @@ export default function EventCard({ event }: EventProps) {
       }
     }
 
-    // --- Spotify fallback ---
+    // ✅ Spotify fallback
     if (!img && event.spotify_url) {
       img = "/images/spotify-placeholder.jpg";
     }
 
-    // --- Category fallback ---
+    // ✅ Category fallback
     if (!img) {
       img = fallbackImage;
     }
@@ -90,7 +90,7 @@ export default function EventCard({ event }: EventProps) {
 
   return (
     <div className="bg-[#fff8f3] border border-[#e1a46e] rounded-2xl shadow-sm hover:shadow-md transition p-4 flex flex-col">
-      {/* ✅ Image or Microlink */}
+      {/* ✅ Image or Microlink preview */}
       {event.source_url ? (
         <div className="rounded-lg overflow-hidden mb-3">
           <Microlink url={event.source_url} size="large" />
@@ -98,13 +98,13 @@ export default function EventCard({ event }: EventProps) {
       ) : (
         <div className="relative w-full h-48 mb-3 rounded-lg overflow-hidden">
           {previewImage ? (
-            <Image
+            <img
               src={previewImage}
               alt={event.title || "Lisbon Event"}
-              fill
-              sizes="(max-width: 768px) 100vw, 400px"
-              style={{ objectFit: "cover" }}
-              unoptimized
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = fallbackImage;
+              }}
             />
           ) : (
             <div className="w-full h-full bg-[#f1e4d0] flex items-center justify-center text-[#b84b22]/70 text-sm italic">
