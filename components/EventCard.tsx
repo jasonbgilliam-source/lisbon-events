@@ -34,47 +34,49 @@ export default function EventCard({ event }: EventProps) {
     day: "numeric",
   });
 
-  // default fallback
+  // Default fallback category image
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
   useEffect(() => {
     let img = event.image_url?.trim() || "";
 
-    // ✅ Fix malformed Supabase / CSV URLs
+    // ✅ Repair malformed or partial URLs
     if (img) {
-      img = img
-        .replace("/public/public/", "/images/")
-        .replace("/public/", "/images/")
-        .replace(
-          "https://lisbon-events.vercel.app",
-          "https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app"
-        );
+      // Replace old base domain
+      img = img.replace(
+        "https://lisbon-events.vercel.app",
+        "https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app"
+      );
 
-      // Add domain if missing
-      if (img.startsWith("/images/")) {
+      // Fix double "/public" or wrong folder
+      img = img.replace("/public/public/", "/images/");
+      img = img.replace("/public/", "/images/");
+
+      // Add missing domain if only relative path
+      if (img.startsWith("/")) {
         img = `https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app${img}`;
       }
 
-      // decode if double-encoded
-      img = decodeURIComponent(img);
+      // Decode URL safely
+      try {
+        img = decodeURIComponent(img);
+      } catch {
+        console.warn("Could not decode image URL:", img);
+      }
     }
 
-    // ✅ YouTube fallback
+    // ✅ Fallbacks
     if (!img && event.youtube_url) {
       const match = event.youtube_url.match(
         /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
       );
-      if (match) {
-        img = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
-      }
+      if (match) img = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
     }
 
-    // ✅ Spotify fallback
     if (!img && event.spotify_url) {
       img = "/images/spotify-placeholder.jpg";
     }
 
-    // ✅ Category fallback
     if (!img) {
       img = fallbackImage;
     }
@@ -90,29 +92,23 @@ export default function EventCard({ event }: EventProps) {
 
   return (
     <div className="bg-[#fff8f3] border border-[#e1a46e] rounded-2xl shadow-sm hover:shadow-md transition p-4 flex flex-col">
-      {/* ✅ Image or Microlink preview */}
-      {event.source_url ? (
-        <div className="rounded-lg overflow-hidden mb-3">
-          <Microlink url={event.source_url} size="large" />
-        </div>
-      ) : (
-        <div className="relative w-full h-48 mb-3 rounded-lg overflow-hidden">
-          {previewImage ? (
-            <img
-              src={previewImage}
-              alt={event.title || "Lisbon Event"}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = fallbackImage;
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-[#f1e4d0] flex items-center justify-center text-[#b84b22]/70 text-sm italic">
-              Loading image...
-            </div>
-          )}
-        </div>
-      )}
+      {/* ✅ Image */}
+      <div className="relative w-full h-48 mb-3 rounded-lg overflow-hidden">
+        {previewImage ? (
+          <img
+            src={previewImage}
+            alt={event.title || "Lisbon Event"}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = fallbackImage;
+            }}
+          />
+        ) : (
+          <div className="w-full h-full bg-[#f1e4d0] flex items-center justify-center text-[#b84b22]/70 text-sm italic">
+            Loading image...
+          </div>
+        )}
+      </div>
 
       {/* ✅ Content */}
       <div className="flex-1 flex flex-col justify-between">
@@ -133,6 +129,17 @@ export default function EventCard({ event }: EventProps) {
           {event.price && <span>💶 {event.price} &nbsp;</span>}
           {event.age && <span>🎟 {event.age}</span>}
         </div>
+
+        {event.source_url && (
+          <a
+            href={event.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-3 text-[#b84b22] hover:text-[#8a351a] font-medium transition"
+          >
+            View Details →
+          </a>
+        )}
       </div>
     </div>
   );
