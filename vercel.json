@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "public": true,
+  "static": {
+    "directory": "public"
+  },
+  "routes": [
+    {
+      "src": "/images/(.*)",
+      "dest": "/public/images/$1"
+    }
+  ]
+}
