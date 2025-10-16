@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, Suspense } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
@@ -8,6 +8,7 @@ import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
+// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -17,58 +18,78 @@ type CategoryData = {
   count: number;
 };
 
+// Normalize helper (case + accent insensitive)
 const normalize = (str: string) =>
-  str?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() || "";
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
     async function fetchCategories() {
       try {
         setLoading(true);
 
+        // 1️⃣ Fetch all approved events
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
           .select("categories, status")
           .eq("status", "approved");
+
         if (eventError) throw eventError;
 
+        // 2️⃣ Fetch catalog categories
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
           .select("name")
           .order("name", { ascending: true });
+
         if (catError) throw catError;
 
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
+        // 3️⃣ Count events by category (handle arrays + strings)
         const counts: Record<string, number> = {};
 
         (events || []).forEach((e: any) => {
           let eventCats: string[] = [];
 
+          // Case 1: categories stored as array
           if (Array.isArray(e.categories)) {
-            eventCats = e.categories;
-          } else if (typeof e.categories === "string" && e.categories.trim() !== "") {
-            const cleaned = e.categories
+            eventCats = e.categories.map((c: string) => c.trim());
+          }
+
+          // Case 2: categories stored as string like "{Music,Festival}"
+          else if (typeof e.categories === "string" && e.categories.trim() !== "") {
+            eventCats = e.categories
               .replace(/[{}[\]"]/g, "")
               .split(",")
               .map((x) => x.trim())
               .filter(Boolean);
-            eventCats = cleaned;
           }
 
+          // Count each normalized match
           eventCats.forEach((cat: string) => {
             const norm = normalize(cat);
+
+            // Try exact normalized match
             const idx = normalizedCatalog.indexOf(norm);
-            const catName = idx >= 0 ? validCategories[idx] : "Other";
+
+            // Try fallback fuzzy match
+            const catName =
+              idx >= 0
+                ? validCategories[idx]
+                : validCategories.find(
+                    (valid) => normalize(valid) === norm
+                  ) || "Other";
+
             counts[catName] = (counts[catName] || 0) + 1;
           });
         });
 
+        // 4️⃣ Merge results (include categories with count = 0)
         const list = validCategories
           .map((name) => ({
             name,
@@ -90,23 +111,6 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  const filteredCategories = useMemo(() => categories, [categories, filters]);
-
-  const getImageCandidates = (slug: string) => {
-    const base = `/images/${slug}`;
-    return [".jpeg", ".jpg", ".png", ".webp"].map((ext) => `${base}${ext}`);
-  };
-
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>,
-    candidates: string[]
-  ) => {
-    const target = e.target as HTMLImageElement;
-    const currentIndex = candidates.findIndex((p) => target.src.endsWith(p));
-    const next = candidates[currentIndex + 1];
-    target.src = next || "/images/default.jpeg";
-  };
-
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -121,24 +125,24 @@ export default function CategoriesPage() {
             </p>
           }
         >
-          <FilterBar onFilter={setFilters} />
+          <FilterBar onFilter={() => {}} />
         </Suspense>
-
-        <p className="text-center text-gray-600 mb-10">
-          Choose a Lisbon vibe — from concerts and film to culture and cuisine.
-        </p>
 
         {loading ? (
           <p className="text-center text-gray-600 italic">Loading categories…</p>
-        ) : filteredCategories.length === 0 ? (
+        ) : categories.length === 0 ? (
           <p className="text-center mt-10 text-gray-600 italic">
             No categories found yet.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCategories.map((cat) => {
+            {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imageCandidates = getImageCandidates(slug);
+
+              // Handle .jpeg/.jpg fallback automatically
+              const jpegPath = `/images/${slug}.jpeg`;
+              const jpgPath = `/images/${slug}.jpg`;
+              const fallbackPath = `/images/default.jpeg`;
 
               return (
                 <Link
@@ -148,12 +152,15 @@ export default function CategoriesPage() {
                 >
                   <div className="relative w-full h-56">
                     <Image
-                      src={imageCandidates[0]}
+                      src={jpegPath}
                       alt={cat.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover rounded-t-2xl"
-                      onError={(e) => handleImageError(e, imageCandidates)}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.srcset = `${jpgPath}, ${fallbackPath}`;
+                      }}
                     />
                   </div>
                   <div className="p-5">
