@@ -49,12 +49,13 @@ export default function EventCard({ event }: { event: Event }) {
       // ✅ CASE 2: YouTube thumbnail
       if (!img && event.youtube_url) {
         const match = event.youtube_url.match(
-          /(?:youtube\.com\/watch\\?v=|youtu\.be\\/)([A-Za-z0-9_-]{11})/
+          /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
         );
-        if (match) {
+        if (match && match[1]) {
           img = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
         }
       }
+
 
       // ✅ CASE 3: Spotify placeholder
       if (!img && event.spotify_url) {
