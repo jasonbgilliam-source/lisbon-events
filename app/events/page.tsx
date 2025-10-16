@@ -40,16 +40,37 @@ export default function EventsPage() {
       const today = dayjs().startOf("day").toISOString();
       const sevenDays = dayjs().add(7, "day").endOf("day").toISOString();
 
+      // 🧩 Step 1: Get all approved events in the approximate time range
       const { data, error } = await supabase
         .from("event_submissions")
         .select("*")
         .eq("status", "approved")
-        .gte("starts_at", today)
-        .lte("starts_at", sevenDays)
         .order("starts_at", { ascending: true });
 
-      if (error) console.error(error);
-      else setEvents(data || []);
+      if (error) {
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+
+      // 🧩 Step 2: Filter client-side to include:
+      // 1️⃣ events that are ongoing (started before now, end after now)
+      // 2️⃣ events starting within the next 7 days
+      const now = dayjs();
+      const filtered = (data || []).filter((e: EventItem) => {
+        const start = e.starts_at ? dayjs(e.starts_at) : null;
+        const end = e.ends_at ? dayjs(e.ends_at) : null;
+
+        const ongoing =
+          start && end && start.isBefore(now) && end.isAfter(now);
+
+        const upcoming =
+          start && start.isAfter(now.subtract(1, "day")) && start.isBefore(dayjs(sevenDays));
+
+        return ongoing || upcoming;
+      });
+
+      setEvents(filtered);
       setLoading(false);
     }
 
@@ -91,12 +112,12 @@ export default function EventsPage() {
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : events.length === 0 ? (
           <p className="text-center text-gray-600 italic mt-10">
-            No events found for the next 7 days.
+            No current or upcoming events found for the next 7 days.
           </p>
         ) : (
           <>
             <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
-              Upcoming Week in Lisbon
+              This Week in Lisbon
             </h1>
 
             <div className="flex flex-col gap-6 mt-8">
