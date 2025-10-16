@@ -29,7 +29,7 @@ export default function EventCard({ event }: { event: Event }) {
 
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
-  const date = new Date(event.start).toLocaleDateString("en-GB", {
+  const formattedDate = new Date(event.start).toLocaleDateString("en-GB", {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -39,14 +39,14 @@ export default function EventCard({ event }: { event: Event }) {
     async function resolveImage() {
       let img = event.image_url?.trim() || "";
 
-      // ✅ CASE 1: Local event image folder
+      // ✅ 1️⃣ Local event image folder logic
       if (img && event.source_folder) {
         const cleanFolder = event.source_folder.replace(/^public\//, "");
         const cleanImage = img.replace(/^\/+/, "");
         img = `/${cleanFolder}/${cleanImage}`;
       }
 
-      // ✅ CASE 2: YouTube thumbnail
+      // ✅ 2️⃣ YouTube thumbnail fallback
       if (!img && event.youtube_url) {
         const match = event.youtube_url.match(
           /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
@@ -56,13 +56,12 @@ export default function EventCard({ event }: { event: Event }) {
         }
       }
 
-
-      // ✅ CASE 3: Spotify placeholder
+      // ✅ 3️⃣ Spotify fallback
       if (!img && event.spotify_url) {
         img = "/images/spotify-placeholder.jpg";
       }
 
-      // ✅ CASE 4: Microlink screenshot if we still have nothing
+      // ✅ 4️⃣ Microlink screenshot fallback
       if (!img && event.source_url) {
         try {
           const res = await fetch(
@@ -75,16 +74,16 @@ export default function EventCard({ event }: { event: Event }) {
             img = data.data.screenshot.url;
           }
         } catch {
-          console.warn("Microlink fetch failed");
+          console.warn("⚠️ Microlink fetch failed");
         }
       }
 
-      // ✅ CASE 5: Fallback category image
+      // ✅ 5️⃣ Category fallback
       if (!img) {
         img = fallbackImage;
       }
 
-      console.info("🖼️ Event image path resolved:", {
+      console.info("🖼️ Image resolved →", {
         title: event.title,
         image_url: event.image_url,
         source_folder: event.source_folder,
@@ -128,7 +127,8 @@ export default function EventCard({ event }: { event: Event }) {
         <h3 className="text-lg font-semibold text-[#b84b22] mb-1 line-clamp-2">
           {event.title}
         </h3>
-        <p className="text-sm text-gray-700 mb-2">{date}</p>
+
+        <p className="text-sm text-gray-700 mb-2">{formattedDate}</p>
 
         {event.venue && (
           <p className="text-sm text-gray-600 mb-2">
