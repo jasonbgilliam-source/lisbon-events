@@ -18,7 +18,7 @@ type CategoryData = {
   count: number;
 };
 
-// Helper to normalize names (for case and accent differences)
+// Helper to normalize names (remove accents, lowercase)
 const normalize = (str: string) =>
   str
     .normalize("NFD")
@@ -36,10 +36,10 @@ export default function CategoriesPage() {
       try {
         setLoading(true);
 
-        // 1️⃣ Fetch approved events
+        // 1️⃣ Fetch approved events (with the array column)
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
-          .select("category, status")
+          .select("categories, status")
           .eq("status", "approved");
 
         if (eventError) throw eventError;
@@ -55,23 +55,24 @@ export default function CategoriesPage() {
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
-        // 3️⃣ Count events by category, normalized
+        // 3️⃣ Count all category occurrences (flattened from the arrays)
         const counts: Record<string, number> = {};
         (events || []).forEach((e: any) => {
-          if (e.category && e.category.trim() !== "") {
-            const eventCat = normalize(e.category);
-            const idx = normalizedCatalog.indexOf(eventCat);
-            if (idx >= 0) {
-              const catName = validCategories[idx];
-              counts[catName] = (counts[catName] || 0) + 1;
-            } else {
-              // handle events with category not in catalog — put in “Other”
-              counts["Other"] = (counts["Other"] || 0) + 1;
-            }
+          if (Array.isArray(e.categories)) {
+            e.categories.forEach((cat: string) => {
+              const normalizedCat = normalize(cat);
+              const idx = normalizedCatalog.indexOf(normalizedCat);
+              if (idx >= 0) {
+                const name = validCategories[idx];
+                counts[name] = (counts[name] || 0) + 1;
+              } else {
+                counts["Other"] = (counts["Other"] || 0) + 1;
+              }
+            });
           }
         });
 
-        // 4️⃣ Merge results (show all categories from catalog even if count = 0)
+        // 4️⃣ Merge results (show all catalog categories, even if count = 0)
         const list = validCategories
           .map((name) => ({
             name,
@@ -95,7 +96,7 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  // 🧩 Filter support (future expansion — no filters yet)
+  // 🧩 Filter support (future)
   const filteredCategories = useMemo(() => categories, [categories, filters]);
 
   return (
@@ -112,7 +113,9 @@ export default function CategoriesPage() {
         </p>
 
         {loading ? (
-          <p className="text-center text-gray-600 italic">Loading categories…</p>
+          <p className="text-center text-gray-600 italic">
+            Loading categories…
+          </p>
         ) : filteredCategories.length === 0 ? (
           <p className="text-center mt-10 text-gray-600 italic">
             No categories found yet.
@@ -121,8 +124,8 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCategories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = `/images/${slug}.jpeg`;
-              const fallbackPath = `/images/default.jpeg`;
+              const imagePath = `/images/${slug}.jpg`;
+              const fallbackPath = `/images/default.jpg`;
 
               return (
                 <Link
