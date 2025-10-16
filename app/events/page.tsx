@@ -16,7 +16,7 @@ export default function EventsPage() {
   useEffect(() => {
     async function fetchEvents() {
       const { data, error } = await supabase
-        .from("events")
+        .from("events_submissions")
         .select("*")
         .order("starts_at", { ascending: true });
 
