@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -24,6 +25,9 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
   const [audience, setAudience] = useState<string[]>([]);
   const [isFree, setIsFree] = useState(false);
   const [allCategories, setAllCategories] = useState<string[]>([]);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
@@ -53,8 +57,46 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
       is_free: isFree,
       ...updated,
     };
+
+    // 🪄 Update the URL dynamically
+    const params = new URLSearchParams();
+
+    if (newFilters.search) params.set("search", newFilters.search);
+    if (newFilters.categories && newFilters.categories.length > 0)
+      params.set("categories", newFilters.categories.join(","));
+    if (newFilters.audience && newFilters.audience.length > 0)
+      params.set("audience", newFilters.audience.join(","));
+    if (newFilters.is_free) params.set("free", "true");
+
+    const query = params.toString();
+    router.replace(`?${query}`, { scroll: false });
+
     onFilter(newFilters);
   };
+
+  // 🧠 Initialize filters from URL (runs on first load)
+  useEffect(() => {
+    const initSearch = searchParams.get("search") || "";
+    const initCategories = searchParams.get("categories")
+      ? searchParams.get("categories")!.split(",")
+      : [];
+    const initAudience = searchParams.get("audience")
+      ? searchParams.get("audience")!.split(",")
+      : [];
+    const initFree = searchParams.get("free") === "true";
+
+    setSearch(initSearch);
+    setCategories(initCategories);
+    setAudience(initAudience);
+    setIsFree(initFree);
+
+    onFilter({
+      search: initSearch,
+      categories: initCategories,
+      audience: initAudience,
+      is_free: initFree,
+    });
+  }, []);
 
   const handleToggle = (
     value: string,
@@ -89,6 +131,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
             setCategories([]);
             setAudience([]);
             setIsFree(false);
+            router.replace("?", { scroll: false });
             onFilter({});
           }}
           className="px-4 py-2 bg-gray-100 text-[#c94917] border border-[#c94917] rounded-lg hover:bg-orange-50 transition"
