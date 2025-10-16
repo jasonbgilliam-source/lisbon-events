@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@supabase/supabase-js";
@@ -8,7 +8,6 @@ import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
-// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -18,25 +17,18 @@ type CategoryData = {
   count: number;
 };
 
-// Helper to normalize names (remove accents, lowercase)
 const normalize = (str: string) =>
-  str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
     async function fetchCategories() {
       try {
         setLoading(true);
 
-        // 1️⃣ Fetch approved events (with the array column)
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
           .select("categories, status")
@@ -44,7 +36,6 @@ export default function CategoriesPage() {
 
         if (eventError) throw eventError;
 
-        // 2️⃣ Fetch catalog categories
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
           .select("name")
@@ -55,33 +46,25 @@ export default function CategoriesPage() {
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
-        // 3️⃣ Count all category occurrences (flattened from the arrays)
         const counts: Record<string, number> = {};
         (events || []).forEach((e: any) => {
           if (Array.isArray(e.categories)) {
             e.categories.forEach((cat: string) => {
-              const normalizedCat = normalize(cat);
-              const idx = normalizedCatalog.indexOf(normalizedCat);
-              if (idx >= 0) {
-                const name = validCategories[idx];
-                counts[name] = (counts[name] || 0) + 1;
-              } else {
-                counts["Other"] = (counts["Other"] || 0) + 1;
-              }
+              const norm = normalize(cat);
+              const idx = normalizedCatalog.indexOf(norm);
+              const catName = idx >= 0 ? validCategories[idx] : "Other";
+              counts[catName] = (counts[catName] || 0) + 1;
             });
           }
         });
 
-        // 4️⃣ Merge results (show all catalog categories, even if count = 0)
         const list = validCategories
           .map((name) => ({
             name,
             count: counts[name] || 0,
           }))
           .concat(
-            counts["Other"]
-              ? [{ name: "Other", count: counts["Other"] }]
-              : []
+            counts["Other"] ? [{ name: "Other", count: counts["Other"] }] : []
           )
           .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -96,9 +79,6 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
-  // 🧩 Filter support (future)
-  const filteredCategories = useMemo(() => categories, [categories, filters]);
-
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -106,26 +86,28 @@ export default function CategoriesPage() {
           Explore by Category
         </h1>
 
-        <FilterBar onFilter={setFilters} />
-
-        <p className="text-center text-gray-600 mb-10">
-          Choose a Lisbon vibe — from concerts and film to culture and cuisine.
-        </p>
+        <Suspense
+          fallback={
+            <p className="text-center text-gray-500 italic mb-6">
+              Loading filters…
+            </p>
+          }
+        >
+          <FilterBar onFilter={() => {}} />
+        </Suspense>
 
         {loading ? (
-          <p className="text-center text-gray-600 italic">
-            Loading categories…
-          </p>
-        ) : filteredCategories.length === 0 ? (
+          <p className="text-center text-gray-600 italic">Loading categories…</p>
+        ) : categories.length === 0 ? (
           <p className="text-center mt-10 text-gray-600 italic">
             No categories found yet.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCategories.map((cat) => {
+            {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = `/images/${slug}.jpg`;
-              const fallbackPath = `/images/default.jpg`;
+              const imagePath = `/images/${slug}.jpeg`;
+              const fallbackPath = `/images/default.jpeg`;
 
               return (
                 <Link
