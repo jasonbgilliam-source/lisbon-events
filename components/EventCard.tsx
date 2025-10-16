@@ -6,6 +6,7 @@ type EventProps = {
     title: string;
     start: string;
     end?: string;
+    all_day?: boolean;
     venue?: string;
     city?: string;
     address?: string;
@@ -15,10 +16,11 @@ type EventProps = {
     description?: string;
     organizer?: string;
     source_url?: string;
-    image_url?: string;        // e.g. "unnamed(13).jpg"
-    source_folder?: string;    // e.g. "Gmail-Lisboa-Events-05_10_2025-19_10_2025_files"
+    image_url?: string;
     youtube_url?: string;
     spotify_url?: string;
+    source_folder?: string;
+    tags?: string;
   };
 };
 
@@ -32,20 +34,24 @@ export default function EventCard({ event }: EventProps) {
     day: "numeric",
   });
 
-  // ✅ Category fallback
+  // ✅ Fallback category image (in /public/images/)
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
   useEffect(() => {
-    let img = "";
+    let img = event.image_url?.trim() || "";
 
-    // ✅ 1. Try local image (preferred)
-    if (event.image_url && event.source_folder) {
-      const safeFolder = event.source_folder.replace(/\s+/g, "-");
-      const safeFile = event.image_url.split("/").pop();
-      img = `/event-images/${safeFolder}/${safeFile}`;
+    // ✅ CASE 1: Full local image path (preferred)
+    if (img && event.source_folder) {
+      // Ensure path looks like /event-images/Gmail-Lisboa-Events-05_10_2025-19_10_2025/unnamed(13).jpg
+      if (img.startsWith("/")) img = img.slice(1);
+      if (event.source_folder.startsWith("public/")) {
+        img = "/" + event.source_folder.replace(/^public\//, "") + "/" + img;
+      } else {
+        img = "/" + event.source_folder + "/" + img;
+      }
     }
 
-    // ✅ 2. YouTube preview if no local image
+    // ✅ CASE 2: YouTube fallback
     if (!img && event.youtube_url) {
       const match = event.youtube_url.match(
         /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
@@ -53,12 +59,12 @@ export default function EventCard({ event }: EventProps) {
       if (match) img = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
     }
 
-    // ✅ 3. Spotify fallback
+    // ✅ CASE 3: Spotify placeholder
     if (!img && event.spotify_url) {
       img = "/images/spotify-placeholder.jpg";
     }
 
-    // ✅ 4. Category fallback
+    // ✅ CASE 4: Final fallback
     if (!img) {
       img = fallbackImage;
     }
@@ -66,10 +72,10 @@ export default function EventCard({ event }: EventProps) {
     setPreviewImage(img);
   }, [
     event.image_url,
-    event.source_folder,
     event.youtube_url,
     event.spotify_url,
     event.category,
+    event.source_folder,
     fallbackImage,
   ]);
 
