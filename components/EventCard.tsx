@@ -1,13 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Microlink from "@microlink/react";
 
 type EventProps = {
   event: {
     title: string;
     start: string;
     end?: string;
-    all_day?: boolean;
     venue?: string;
     city?: string;
     address?: string;
@@ -17,10 +15,10 @@ type EventProps = {
     description?: string;
     organizer?: string;
     source_url?: string;
-    image_url?: string;
+    image_url?: string;        // e.g. "unnamed(13).jpg"
+    source_folder?: string;    // e.g. "Gmail-Lisboa-Events-05_10_2025-19_10_2025_files"
     youtube_url?: string;
     spotify_url?: string;
-    tags?: string;
   };
 };
 
@@ -34,38 +32,20 @@ export default function EventCard({ event }: EventProps) {
     day: "numeric",
   });
 
-  // Default fallback category image
+  // ✅ Category fallback
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
   useEffect(() => {
-    let img = event.image_url?.trim() || "";
+    let img = "";
 
-    // ✅ Repair malformed or partial URLs
-    if (img) {
-      // Replace old base domain
-      img = img.replace(
-        "https://lisbon-events.vercel.app",
-        "https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app"
-      );
-
-      // Fix double "/public" or wrong folder
-      img = img.replace("/public/public/", "/images/");
-      img = img.replace("/public/", "/images/");
-
-      // Add missing domain if only relative path
-      if (img.startsWith("/")) {
-        img = `https://lisbon-events-j9560p72f-jason-gilliams-projects.vercel.app${img}`;
-      }
-
-      // Decode URL safely
-      try {
-        img = decodeURIComponent(img);
-      } catch {
-        console.warn("Could not decode image URL:", img);
-      }
+    // ✅ 1. Try local image (preferred)
+    if (event.image_url && event.source_folder) {
+      const safeFolder = event.source_folder.replace(/\s+/g, "-");
+      const safeFile = event.image_url.split("/").pop();
+      img = `/event-images/${safeFolder}/${safeFile}`;
     }
 
-    // ✅ Fallbacks
+    // ✅ 2. YouTube preview if no local image
     if (!img && event.youtube_url) {
       const match = event.youtube_url.match(
         /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
@@ -73,10 +53,12 @@ export default function EventCard({ event }: EventProps) {
       if (match) img = `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
     }
 
+    // ✅ 3. Spotify fallback
     if (!img && event.spotify_url) {
       img = "/images/spotify-placeholder.jpg";
     }
 
+    // ✅ 4. Category fallback
     if (!img) {
       img = fallbackImage;
     }
@@ -84,6 +66,7 @@ export default function EventCard({ event }: EventProps) {
     setPreviewImage(img);
   }, [
     event.image_url,
+    event.source_folder,
     event.youtube_url,
     event.spotify_url,
     event.category,
