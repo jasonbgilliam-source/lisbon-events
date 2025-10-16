@@ -28,8 +28,9 @@ type EventItem = {
   image_url?: string;
   youtube_url?: string;
   spotify_url?: string;
-  source_url?: string;
+  source_folder?: string; // ✅ add this line
 };
+
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
