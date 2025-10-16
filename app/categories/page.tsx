@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
 
@@ -20,10 +21,14 @@ type CategoryData = {
 const normalize = (str: string) =>
   str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
 
-export default function CategoriesPage() {
+function CategoriesInner() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
+  // Load all categories and counts from Supabase
   useEffect(() => {
     async function fetchCategories() {
       try {
@@ -69,6 +74,7 @@ export default function CategoriesPage() {
           .sort((a, b) => a.name.localeCompare(b.name));
 
         setCategories(list);
+        setFilteredCategories(list);
       } catch (err) {
         console.error("Error loading categories:", err);
       } finally {
@@ -79,6 +85,37 @@ export default function CategoriesPage() {
     fetchCategories();
   }, []);
 
+  // Apply filters from FilterBar
+  const handleFilter = (filters: any) => {
+    let filtered = [...categories];
+
+    if (filters.search) {
+      const term = filters.search.toLowerCase();
+      filtered = filtered.filter((c) => c.name.toLowerCase().includes(term));
+    }
+
+    setFilteredCategories(filtered);
+
+    // update URL params for shareability
+    const params = new URLSearchParams();
+    if (filters.search) params.set("search", filters.search);
+    router.push(`/categories?${params.toString()}`);
+  };
+
+  // Sync from URL -> FilterBar
+  useEffect(() => {
+    const search = searchParams.get("search");
+    if (search) {
+      setFilteredCategories(
+        categories.filter((c) =>
+          c.name.toLowerCase().includes(search.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredCategories(categories);
+    }
+  }, [searchParams, categories]);
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
       <section className="max-w-7xl mx-auto px-4 py-8">
@@ -86,25 +123,17 @@ export default function CategoriesPage() {
           Explore by Category
         </h1>
 
-        <Suspense
-          fallback={
-            <p className="text-center text-gray-500 italic mb-6">
-              Loading filters…
-            </p>
-          }
-        >
-          <FilterBar onFilter={() => {}} />
-        </Suspense>
+        <FilterBar onFilter={handleFilter} />
 
         {loading ? (
           <p className="text-center text-gray-600 italic">Loading categories…</p>
-        ) : categories.length === 0 ? (
+        ) : filteredCategories.length === 0 ? (
           <p className="text-center mt-10 text-gray-600 italic">
-            No categories found yet.
+            No matching categories.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {categories.map((cat) => {
+            {filteredCategories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
               const imagePath = `/images/${slug}.jpeg`;
               const fallbackPath = `/images/default.jpeg`;
@@ -143,5 +172,17 @@ export default function CategoriesPage() {
         )}
       </section>
     </main>
+  );
+}
+
+export default function CategoriesPage() {
+  return (
+    <Suspense
+      fallback={
+        <p className="text-center text-gray-500 italic mt-10">Loading…</p>
+      }
+    >
+      <CategoriesInner />
+    </Suspense>
   );
 }
