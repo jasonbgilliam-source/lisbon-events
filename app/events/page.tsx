@@ -1,165 +1,109 @@
-"use client";
+import pandas as pd
+import re, uuid, pytz, json
+from datetime import datetime, timedelta
+from openai import OpenAI
+from tqdm import tqdm
 
-import React, { useEffect, useState, useMemo } from "react";
-import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
-import { createClient } from "@supabase/supabase-js";
-import FilterBar from "@/components/FilterBar";
-import EventCard from "@/components/EventCard"; // ✅ Use the reusable EventCard component
+# --- Setup ---
+client = OpenAI()
+tz = pytz.timezone("Europe/Lisbon")
+today = datetime.now(tz).isoformat(timespec="seconds")
 
-dayjs.extend(isBetween);
+input_path  = "lisbon_events_oct2025.csv"
+output_path = "lisbon_events_oct2025_structured.csv"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+raw = pd.read_csv(input_path)
 
-type EventItem = {
-  id: number;
-  title: string;
-  description: string;
-  starts_at: string;
-  ends_at?: string;
-  location_name?: string;
-  address?: string;
-  city?: string;
-  price?: string;
-  categories?: string[] | string;
-  audience?: string[] | string;
-  image_url?: string;
-  youtube_url?: string;
-  spotify_url?: string;
-  source_url?: string;
-  source_folder?: string; 
-};
+# --- Helper for multi-day expansion ---
+def expand_dates(start, end, weekdays=None):
+    out = []
+    if not start or not end:
+        return [start]
+    d0 = datetime.strptime(start, "%Y-%m-%d")
+    d1 = datetime.strptime(end, "%Y-%m-%d")
+    while d0 <= d1:
+        if not weekdays or d0.strftime("%A").lower() in weekdays:
+            out.append(d0.strftime("%Y-%m-%d"))
+        d0 += timedelta(days=1)
+    return out or [start]
 
+# --- Prompt template for GPT ---
+PROMPT = """You are a data analyst cleaning event listings for a Lisbon events database.
+Given this raw event text, extract and infer all fields for the schema below.
+Preserve original language. If multiple dates are given, identify weekday patterns.
+If you see URLs, assign them correctly: ticket, image, youtube, spotify.
+If you can, identify city names from the venue.
+Output as compact JSON with these keys:
+title, description, starts_at, ends_at, location_name, address, ticket_url,
+image_url, organizer_email, age, city, all_day, category, youtube_url, spotify_url, is_free.
+Always include full ISO date (YYYY-MM-DD) and time (HH:MM if present) in Europe/Lisbon timezone.
+Default category = "Family".
+"""
 
-export default function EventsPage() {
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [filters, setFilters] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+# --- Run GPT inference row by row ---
+records = []
 
-  // ✅ Load events from Supabase
-  useEffect(() => {
-    async function loadEvents() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("event_submissions")
-        .select("*")
-        .eq("status", "approved")
-        .order("starts_at", { ascending: true });
+for i, row in tqdm(raw.iterrows(), total=len(raw)):
+    text = " ".join([str(x) for x in row if isinstance(x, str)])
+    try:
+        completion = client.chat.completions.create(
+            model="gpt-5",
+            messages=[
+                {"role": "system", "content": PROMPT},
+                {"role": "user", "content": text}
+            ]
+        )
+        data = completion.choices[0].message.content
 
-      if (error) console.error(error);
-      else setEvents(data || []);
-      setLoading(false);
-    }
+        # --- Clean up and parse JSON ---
+        data = re.sub(r"```json|```", "", data).strip()
+        data = data.replace("false", "False").replace("true", "True").replace("null", "None")
 
-    loadEvents();
-  }, []);
+        try:
+            j = pd.json_normalize(eval(data))
+        except Exception:
+            j = pd.json_normalize(json.loads(data))
 
-  // ✅ Apply filters dynamically
-  const filteredEvents = useMemo(() => {
-    return events.filter((e) => {
-      // 🔍 Search
-      if (
-        filters.search &&
-        !`${e.title} ${e.description} ${e.location_name}`
-          .toLowerCase()
-          .includes(filters.search.toLowerCase())
-      )
-        return false;
+    except Exception as e:
+        print(f"Row {i} failed: {e}")
+        continue
 
-      // 🎭 Category filter
-      if (filters.categories && filters.categories.length > 0) {
-        const eventCats =
-          Array.isArray(e.categories) && e.categories.length
-            ? e.categories.map((c: string) => c.toLowerCase())
-            : typeof e.categories === "string"
-            ? e.categories
-                .replace(/[{}"]/g, "")
-                .split(",")
-                .map((x) => x.trim().toLowerCase())
-            : [];
-        const match = filters.categories.some((c: string) =>
-          eventCats.includes(c.toLowerCase())
-        );
-        if (!match) return false;
-      }
+    # --- Expand multi-day events ---
+    start_date = j.get("starts_at", [None])[0]
+    end_date   = j.get("ends_at", [start_date])[0]
+    weekdays   = None
+    dates = expand_dates(start_date[:10] if start_date else None,
+                         end_date[:10]   if end_date   else None,
+                         weekdays)
 
-      // 👨‍👩‍👧 Audience filter
-      if (filters.audience && filters.audience.length > 0) {
-        const eventAud =
-          Array.isArray(e.audience) && e.audience.length
-            ? e.audience.map((a: string) => a.toLowerCase())
-            : typeof e.audience === "string"
-            ? e.audience
-                .replace(/[{}"]/g, "")
-                .split(",")
-                .map((x) => x.trim().toLowerCase())
-            : [];
-        const match = filters.audience.some((a: string) =>
-          eventAud.includes(a.toLowerCase())
-        );
-        if (!match) return false;
-      }
+    for d in dates:
+        entry = {
+            "id": str(uuid.uuid4()),
+            "title": j.get("title", [None])[0],
+            "description": j.get("description", [None])[0],
+            "starts_at": j.get("starts_at", [None])[0],
+            "ends_at": j.get("ends_at", [None])[0],
+            "location_name": j.get("location_name", [None])[0],
+            "address": j.get("address", [None])[0],
+            "ticket_url": j.get("ticket_url", [None])[0],
+            "image_url": j.get("image_url", [None])[0],
+            "organizer_email": j.get("organizer_email", [None])[0],
+            "status": "approved",
+            "created_at": today,
+            "reviewer": "",
+            "review_notes": "",
+            "approved_at": today,
+            "age": j.get("age", [None])[0],
+            "city": j.get("city", [None])[0],
+            "all_day": bool(j.get("all_day", [False])[0]),
+            "category": j.get("category", ["Family"])[0],
+            "youtube_url": j.get("youtube_url", [None])[0],
+            "spotify_url": j.get("spotify_url", [None])[0],
+            "is_free": bool(j.get("is_free", [False])[0]),
+        }
+        records.append(entry)
 
-      // 🆓 Free events filter
-      if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
-        return false;
-
-      return true;
-    });
-  }, [events, filters]);
-
-  return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
-      <section className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
-          Upcoming Events in Lisbon
-        </h1>
-
-        {/* ✅ Filter bar */}
-        <FilterBar onFilter={setFilters} />
-
-        {loading ? (
-          <p className="text-center text-gray-600 mt-10">Loading events…</p>
-        ) : filteredEvents.length === 0 ? (
-          <p className="text-center text-gray-600 mt-10 italic">
-            No events match your filters.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            {filteredEvents.map((e) => (
-              <EventCard
-                key={e.id}
-                event={{
-                  title: e.title,
-                  start: e.starts_at,
-                  end: e.ends_at,
-                  venue: e.location_name,
-                  city: e.city,
-                  address: e.address,
-                  price: e.price,
-                  category:
-                    Array.isArray(e.categories) && e.categories.length
-                      ? e.categories[0]
-                      : typeof e.categories === "string"
-                      ? e.categories.replace(/[{}"]/g, "").split(",")[0]
-                      : "default",
-                  description: e.description,
-                  organizer: "",
-                  source_url: e.source_url,
-                  image_url: e.image_url,
-                  youtube_url: e.youtube_url,
-                  spotify_url: e.spotify_url,
-                  source_folder:
-                    "public/event-images/Gmail-Lisboa-Events-05_10_2025-19_10_2025",
-                  tags: "",
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
-  );
-}
+# --- Save final structured dataset ---
+final = pd.DataFrame(records)
+final.to_csv(output_path, index=False, encoding="utf-8-sig")
+print(f"✅ Finished! {len(final)} structured rows saved to {output_path}")
