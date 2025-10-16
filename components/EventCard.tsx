@@ -133,3 +133,7 @@ export default function EventCard({ event }: EventProps) {
     </div>
   );
 }
+
+    </div>
+  );
+}
