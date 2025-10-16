@@ -2,12 +2,13 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // ✅ Disable Next.js image optimization so <img> uses direct URLs
+  // ✅ Allow external images from GitHub and YouTube
   images: {
-    unoptimized: true,
+    unoptimized: true, // keeps build simple and compatible with static exports
+    domains: ["raw.githubusercontent.com", "img.youtube.com"],
   },
 
-  // ✅ Optional: ensures consistent URL structure (helps static exports)
+  // ✅ Optional: keeps URLs tidy for static builds
   trailingSlash: true,
 };
 
