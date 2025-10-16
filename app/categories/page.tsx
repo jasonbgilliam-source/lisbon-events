@@ -8,7 +8,6 @@ import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
-// ✅ Supabase init
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -31,14 +30,12 @@ export default function CategoriesPage() {
       try {
         setLoading(true);
 
-        // 1️⃣ Fetch all approved events
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
           .select("categories, status")
           .eq("status", "approved");
         if (eventError) throw eventError;
 
-        // 2️⃣ Fetch official category catalog
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
           .select("name")
@@ -48,7 +45,6 @@ export default function CategoriesPage() {
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
-        // 3️⃣ Count events by category (support array or string)
         const counts: Record<string, number> = {};
 
         (events || []).forEach((e: any) => {
@@ -57,7 +53,6 @@ export default function CategoriesPage() {
           if (Array.isArray(e.categories)) {
             eventCats = e.categories;
           } else if (typeof e.categories === "string" && e.categories.trim() !== "") {
-            // handle serialized arrays like "{Theater,Exhibition}" or '["Theater","Exhibition"]'
             const cleaned = e.categories
               .replace(/[{}[\]"]/g, "")
               .split(",")
@@ -74,7 +69,6 @@ export default function CategoriesPage() {
           });
         });
 
-        // 4️⃣ Merge counts with catalog (so all categories still display)
         const list = validCategories
           .map((name) => ({
             name,
@@ -98,7 +92,6 @@ export default function CategoriesPage() {
 
   const filteredCategories = useMemo(() => categories, [categories, filters]);
 
-  // ✅ Flexible image fallback logic
   const getImageCandidates = (slug: string) => {
     const base = `/images/${slug}`;
     return [".jpeg", ".jpg", ".png", ".webp"].map((ext) => `${base}${ext}`);
@@ -178,8 +171,5 @@ export default function CategoriesPage() {
         )}
       </section>
     </main>
-  );
-}
-
   );
 }
