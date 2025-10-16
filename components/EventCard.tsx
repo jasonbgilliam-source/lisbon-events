@@ -34,21 +34,17 @@ export default function EventCard({ event }: EventProps) {
     day: "numeric",
   });
 
-  // ✅ Fallback category image (in /public/images/)
+  // Default fallback
   const fallbackImage = `/images/${event.category?.toLowerCase() || "default"}.jpg`;
 
   useEffect(() => {
     let img = event.image_url?.trim() || "";
 
-    // ✅ CASE 1: Full local image path (preferred)
+    // ✅ CASE 1: Local path using source_folder
     if (img && event.source_folder) {
-      // Ensure path looks like /event-images/Gmail-Lisboa-Events-05_10_2025-19_10_2025/unnamed(13).jpg
-      if (img.startsWith("/")) img = img.slice(1);
-      if (event.source_folder.startsWith("public/")) {
-        img = "/" + event.source_folder.replace(/^public\//, "") + "/" + img;
-      } else {
-        img = "/" + event.source_folder + "/" + img;
-      }
+      const cleanFolder = event.source_folder.replace(/^public\//, "");
+      const cleanImage = img.replace(/^\/+/, "");
+      img = `/${cleanFolder}/${cleanImage}`;
     }
 
     // ✅ CASE 2: YouTube fallback
@@ -68,6 +64,13 @@ export default function EventCard({ event }: EventProps) {
     if (!img) {
       img = fallbackImage;
     }
+
+    console.info("🖼️ Event image path resolved:", {
+      title: event.title,
+      image_url: event.image_url,
+      source_folder: event.source_folder,
+      resolved: img,
+    });
 
     setPreviewImage(img);
   }, [
@@ -130,10 +133,6 @@ export default function EventCard({ event }: EventProps) {
           </a>
         )}
       </div>
-    </div>
-  );
-}
-
     </div>
   );
 }
