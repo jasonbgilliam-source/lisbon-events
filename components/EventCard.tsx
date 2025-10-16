@@ -110,12 +110,15 @@ export default function EventCard({ event }: { event: Event }) {
     <article className="rounded-2xl overflow-hidden shadow-md border border-[#f1e4d0] bg-[#fffaf5] transition hover:shadow-lg hover:-translate-y-1 duration-200">
       {/* Image */}
       {previewImage ? (
-        <img
-          src={previewImage}
-          alt={event.title}
-          className="w-full h-48 object-cover"
-          onError={handleImageError}
-        />
+    <img
+        src={previewImage}
+        alt={event.title}
+        className="w-full h-48 object-cover"
+        onError={(e: React.SyntheticEvent<HTMLImageElement, globalThis.Event>) => {
+          const target = e.target as HTMLImageElement;
+          target.src = "/images/default.jpeg";
+        }}
+      />     
       ) : (
         <div className="w-full h-48 bg-[#f1e4d0] flex items-center justify-center text-[#b84b22]/70 text-sm italic">
           Loading preview...
