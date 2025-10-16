@@ -33,7 +33,7 @@ export default function EventCard({ event }: { event: Event }) {
         return;
       }
 
-      // ✅ 2. Try YouTube or Spotify preview thumbnails
+      // ✅ 2. YouTube / Spotify thumbnails
       if (event.youtube_url) {
         const match = event.youtube_url.match(
           /(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/
@@ -44,12 +44,11 @@ export default function EventCard({ event }: { event: Event }) {
         }
       }
       if (event.spotify_url) {
-        // Spotify thumbnails aren't public, so use Spotify logo placeholder
         setPreviewImage("/images/spotify-placeholder.jpg");
         return;
       }
 
-      // ✅ 3. Try Microlink screenshot if source_url available
+      // ✅ 3. Microlink screenshot if source_url available
       if (event.source_url) {
         try {
           const res = await fetch(
@@ -63,15 +62,19 @@ export default function EventCard({ event }: { event: Event }) {
             return;
           }
         } catch {
-          // continue to fallback
+          // ignore and continue
         }
       }
 
-      // ✅ 4. Fallback to local category image
-      const categoryImage = `/images/${event.category
-        ?.toLowerCase()
-        .replace(/\s+/g, "-")}.jpg`;
-      setPreviewImage(categoryImage);
+      // ✅ 4. Fallback to local category image — support .jpeg, .jpg, .png, .webp
+      const base = event.category
+        ? `/images/${event.category.toLowerCase().replace(/\s+/g, "-")}`
+        : "/images/default";
+      const exts = [".jpeg", ".jpg", ".png", ".webp"];
+      const candidates = exts.map((ext) => `${base}${ext}`);
+
+      // Start with the first candidate
+      setPreviewImage(candidates[0]);
     }
 
     fetchImage();
@@ -82,6 +85,20 @@ export default function EventCard({ event }: { event: Event }) {
     event.source_url,
     event.category,
   ]);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = e.target as HTMLImageElement;
+    const baseName = target.src.split(".").slice(0, -1).join(".");
+    const extensions = [".jpeg", ".jpg", ".png", ".webp"];
+    const currentExt = "." + target.src.split(".").pop();
+    const currentIdx = extensions.indexOf(currentExt);
+    const nextExt = extensions[currentIdx + 1];
+    if (nextExt) {
+      target.src = `${baseName}${nextExt}`;
+    } else {
+      target.src = "/images/default.jpeg";
+    }
+  };
 
   const date = new Date(event.start).toLocaleDateString("en-GB", {
     weekday: "short",
@@ -97,6 +114,7 @@ export default function EventCard({ event }: { event: Event }) {
           src={previewImage}
           alt={event.title}
           className="w-full h-48 object-cover"
+          onError={handleImageError}
         />
       ) : (
         <div className="w-full h-48 bg-[#f1e4d0] flex items-center justify-center text-[#b84b22]/70 text-sm italic">
