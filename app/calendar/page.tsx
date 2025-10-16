@@ -38,7 +38,7 @@ const occursOnDay = (event: EventItem, day: dayjs.Dayjs) => {
   return day.isBetween(start.startOf("day"), end.endOf("day"), null, "[]");
 };
 
-export default function CalendarPage() {
+export default function CalendarInner(){
   const [events, setEvents] = useState<EventItem[]>([]);
   const [filters, setFilters] = useState<any>({});
   const [currentMonth, setCurrentMonth] = useState(dayjs());
