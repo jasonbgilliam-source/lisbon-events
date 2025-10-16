@@ -37,13 +37,15 @@ export default function EventsPage() {
     async function loadEvents() {
       setLoading(true);
 
-      const now = dayjs().startOf("day").toISOString();
+      const today = dayjs().startOf("day").toISOString();
+      const sevenDays = dayjs().add(7, "day").endOf("day").toISOString();
 
       const { data, error } = await supabase
         .from("event_submissions")
         .select("*")
         .eq("status", "approved")
-        .gte("starts_at", now)
+        .gte("starts_at", today)
+        .lte("starts_at", sevenDays)
         .order("starts_at", { ascending: true });
 
       if (error) console.error(error);
@@ -66,6 +68,22 @@ export default function EventsPage() {
   const getSpotifyThumbnail = (url?: string) =>
     url && url.includes("spotify") ? "/images/spotify-cover.jpeg" : null;
 
+  const resolveImage = (e: EventItem): string => {
+    const cleanUrl = e.image_url?.trim();
+
+    if (cleanUrl && /^https?:\/\//.test(cleanUrl)) {
+      return cleanUrl; // ✅ Valid Supabase image URL
+    } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
+      return getYouTubeThumbnail(e.youtube_url)!;
+    } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
+      return getSpotifyThumbnail(e.spotify_url)!;
+    } else if (e.category) {
+      return `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
+    } else {
+      return "/images/default.jpeg";
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-4xl mx-auto">
@@ -73,31 +91,18 @@ export default function EventsPage() {
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : events.length === 0 ? (
           <p className="text-center text-gray-600 italic mt-10">
-            No upcoming events found.
+            No events found for the next 7 days.
           </p>
         ) : (
           <>
             <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
-              Upcoming Events in Lisbon
+              Upcoming Week in Lisbon
             </h1>
 
             <div className="flex flex-col gap-6 mt-8">
               {events.map((e) => {
                 const expanded = expandedId === String(e.id);
-
-                // ✅ Image selection priority
-                let imgSrc: string;
-                if (e.image_url && e.image_url.trim() !== "") {
-                  imgSrc = e.image_url;
-                } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
-                  imgSrc = getYouTubeThumbnail(e.youtube_url)!;
-                } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
-                  imgSrc = getSpotifyThumbnail(e.spotify_url)!;
-                } else if (e.category) {
-                  imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
-                } else {
-                  imgSrc = "/images/default.jpeg";
-                }
+                const imgSrc = resolveImage(e);
 
                 return (
                   <div
