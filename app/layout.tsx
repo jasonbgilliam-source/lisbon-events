@@ -2,12 +2,24 @@ import "./globals.css";
 import Link from "next/link";
 import { Metadata } from "next";
 import Footer from "@/components/Footer";
+import fs from "fs";
 
 export const metadata: Metadata = {
   title: "Lisbon Events – Events & Eats",
   description:
     "Discover concerts, food festivals, art shows, and the best things to do in Lisbon.",
 };
+
+// --- Force include public/images during Vercel build ---
+if (typeof window === "undefined") {
+  try {
+    fs.readdirSync("./public/images");
+    console.log("✅ Included public/images for Vercel static export");
+  } catch (err) {
+    console.warn("⚠️ Could not read public/images:", err);
+  }
+}
+// -------------------------------------------------------
 
 export default function RootLayout({
   children,
