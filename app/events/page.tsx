@@ -35,6 +35,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  // 🔄 Load data from Supabase
   useEffect(() => {
     async function loadEvents() {
       setLoading(true);
@@ -54,7 +55,7 @@ export default function EventsPage() {
     loadEvents();
   }, []);
 
-  // 🔍 Handle filter updates from FilterBar
+  // 🎛️ Handle filters
   const handleFilter = (filters: any) => {
     let filtered = [...events];
 
@@ -93,23 +94,38 @@ export default function EventsPage() {
     setFilteredEvents(filtered);
   };
 
-  // 📅 Consistent date formatting
+  // 🗓️ Format event times
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("ddd, MMM D, YYYY h:mm A") : "";
 
-  // 🖼️ Image logic (similar to Featured)
+  // 🖼️ Build full GitHub image URL or fallback
   const getImage = (e: EventItem) => {
-    if (e.image_url && e.image_url.trim() !== "") return e.image_url;
+    // 1️⃣ GitHub repo base for stored images
+    const githubBase =
+      "https://raw.githubusercontent.com/jasonbgilliam-source/lisbon-events/main/";
 
+    // 2️⃣ If local repo path (not full URL)
+    if (e.image_url && !e.image_url.startsWith("http")) {
+      return `${githubBase}${e.image_url.replace(/^\.?\/*/, "")}`;
+    }
+
+    // 3️⃣ Already a complete URL
+    if (e.image_url && e.image_url.startsWith("http")) return e.image_url;
+
+    // 4️⃣ YouTube thumbnail
     if (e.youtube_url) {
       const match = e.youtube_url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
       if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
     }
 
+    // 5️⃣ Spotify placeholder
     if (e.spotify_url) return "/images/spotify-cover.jpeg";
+
+    // 6️⃣ Category fallback
     if (e.category)
       return `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
 
+    // 7️⃣ Default fallback
     return "/images/default.jpeg";
   };
 
@@ -120,7 +136,7 @@ export default function EventsPage() {
           Lisbon Events
         </h1>
 
-        {/* 🧭 FilterBar stays the same */}
+        {/* 🎛️ Filter Bar */}
         <Suspense
           fallback={
             <p className="text-center text-gray-500 italic mb-6">
@@ -131,6 +147,7 @@ export default function EventsPage() {
           <FilterBar onFilter={handleFilter} />
         </Suspense>
 
+        {/* 🔄 Loading / Empty / Content */}
         {loading ? (
           <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : filteredEvents.length === 0 ? (
@@ -250,5 +267,8 @@ export default function EventsPage() {
         )}
       </section>
     </main>
+  );
+}
+
   );
 }
