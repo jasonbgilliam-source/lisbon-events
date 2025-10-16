@@ -3,12 +3,12 @@
 import React, { useEffect, useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useSearchParams, useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
+// ✅ Supabase init
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -19,50 +19,62 @@ type CategoryData = {
 };
 
 const normalize = (str: string) =>
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+  str?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase() || "";
 
-function CategoriesInner() {
+export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const [filters, setFilters] = useState<any>({});
 
-  // Load all categories and counts from Supabase
   useEffect(() => {
     async function fetchCategories() {
       try {
         setLoading(true);
 
+        // 1️⃣ Fetch all approved events
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
           .select("categories, status")
           .eq("status", "approved");
-
         if (eventError) throw eventError;
 
+        // 2️⃣ Fetch official category catalog
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
           .select("name")
           .order("name", { ascending: true });
-
         if (catError) throw catError;
 
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
+        // 3️⃣ Count events by category (support array or string)
         const counts: Record<string, number> = {};
+
         (events || []).forEach((e: any) => {
+          let eventCats: string[] = [];
+
           if (Array.isArray(e.categories)) {
-            e.categories.forEach((cat: string) => {
-              const norm = normalize(cat);
-              const idx = normalizedCatalog.indexOf(norm);
-              const catName = idx >= 0 ? validCategories[idx] : "Other";
-              counts[catName] = (counts[catName] || 0) + 1;
-            });
+            eventCats = e.categories;
+          } else if (typeof e.categories === "string" && e.categories.trim() !== "") {
+            // handle serialized arrays like "{Theater,Exhibition}" or '["Theater","Exhibition"]'
+            const cleaned = e.categories
+              .replace(/[{}[\]"]/g, "")
+              .split(",")
+              .map((x) => x.trim())
+              .filter(Boolean);
+            eventCats = cleaned;
           }
+
+          eventCats.forEach((cat: string) => {
+            const norm = normalize(cat);
+            const idx = normalizedCatalog.indexOf(norm);
+            const catName = idx >= 0 ? validCategories[idx] : "Other";
+            counts[catName] = (counts[catName] || 0) + 1;
+          });
         });
 
+        // 4️⃣ Merge counts with catalog (so all categories still display)
         const list = validCategories
           .map((name) => ({
             name,
@@ -74,7 +86,6 @@ function CategoriesInner() {
           .sort((a, b) => a.name.localeCompare(b.name));
 
         setCategories(list);
-        setFilteredCategories(list);
       } catch (err) {
         console.error("Error loading categories:", err);
       } finally {
@@ -85,36 +96,23 @@ function CategoriesInner() {
     fetchCategories();
   }, []);
 
-  // Apply filters from FilterBar
-  const handleFilter = (filters: any) => {
-    let filtered = [...categories];
+  const filteredCategories = useMemo(() => categories, [categories, filters]);
 
-    if (filters.search) {
-      const term = filters.search.toLowerCase();
-      filtered = filtered.filter((c) => c.name.toLowerCase().includes(term));
-    }
-
-    setFilteredCategories(filtered);
-
-    // update URL params for shareability
-    const params = new URLSearchParams();
-    if (filters.search) params.set("search", filters.search);
-    router.push(`/categories?${params.toString()}`);
+  // ✅ Flexible image fallback logic
+  const getImageCandidates = (slug: string) => {
+    const base = `/images/${slug}`;
+    return [".jpeg", ".jpg", ".png", ".webp"].map((ext) => `${base}${ext}`);
   };
 
-  // Sync from URL -> FilterBar
-  useEffect(() => {
-    const search = searchParams.get("search");
-    if (search) {
-      setFilteredCategories(
-        categories.filter((c) =>
-          c.name.toLowerCase().includes(search.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredCategories(categories);
-    }
-  }, [searchParams, categories]);
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement, Event>,
+    candidates: string[]
+  ) => {
+    const target = e.target as HTMLImageElement;
+    const currentIndex = candidates.findIndex((p) => target.src.endsWith(p));
+    const next = candidates[currentIndex + 1];
+    target.src = next || "/images/default.jpeg";
+  };
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
@@ -123,20 +121,31 @@ function CategoriesInner() {
           Explore by Category
         </h1>
 
-        <FilterBar onFilter={handleFilter} />
+        <Suspense
+          fallback={
+            <p className="text-center text-gray-500 italic mb-6">
+              Loading filters…
+            </p>
+          }
+        >
+          <FilterBar onFilter={setFilters} />
+        </Suspense>
+
+        <p className="text-center text-gray-600 mb-10">
+          Choose a Lisbon vibe — from concerts and film to culture and cuisine.
+        </p>
 
         {loading ? (
           <p className="text-center text-gray-600 italic">Loading categories…</p>
         ) : filteredCategories.length === 0 ? (
           <p className="text-center mt-10 text-gray-600 italic">
-            No matching categories.
+            No categories found yet.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCategories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
-              const imagePath = `/images/${slug}.jpeg`;
-              const fallbackPath = `/images/default.jpeg`;
+              const imageCandidates = getImageCandidates(slug);
 
               return (
                 <Link
@@ -146,15 +155,12 @@ function CategoriesInner() {
                 >
                   <div className="relative w-full h-56">
                     <Image
-                      src={imagePath}
+                      src={imageCandidates[0]}
                       alt={cat.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover rounded-t-2xl"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = fallbackPath;
-                      }}
+                      onError={(e) => handleImageError(e, imageCandidates)}
                     />
                   </div>
                   <div className="p-5">
@@ -175,14 +181,5 @@ function CategoriesInner() {
   );
 }
 
-export default function CategoriesPage() {
-  return (
-    <Suspense
-      fallback={
-        <p className="text-center text-gray-500 italic mt-10">Loading…</p>
-      }
-    >
-      <CategoriesInner />
-    </Suspense>
   );
 }
