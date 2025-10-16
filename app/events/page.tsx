@@ -24,6 +24,7 @@ type EventItem = {
   age?: string;
   category?: string;
   image_url?: string;
+  source_folder?: string; // 👈 important new field
   youtube_url?: string;
   spotify_url?: string;
   is_free?: boolean;
@@ -98,34 +99,32 @@ export default function EventsPage() {
   const formatDate = (dateStr?: string) =>
     dateStr ? dayjs(dateStr).format("ddd, MMM D, YYYY h:mm A") : "";
 
-  // 🖼️ Build full GitHub image URL or fallback
+  // 🖼️ Build local image path or fallbacks
   const getImage = (e: EventItem) => {
-    // 1️⃣ GitHub repo base for stored images
-    const githubBase =
-      "https://raw.githubusercontent.com/jasonbgilliam-source/lisbon-events/main/";
-
-    // 2️⃣ If local repo path (not full URL)
-    if (e.image_url && !e.image_url.startsWith("http")) {
-      return `${githubBase}${e.image_url.replace(/^\.?\/*/, "")}`;
+    // 1️⃣ Local file: combine source_folder + image_url
+    if (e.image_url && e.source_folder) {
+      const folder = e.source_folder.replace(/^\.?\/*/, ""); // remove leading ./ or /
+      const filename = e.image_url.replace(/^\.?\/*/, "");
+      return `/${folder}${folder.endsWith("/") ? "" : "/"}${filename}`;
     }
 
-    // 3️⃣ Already a complete URL
+    // 2️⃣ If already a full URL (external)
     if (e.image_url && e.image_url.startsWith("http")) return e.image_url;
 
-    // 4️⃣ YouTube thumbnail
+    // 3️⃣ YouTube thumbnail fallback
     if (e.youtube_url) {
       const match = e.youtube_url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
       if (match) return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
     }
 
-    // 5️⃣ Spotify placeholder
+    // 4️⃣ Spotify fallback
     if (e.spotify_url) return "/images/spotify-cover.jpeg";
 
-    // 6️⃣ Category fallback
+    // 5️⃣ Category fallback
     if (e.category)
       return `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
 
-    // 7️⃣ Default fallback
+    // 6️⃣ Default fallback
     return "/images/default.jpeg";
   };
 
