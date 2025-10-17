@@ -2,7 +2,25 @@
 
 import "./globals.css";
 import Link from "next/link";
-import React from "react";
+import { Metadata } from "next";
+import fs from "fs";
+
+export const metadata: Metadata = {
+  title: "Lisbon Events – Events & Eats",
+  description:
+    "Discover concerts, food festivals, art shows, and the best things to do in Lisbon.",
+};
+
+// --- Force include public/images during Vercel build ---
+if (typeof window === "undefined") {
+  try {
+    fs.readdirSync("./public/images");
+    console.log("✅ Included public/images for Vercel static export");
+  } catch (err) {
+    console.warn("⚠️ Could not read public/images:", err);
+  }
+}
+// -------------------------------------------------------
 
 export default function RootLayout({
   children,
@@ -11,35 +29,78 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen bg-[#fff8f2] text-[#40210f]">
-        {/* Header */}
-        <header className="bg-[#fffaf5] border-b border-[#e6c5a1] shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between">
-            <Link href="/" className="text-3xl font-bold text-[#c94917]">
-              Lisbon Events
-            </Link>
+      <body className="font-sans bg-[#fff8f2] text-[#40210f]">
+        {/* ──────── Hero Banner (Top Section) ──────── */}
+        <header className="relative w-full">
+          <div
+            className="relative h-[180px] bg-cover bg-center"
+            style={{
+              backgroundImage: "url('/images/hero-lisbon.jpg')",
+            }}
+          >
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center text-white px-4">
+              <h1 className="text-3xl font-bold mb-1 drop-shadow-lg">
+                Lisbon Events
+              </h1>
+              <p className="text-base drop-shadow-md mb-3">
+                Discover concerts, food festivals, art shows, and more.
+              </p>
 
-            <nav className="mt-3 sm:mt-0">
-              <ul className="flex flex-wrap gap-5 text-sm font-medium text-[#40210f]">
-                <li><Link href="/calendar" className="hover:text-[#c94917]">Calendar</Link></li>
-                <li><Link href="/events" className="hover:text-[#c94917]">Events</Link></li>
-                <li><Link href="/categories" className="hover:text-[#c94917]">Categories</Link></li>
-                <li><Link href="/submit" className="hover:text-[#c94917]">Submit an event</Link></li>
-              </ul>
-            </nav>
+              {/* Navigation Bar */}
+              <nav className="flex flex-wrap justify-center gap-2">
+                <Link
+                  href="/featured"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Featured
+                </Link>
+                <Link
+                  href="/discover"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Discover
+                </Link>
+                <Link
+                  href="/calendar"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Calendar
+                </Link>
+                <Link
+                  href="/events"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Events
+                </Link>
+                <Link
+                  href="/categories"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Categories
+                </Link>
+                <Link
+                  href="/submit"
+                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                >
+                  Submit
+                </Link>
+              </nav>
+            </div>
           </div>
         </header>
 
-        {/* Main */}
-        <main className="flex-1">{children}</main>
+        {/* ──────── Main Page Content ──────── */}
+        <main className="max-w-6xl mx-auto px-4 py-8 flex-1">{children}</main>
 
-        {/* Footer with tiled texture */}
+        {/* ──────── Tan Tile Footer (Bottom Section) ──────── */}
         <footer className="mt-12">
           <div className="relative">
+            {/* 🔸 Fallback: tile-lisbon or event image */}
             <div
               className="absolute inset-0 opacity-[0.08]"
               style={{
-                backgroundImage: "url('/images/tile-lisbon.jpg')",
+                backgroundImage:
+                  "url('/images/tile-lisbon.jpg'), url('/event-images/GmailLisboaEvents0510202519102025/unnamed(1).jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -62,10 +123,12 @@ export default function RootLayout({
                     Quick Links
                   </div>
                   <ul className="space-y-1 text-sm">
+                    <li><Link href="/featured">Featured</Link></li>
+                    <li><Link href="/discover">Discover</Link></li>
                     <li><Link href="/calendar">Calendar</Link></li>
                     <li><Link href="/events">Events</Link></li>
                     <li><Link href="/categories">Categories</Link></li>
-                    <li><Link href="/submit">Submit an event</Link></li>
+                    <li><Link href="/submit">Submit an Event</Link></li>
                   </ul>
                 </div>
 
