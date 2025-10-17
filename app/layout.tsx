@@ -1,5 +1,3 @@
-"use client";
-
 import "./globals.css";
 import Link from "next/link";
 import { Metadata } from "next";
@@ -48,42 +46,22 @@ export default function RootLayout({
 
               {/* Navigation Bar */}
               <nav className="flex flex-wrap justify-center gap-2">
-                <Link
-                  href="/featured"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Featured
-                </Link>
-                <Link
-                  href="/discover"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Discover
-                </Link>
-                <Link
-                  href="/calendar"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Calendar
-                </Link>
-                <Link
-                  href="/events"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Events
-                </Link>
-                <Link
-                  href="/categories"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Categories
-                </Link>
-                <Link
-                  href="/submit"
-                  className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
-                >
-                  Submit
-                </Link>
+                {[
+                  { name: "Featured", href: "/featured" },
+                  { name: "Discover", href: "/discover" },
+                  { name: "Calendar", href: "/calendar" },
+                  { name: "Events", href: "/events" },
+                  { name: "Categories", href: "/categories" },
+                  { name: "Submit", href: "/submit" },
+                ].map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="bg-white text-[#40210f] px-3 py-1.5 rounded-full font-semibold hover:bg-orange-100 transition"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
               </nav>
             </div>
           </div>
