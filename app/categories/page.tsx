@@ -8,6 +8,7 @@ import FilterBar from "@/components/FilterBar";
 
 export const dynamic = "force-dynamic";
 
+// ✅ Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -17,9 +18,31 @@ type CategoryData = {
   count: number;
 };
 
-// Helper — normalize category names for fuzzy matching
+// Normalize helper (case + accent insensitive)
 const normalize = (str: string) =>
   str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+
+// ✅ Safe parser for JSON or text arrays
+function parseCategories(value: any): string[] {
+  if (!value) return [];
+  try {
+    // JSON array like ["Music","Theater"]
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.map((v) => String(v).trim());
+    }
+  } catch {
+    // Postgres array-like string {Music,Theater}
+    if (typeof value === "string") {
+      return value
+        .replace(/[{}[\]"]/g, "")
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
+    }
+  }
+  return [];
+}
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -30,7 +53,7 @@ export default function CategoriesPage() {
       try {
         setLoading(true);
 
-        // 1️⃣ Get all approved events
+        // 1️⃣ Fetch all approved events
         const { data: events, error: eventError } = await supabase
           .from("event_submissions")
           .select("categories, status")
@@ -38,7 +61,7 @@ export default function CategoriesPage() {
 
         if (eventError) throw eventError;
 
-        // 2️⃣ Get category catalog
+        // 2️⃣ Fetch master category catalog
         const { data: catalog, error: catError } = await supabase
           .from("category_catalog")
           .select("name")
@@ -49,42 +72,24 @@ export default function CategoriesPage() {
         const validCategories = (catalog || []).map((c) => c.name.trim());
         const normalizedCatalog = validCategories.map(normalize);
 
-        // 3️⃣ Count how many events per category
+        // 3️⃣ Count events per category
         const counts: Record<string, number> = {};
 
         (events || []).forEach((e: any) => {
-          if (!e.categories) return;
-
-          let eventCats: string[] = [];
-
-          // Case 1: Array format
-          if (Array.isArray(e.categories)) {
-            eventCats = e.categories.map((c: string) => c.trim());
-          }
-
-          // Case 2: String like "{Music,Festival}"
-          else if (typeof e.categories === "string" && e.categories.trim() !== "") {
-            eventCats = e.categories
-              .replace(/[{}[\]"]/g, "")
-              .split(",")
-              .map((x) => x.trim())
-              .filter(Boolean);
-          }
-
-          // Tally normalized matches
-          eventCats.forEach((cat: string) => {
+          const parsedCats = parseCategories(e.categories);
+          parsedCats.forEach((cat) => {
             const norm = normalize(cat);
             const idx = normalizedCatalog.indexOf(norm);
             const catName =
               idx >= 0
                 ? validCategories[idx]
-                : validCategories.find((valid) => normalize(valid) === norm) || "Other";
-
+                : validCategories.find((valid) => normalize(valid) === norm) ||
+                  "Other";
             counts[catName] = (counts[catName] || 0) + 1;
           });
         });
 
-        // 4️⃣ Merge all categories (including 0-count ones)
+        // 4️⃣ Merge results (include categories with count = 0)
         const list = validCategories
           .map((name) => ({
             name,
@@ -134,7 +139,7 @@ export default function CategoriesPage() {
             {categories.map((cat) => {
               const slug = cat.name.toLowerCase().replace(/\s+/g, "-");
 
-              // Use .jpeg first, fallback to .jpg, then default
+              // Handle .jpeg/.jpg fallback automatically
               const jpegPath = `/images/${slug}.jpeg`;
               const jpgPath = `/images/${slug}.jpg`;
               const fallbackPath = `/images/default.jpeg`;
@@ -157,11 +162,7 @@ export default function CategoriesPage() {
                         target.srcset = `${jpgPath}, ${fallbackPath}`;
                       }}
                     />
-                    <span className="absolute top-2 right-2 bg-[#c94917] text-white text-xs px-2 py-1 rounded-full shadow-md">
-                      {cat.count}
-                    </span>
                   </div>
-
                   <div className="p-5">
                     <h2 className="text-2xl font-semibold mb-1 text-[#c94917]">
                       {cat.name}
