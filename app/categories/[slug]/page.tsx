@@ -2,94 +2,90 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { useParams } from "next/navigation";
 import EventCard from "@/components/EventCard";
 
-export const dynamic = "force-dynamic";
-
-// ✅ Initialize Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Normalize function for accents and case
-const normalize = (str: string) =>
-  str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim()
-    .toLowerCase();
-
-export default function CategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default function CategoryPage() {
+  const { slug } = useParams();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const category = decodeURIComponent(params.category);
 
   useEffect(() => {
     async function loadCategoryEvents() {
-      try {
-        setLoading(true);
+      setLoading(true);
 
-        // ✅ Match events where category is included in array
-        const { data, error } = await supabase
+      let data: any[] | null = null;
+      let error: any = null;
+
+      // Try a direct query — works if categories is an array column (text[])
+      try {
+        const { data: direct, error: err1 } = await supabase
           .from("event_submissions")
           .select("*")
           .eq("status", "approved")
-          .contains("categories", [category]);
-
-        if (error) throw error;
-
-        // Optional fallback: handle accent or case mismatches
-        if (!data || data.length === 0) {
-          const { data: fallbackData, error: fallbackError } = await supabase
-            .from("event_submissions")
-            .select("*")
-            .eq("status", "approved");
-
-          if (fallbackError) throw fallbackError;
-
-          const normalizedCategory = normalize(category);
-          const filtered = (fallbackData || []).filter((event: any) =>
-            (event.categories || []).some(
-              (cat: string) => normalize(cat) === normalizedCategory
-            )
-          );
-
-          setEvents(filtered);
-        } else {
-          setEvents(data);
-        }
-      } catch (err) {
-        console.error("Error loading category events:", err);
-      } finally {
-        setLoading(false);
+          .contains("categories", [slug]); // Supabase supports array contains
+        data = direct;
+        error = err1;
+      } catch {
+        // fallback to next step
       }
+
+      // If the above fails or returns empty, fall back to ilike
+      if ((!data || data.length === 0) && !error) {
+        const { data: fallback, error: err2 } = await supabase
+          .from("event_submissions")
+          .select("*")
+          .eq("status", "approved")
+          .ilike("categories", `%${slug}%`);
+        data = fallback;
+        error = err2;
+      }
+
+      if (!error && data) {
+        // Final safeguard: normalize arrays if categories are in string form
+        const filtered = data.filter((e) => {
+          const cats =
+            Array.isArray(e.categories)
+              ? e.categories.map((c) => c.toLowerCase())
+              : typeof e.categories === "string"
+              ? e.categories
+                  .replace(/[{}"]/g, "")
+                  .split(",")
+                  .map((x) => x.trim().toLowerCase())
+              : [];
+          return cats.includes(slug.toLowerCase());
+        });
+
+        setEvents(filtered);
+      }
+      setLoading(false);
     }
 
     loadCategoryEvents();
-  }, [category]);
+  }, [slug]);
 
   return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f]">
-      <section className="max-w-6xl mx-auto px-4 py-10">
-        <h1 className="text-4xl font-bold mb-6 text-[#c94917] text-center capitalize">
-          {category} Events
+    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
+      <section className="max-w-5xl mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917] capitalize">
+          {slug.replace(/-/g, " ")} Events in Lisbon
         </h1>
 
         {loading ? (
-          <p className="text-center text-gray-600 italic">Loading events…</p>
+          <p className="text-center text-gray-600 mt-10">Loading events…</p>
         ) : events.length === 0 ? (
-          <p className="text-center mt-10 text-gray-600 italic">
+          <p className="text-center text-gray-600 italic mt-10">
             No events found for this category.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-             {events.map((event) => (
-          <EventCard key={event.id} e={event} />
-          ))}
+          <div className="flex flex-col gap-6 mt-8">
+            {events.map((event) => (
+              <EventCard key={event.id} e={event} />
+            ))}
           </div>
         )}
       </section>
