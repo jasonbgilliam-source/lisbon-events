@@ -5,6 +5,8 @@ import dayjs from "dayjs";
 import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
 import Link from "next/link";
+import EventCard from "@/components/EventCard";
+
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -109,31 +111,11 @@ export default function FeaturedPage() {
               🎉 Today’s Featured Events in Lisbon
             </h1>
 
-            <div className="flex flex-col gap-6 mt-8">
-              {events.map((e) => {
-                const expanded = expandedId === String(e.id);
-
-                let imgSrc: string;
-                if (e.image_url && e.image_url.trim() !== "") {
-                  imgSrc = e.image_url;
-                } else if (e.youtube_url && getYouTubeThumbnail(e.youtube_url)) {
-                  imgSrc = getYouTubeThumbnail(e.youtube_url)!;
-                } else if (e.spotify_url && getSpotifyThumbnail(e.spotify_url)) {
-                  imgSrc = getSpotifyThumbnail(e.spotify_url)!;
-                } else if (e.category) {
-                  imgSrc = `/images/${e.category.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
-                } else {
-                  imgSrc = "/images/default.jpeg";
-                }
-
-                return (
-                  <div
-                    key={e.id}
-                    onClick={() => setExpandedId(expanded ? null : String(e.id))}
-                    className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
-                      expanded ? "scale-[1.02] bg-orange-50" : ""
-                    }`}
-                  >
+                    <div className="flex flex-col gap-6 mt-8">
+                      {events.map((e) => (
+                        <EventCard key={e.id} e={e} />
+                      ))}
+                    </div>
                     <div className="relative w-full sm:w-56 h-40 sm:h-auto">
                       <Image
                         src={imgSrc}
