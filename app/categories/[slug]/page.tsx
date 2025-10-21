@@ -57,7 +57,9 @@ export default function CategoryPage() {
                   .split(",")
                   .map((x) => x.trim().toLowerCase())
               : [];
-          return cats.includes(slug.toLowerCase());
+         return cats.includes(
+            Array.isArray(slug) ? slug[0].toLowerCase() : slug.toLowerCase()
+          );
         });
 
         setEvents(filtered);
