@@ -18,66 +18,67 @@ export default function CategoryPage() {
     async function loadCategoryEvents() {
       setLoading(true);
 
-      let data: any[] | null = null;
-      let error: any = null;
+      const activeSlug = Array.isArray(slug) ? slug[0].toLowerCase() : slug.toLowerCase();
 
-      // Try a direct query — works if categories is an array column (text[])
-      try {
-        const { data: direct, error: err1 } = await supabase
-          .from("event_submissions")
-          .select("*")
-          .eq("status", "approved")
-          .contains("categories", [slug]); // Supabase supports array contains
-        data = direct;
-        error = err1;
-      } catch {
-        // fallback to next step
+      // --- Fetch all approved events first ---
+      const { data, error } = await supabase
+        .from("event_submissions")
+        .select("*")
+        .eq("status", "approved");
+
+      if (error) {
+        console.error("Error fetching events:", error);
+        setLoading(false);
+        return;
       }
 
-      // If the above fails or returns empty, fall back to ilike
-      if ((!data || data.length === 0) && !error) {
-        const { data: fallback, error: err2 } = await supabase
-          .from("event_submissions")
-          .select("*")
-          .eq("status", "approved")
-          .ilike("categories", `%${slug}%`);
-        data = fallback;
-        error = err2;
-      }
+      // --- Normalize + filter both category & categories ---
+      const filtered = (data || []).filter((e) => {
+        const cats: string[] = [];
 
-      if (!error && data) {
-        // Final safeguard: normalize arrays if categories are in string form
-        const filtered = data.filter((e) => {
-          const cats =
-            Array.isArray(e.categories)
-              ? e.categories.map((c) => c.toLowerCase())
-              : typeof e.categories === "string"
-              ? e.categories
-                  .replace(/[{}"]/g, "")
-                  .split(",")
-                  .map((x) => x.trim().toLowerCase())
-              : [];
-         return cats.includes(
-            Array.isArray(slug) ? slug[0].toLowerCase() : slug.toLowerCase()
-          );
-        });
+        // Legacy single category field
+        if (e.category && typeof e.category === "string") {
+          cats.push(e.category.toLowerCase());
+        }
 
-        setEvents(filtered);
-      }
+        // New categories array or string field
+        if (Array.isArray(e.categories)) {
+          cats.push(...e.categories.map((c: string) => c.toLowerCase()));
+        } else if (typeof e.categories === "string" && e.categories.trim() !== "") {
+          try {
+            // Handle Postgres array string or JSON-like text
+            const parsed =
+              e.categories.trim().startsWith("[")
+                ? JSON.parse(e.categories)
+                : e.categories
+                    .replace(/[{}"]/g, "")
+                    .split(",")
+                    .map((x: string) => x.trim());
+            cats.push(...parsed.map((c: string) => c.toLowerCase()));
+          } catch {
+            /* ignore parse error */
+          }
+        }
+
+        return cats.includes(activeSlug);
+      });
+
+      setEvents(filtered);
       setLoading(false);
     }
 
     loadCategoryEvents();
   }, [slug]);
 
+  const readableSlug = ((Array.isArray(slug) ? slug[0] : slug)
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase()));
+
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-5xl mx-auto">
-       <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
-          {((Array.isArray(slug) ? slug[0] : slug)
-            .replace(/-/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase()))}{" "}
-          Events in Lisbon
+        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
+          {readableSlug} Events in Lisbon
         </h1>
 
         {loading ? (
@@ -89,7 +90,7 @@ export default function CategoryPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {events.map((event) => (
-              <EventCard key={event.id} e={event} />
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
         )}
