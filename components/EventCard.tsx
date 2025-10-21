@@ -18,7 +18,7 @@ export type EventItem = {
   city?: string;
   price?: string;
   age?: string;
-  category?: string;             // legacy single value
+  category?: string;              // legacy single value
   categories?: string[] | string; // new array field
   image_url?: string;
   source_url?: string;
@@ -32,57 +32,35 @@ export default function EventCard({ e }: { e: EventItem }) {
   const [expanded, setExpanded] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>("/images/default.jpeg");
 
-  // 🖼️ Select the best image available
+  // 🖼️ Choose best available image
   useEffect(() => {
-    async function pickImage() {
-      // 1️⃣ explicit image URL
-      if (e.image_url && e.image_url.trim() !== "") {
-        setPreviewImage(e.image_url);
-        return;
+    function getImage(): string {
+      // 1️⃣ Local folder + image file
+      if (e.image_url && e.source_folder) {
+        const folder = e.source_folder.replace(/^\.?\/*/, "");
+        const filename = e.image_url.replace(/^\.?\/*/, "");
+        return `/${folder}${folder.endsWith("/") ? "" : "/"}${filename}`;
       }
 
-      // 2️⃣ YouTube thumbnail
+      // 2️⃣ Absolute external URL
+      if (e.image_url && e.image_url.startsWith("http")) return e.image_url;
+
+      // 3️⃣ YouTube thumbnail
       if (e.youtube_url) {
         const m = e.youtube_url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
-        if (m) {
-          setPreviewImage(`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`);
-          return;
-        }
+        if (m) return `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
       }
 
-      // 3️⃣ Spotify placeholder
-      if (e.spotify_url) {
-        setPreviewImage("/images/spotify-cover.jpeg");
-        return;
-      }
-
-      // 4️⃣ Microlink screenshot
-      if (e.source_url) {
-        try {
-          const res = await fetch(
-            `https://api.microlink.io?url=${encodeURIComponent(
-              e.source_url
-            )}&screenshot=true&meta=false`
-          );
-          const data = await res.json();
-          if (data?.data?.screenshot?.url) {
-            setPreviewImage(data.data.screenshot.url);
-            return;
-          }
-        } catch {
-          // ignore fetch failures
-        }
-      }
+      // 4️⃣ Spotify cover
+      if (e.spotify_url) return "/images/spotify-cover.jpeg";
 
       // 5️⃣ Category or categories array fallback
       let catName: string | undefined;
-
       if (e.category && typeof e.category === "string" && e.category.trim() !== "") {
         catName = e.category;
       } else if (Array.isArray(e.categories) && e.categories.length > 0) {
         catName = e.categories[0];
       } else if (typeof e.categories === "string" && e.categories.includes("{")) {
-        // handle Postgres-style array string "{Music,Markets}"
         const arr = e.categories
           .replace(/[{}"]/g, "")
           .split(",")
@@ -90,23 +68,19 @@ export default function EventCard({ e }: { e: EventItem }) {
           .filter(Boolean);
         if (arr.length > 0) catName = arr[0];
       }
-
-      if (catName) {
-        const base = `/images/${catName.toLowerCase().replace(/\s+/g, "-")}`;
-        setPreviewImage(`${base}.jpeg`);
-        return;
-      }
+      if (catName)
+        return `/images/${catName.toLowerCase().replace(/\s+/g, "-")}.jpeg`;
 
       // 6️⃣ Default placeholder
-      setPreviewImage("/images/default.jpeg");
+      return "/images/default.jpeg";
     }
 
-    pickImage();
+    setPreviewImage(getImage());
   }, [
     e.image_url,
+    e.source_folder,
     e.youtube_url,
     e.spotify_url,
-    e.source_url,
     e.category,
     e.categories,
   ]);
@@ -130,6 +104,7 @@ export default function EventCard({ e }: { e: EventItem }) {
         expanded ? "scale-[1.02] bg-orange-50" : ""
       }`}
     >
+      {/* 🖼️ Event image */}
       <div className="relative w-full sm:w-56 h-40 sm:h-auto">
         <Image
           src={previewImage}
@@ -140,8 +115,8 @@ export default function EventCard({ e }: { e: EventItem }) {
         />
       </div>
 
+      {/* 📋 Event info */}
       <div className="flex-1 p-5">
-        {/* Title + expand arrow */}
         <div className="flex justify-between items-center mb-1">
           <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
           <span
@@ -153,7 +128,6 @@ export default function EventCard({ e }: { e: EventItem }) {
           </span>
         </div>
 
-        {/* Core info */}
         <p className="text-sm text-gray-700 mb-1">📍 {loc || "Location TBA"}</p>
         <p className="text-sm text-gray-700 mb-1">
           🕒 {formatDate(start)}
@@ -166,7 +140,6 @@ export default function EventCard({ e }: { e: EventItem }) {
         )}
         {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
 
-        {/* Description */}
         {e.description && (
           <p
             className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
@@ -177,7 +150,7 @@ export default function EventCard({ e }: { e: EventItem }) {
           </p>
         )}
 
-        {/* Category badges */}
+        {/* 🏷️ Category badges */}
         {Array.isArray(e.categories) && e.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
             {e.categories.map((cat: string) => (
@@ -193,7 +166,7 @@ export default function EventCard({ e }: { e: EventItem }) {
           </div>
         )}
 
-        {/* Expanded links */}
+        {/* 🔗 External links */}
         {expanded && (
           <div className="mt-3 flex flex-wrap gap-3">
             {e.youtube_url && (
