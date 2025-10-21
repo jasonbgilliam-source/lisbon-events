@@ -90,7 +90,7 @@ export default function CategoryPage() {
         ) : (
           <div className="flex flex-col gap-6 mt-8">
             {events.map((event) => (
-              <EventCard key={event.id} event={event} />
+              <EventCard key={event.id} e={event} />
             ))}
           </div>
         )}
