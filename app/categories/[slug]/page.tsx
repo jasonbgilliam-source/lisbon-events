@@ -73,8 +73,11 @@ export default function CategoryPage() {
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
       <section className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917] capitalize">
-          {(Array.isArray(slug) ? slug[0] : slug).replace(/-/g, " ")} Events in Lisbon
+       <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917]">
+          {((Array.isArray(slug) ? slug[0] : slug)
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase()))}{" "}
+          Events in Lisbon
         </h1>
 
         {loading ? (
