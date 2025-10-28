@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import Link from "next/link";
 import { Metadata } from "next";
