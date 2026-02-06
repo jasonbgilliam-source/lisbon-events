@@ -31,7 +31,7 @@ export default function SubmissionsAdminPage() {
       const text = await res.text();
       throw new Error(
         `Expected JSON but got ${res.status} ${res.statusText}. ` +
-        `Check that /api/submissions/list exists. First bytes: ${text.slice(0, 120)}`
+        `Check that /api/admin/submissions/list exists. First bytes: ${text.slice(0, 120)}`
       );
     }
     return res.json();
@@ -41,7 +41,7 @@ export default function SubmissionsAdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/submissions/list", { cache: "no-store" });
+      const res = await fetch("/api/admin/submissions/list", { cache: "no-store" });
       const j = await expectJSON(res);
       if (!res.ok) throw new Error(j.error || res.statusText);
       setSubs(j.items || []);
@@ -76,7 +76,7 @@ export default function SubmissionsAdminPage() {
 
   async function approve(id: number) {
     try {
-      await postJSON("/api/submissions/approve", { id, reviewer: "admin", notes: "" });
+      await postJSON("/api/admin/submissions/approve", { id, reviewer: "admin", notes: "" });
       await load();
       alert("Approved + published");
     } catch (e: any) {
@@ -87,7 +87,7 @@ export default function SubmissionsAdminPage() {
   async function reject(id: number) {
     try {
       const notes = prompt("Optional note for rejection") || "";
-      await postJSON("/api/submissions/reject", { id, reviewer: "admin", notes });
+      await postJSON("/api/admin/submissions/reject", { id, reviewer: "admin", notes });
       await load();
       alert("Rejected");
     } catch (e: any) {
@@ -100,7 +100,7 @@ export default function SubmissionsAdminPage() {
     <main className="p-6">
       <p className="text-red-700 font-medium">Error: {error}</p>
       <p className="text-sm mt-2">
-        Tip: open <code>/api/submissions/list</code> directly in your browser.
+        Tip: open <code>/api/admin/submissions/list</code> directly in your browser.
         If that shows HTML or 404, the API route path or build is wrong.
       </p>
     </main>
