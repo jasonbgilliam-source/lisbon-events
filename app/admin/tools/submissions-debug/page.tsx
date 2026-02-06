@@ -58,7 +58,9 @@ export default function SubmissionsAdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminGetJSON<{ items: Submission[] }>("/api/admin/submissions/list");
+      const data = await adminGetJSON<{ items: Submission[] }>(
+        "/api/admin/submissions/list"
+      );
       setSubs(data.items || []);
     } catch (e: any) {
       setError(e?.message || "Failed to load");
@@ -107,15 +109,17 @@ export default function SubmissionsAdminPage() {
       <main className="p-6">
         <p className="text-red-700 font-medium">Error: {error}</p>
         <p className="text-sm mt-2">
-          Tip: open <code>/api/admin/submissions/list</code> directly in your browser.
-          If that shows 401, your admin token env vars aren’t set.
+          Tip: open <code>/api/admin/submissions/list</code> directly in your
+          browser. If that shows 401, your admin token env vars aren’t set.
         </p>
       </main>
     );
 
   return (
     <main className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">Pending Event Submissions</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        Pending Event Submissions
+      </h1>
 
       {subs.length === 0 ? <p>No pending submissions 🎉</p> : null}
 
@@ -133,20 +137,33 @@ export default function SubmissionsAdminPage() {
                   {whenText(s)} {whereText(s) ? `@ ${whereText(s)}` : ""}
                 </div>
 
-                {s.description ? <p className="mt-2 text-sm">{s.description}</p> : null}
+                {s.description ? (
+                  <p className="mt-2 text-sm">{s.description}</p>
+                ) : null}
 
                 {sourceLink(s) ? (
-                  <a className="text-sm underline" href={sourceLink(s)} target="_blank" rel="noreferrer">
+                  <a
+                    className="text-sm underline"
+                    href={sourceLink(s)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Source
                   </a>
                 ) : null}
               </div>
 
               <div className="flex gap-2 shrink-0">
-                <button className="border px-3 py-1 rounded" onClick={() => approve(s.id)}>
+                <button
+                  className="border px-3 py-1 rounded"
+                  onClick={() => approve(s.id)}
+                >
                   Approve
                 </button>
-                <button className="border px-3 py-1 rounded" onClick={() => reject(s.id)}>
+                <button
+                  className="border px-3 py-1 rounded"
+                  onClick={() => reject(s.id)}
+                >
                   Reject
                 </button>
               </div>
