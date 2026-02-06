@@ -46,7 +46,7 @@ export default function CategoriesAdminPage() {
   async function addOrRename() {
     if (!newName.trim()) { alert("Enter a category name"); return; }
     try {
-      await adminPost("/api/categories/upsert", { name: newName.trim(), renameFrom: renameFrom.trim() || undefined });
+      await adminPost("/api/admin/categories/upsert", { name: newName.trim(), renameFrom: renameFrom.trim() || undefined });
       setNewName(""); setRenameFrom("");
       await load();
       alert("Saved");
@@ -58,7 +58,7 @@ export default function CategoriesAdminPage() {
   async function remove(name: string) {
     if (!confirm(`Delete category "${name}"?`)) return;
     try {
-      await adminPost("/api/categories/delete", { name });
+      await adminPost("/api/admin/categories/delete", { name });
       await load();
     } catch (e: any) {
       alert(e.message || "Failed to delete");
