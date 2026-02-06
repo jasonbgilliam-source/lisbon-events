@@ -1,7 +1,7 @@
 "use client";
-import { adminPostJSON } from "@/lib/adminFetch";
 
 import * as React from "react";
+import { adminPostJSON } from "@/lib/adminFetch";
 
 export default function AddEventPage() {
   const [busy, setBusy] = React.useState(false);
@@ -54,17 +54,16 @@ export default function AddEventPage() {
       <h1 className="text-2xl font-semibold mb-4">Add Event</h1>
 
       <form onSubmit={handleAddEventSubmit} className="space-y-4">
-        {/* Required */}
         <div>
           <label className="block text-sm font-medium">Title *</label>
           <input name="title" className="border p-2 w-full" required />
         </div>
+
         <div>
           <label className="block text-sm font-medium">Start (date/time) *</label>
           <input name="start" type="datetime-local" className="border p-2 w-full" required />
         </div>
 
-        {/* Optional */}
         <div>
           <label className="block text-sm font-medium">End (date/time)</label>
           <input name="end" type="datetime-local" className="border p-2 w-full" />
@@ -100,11 +99,7 @@ export default function AddEventPage() {
           <div><label className="block text-sm font-medium">Recurrence Note</label><input name="recurrence_note" className="border p-2 w-full" /></div>
         </div>
 
-        <button
-          type="submit"
-          disabled={busy}
-          className="px-4 py-2 border rounded"
-        >
+        <button type="submit" disabled={busy} className="px-4 py-2 border rounded">
           {busy ? "Submitting…" : "Submit"}
         </button>
 
