@@ -79,7 +79,7 @@ export default function RootLayout({
               className="absolute inset-0 opacity-[0.08]"
               style={{
                 backgroundImage:
-                  "url('/images/tile-lisbon.jpg'), url('/event-images/GmailLisboaEvents0510202519102025/unnamed(1).jpg')",
+                  "url('/images/tile-lisbon.jpg'), url('/event-images/GmailLisboaEvents0510202519102025/unnamed1.jpg')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
