@@ -2,6 +2,9 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 function toIso(s?: string | null) {
   if (!s) return null;
   const d = new Date(s);
@@ -9,13 +12,15 @@ function toIso(s?: string | null) {
   return d.toISOString();
 }
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
 async function allowedCategories(): Promise<Set<string>> {
   const supabase = supabaseServer();
   const { data, error } = await supabase.from("category_catalog").select("name");
-  if (error) throw new Error(error.message);
+
+  if (error) {
+    console.error("❌ allowedCategories error:", error);
+    throw new Error(error.message);
+  }
+
   return new Set((data || []).map((r: any) => String(r.name)));
 }
 
@@ -23,31 +28,53 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
+    // Helpful debug: what did the client actually send?
+    console.log("🧾 submit-event payload keys:", Object.keys(body || {}));
+
     const title = (body.title || "").trim();
     const description = (body.description || "").trim();
     const location_name = (body.location_name || "").trim();
     const organizer_email = (body.organizer_email || "").trim();
-    const starts_at = toIso(body.starts_at || body.start);
+
+    // Accept either starts_at/ends_at or start/end
+    const starts_at = toIso(body.starts_at ?? body.start);
+    const ends_at = toIso(body.ends_at ?? body.end);
+
+    console.log("📌 parsed fields:", {
+      title: !!title,
+      description: !!description,
+      location_name: !!location_name,
+      organizer_email: !!organizer_email,
+      starts_at,
+      ends_at,
+    });
 
     if (!title || !description || !location_name || !organizer_email || !starts_at) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const ends_at = toIso(body.ends_at || body.end);
     const all_day =
-      String(body.all_day ?? "").trim().toLowerCase() === "true" || body.all_day === true;
+      String(body.all_day ?? "")
+        .trim()
+        .toLowerCase() === "true" || body.all_day === true;
 
     // Category from catalog only
     const category = (body.category ?? "").toString().trim();
-    if (!category) return NextResponse.json({ error: "Category is required" }, { status: 400 });
-    const allowed = await allowedCategories();
-    if (!allowed.has(category)) {
-      return NextResponse.json({ error: "Invalid category. Please select from the list." }, { status: 400 });
+    if (!category) {
+      return NextResponse.json({ error: "Category is required" }, { status: 400 });
     }
 
-    const { error } = await supabaseServer()
-      .from("event_submissions")
-      .insert([{
+    const allowed = await allowedCategories();
+    if (!allowed.has(category)) {
+      return NextResponse.json(
+        { error: "Invalid category. Please select from the list." },
+        { status: 400 }
+      );
+    }
+
+    const supabase = supabaseServer();
+    const { error } = await supabase.from("event_submissions").insert([
+      {
         title,
         description,
         starts_at,
@@ -65,11 +92,17 @@ export async function POST(req: Request) {
         spotify_url: body.spotify_url ?? null,
         is_free: body.is_free ?? false,
         status: "pending",
-      }]);
+      },
+    ]);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("❌ insert event_submissions error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
     return NextResponse.json({ ok: true });
   } catch (e: any) {
+    console.error("❌ submit-event exception:", e);
     return NextResponse.json({ error: e?.message ?? "unknown error" }, { status: 500 });
   }
 }
