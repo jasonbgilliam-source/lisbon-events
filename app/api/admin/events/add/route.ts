@@ -1,4 +1,4 @@
-// app/api/add-event/route.ts
+// app/api/admin/events/add/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 
