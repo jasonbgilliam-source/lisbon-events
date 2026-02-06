@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/adminAuth";
 // app/api/admin/events/add/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
@@ -34,6 +35,9 @@ function toIsoOrThrow(s: string) {
 }
 
 export async function POST(req: Request) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const body = (await req.json()) as EventForm;
 

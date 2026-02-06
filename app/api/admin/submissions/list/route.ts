@@ -1,10 +1,14 @@
+import { requireAdmin } from "@/lib/adminAuth";
 // app/api/submissions/list/route.ts
-import { supabaseServer } from "../../../../lib/supabaseServer";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(req: Request) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   const supabase = supabaseServer();
 
   // Grab latest 200, then keep only "pending" (tolerant of null/empty)

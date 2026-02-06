@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/adminAuth";
 // app/api/categories/delete/route.ts
 import { supabaseServer } from "@/lib/supabaseServer";
 
@@ -14,6 +15,9 @@ function assertAdmin(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   const authErr = assertAdmin(req);
   if (authErr) {
     return new Response(JSON.stringify({ error: authErr }), {

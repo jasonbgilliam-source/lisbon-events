@@ -1,4 +1,5 @@
 "use client";
+import { adminPostJSON } from "@/lib/adminFetch";
 
 import * as React from "react";
 
@@ -29,24 +30,11 @@ export default function CategoriesAdminPage() {
 
   React.useEffect(() => { load(); }, []);
 
-  async function adminPost(url: string, body: any) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-key": adminKey || "",
-      },
-      body: JSON.stringify(body),
-    });
-    const j = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(j.error || res.statusText);
-    return j;
-  }
 
   async function addOrRename() {
     if (!newName.trim()) { alert("Enter a category name"); return; }
     try {
-      await adminPost("/api/admin/categories/upsert", { name: newName.trim(), renameFrom: renameFrom.trim() || undefined });
+      await adminPostJSON("/api/admin/categories/upsert", { name: newName.trim(), renameFrom: renameFrom.trim() || undefined });
       setNewName(""); setRenameFrom("");
       await load();
       alert("Saved");
@@ -58,7 +46,7 @@ export default function CategoriesAdminPage() {
   async function remove(name: string) {
     if (!confirm(`Delete category "${name}"?`)) return;
     try {
-      await adminPost("/api/admin/categories/delete", { name });
+      await adminPostJSON("/api/admin/categories/delete", { name });
       await load();
     } catch (e: any) {
       alert(e.message || "Failed to delete");

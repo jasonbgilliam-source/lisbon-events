@@ -1,4 +1,5 @@
 "use client";
+import { adminGetJSON, adminPostJSON } from "@/lib/adminFetch";
 
 import * as React from "react";
 
@@ -41,7 +42,7 @@ export default function SubmissionsAdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin/submissions/list", { cache: "no-store" });
+      const data = await adminGetJSON<{ items: any[] }>("/api/admin/submissions/list");
       const j = await expectJSON(res);
       if (!res.ok) throw new Error(j.error || res.statusText);
       setSubs(j.items || []);
@@ -54,29 +55,10 @@ export default function SubmissionsAdminPage() {
 
   React.useEffect(() => { load(); }, []);
 
-  async function postJSON(url: string, body: any) {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      cache: "no-store",
-    });
-    const ct = res.headers.get("content-type") || "";
-    if (!ct.includes("application/json")) {
-      const text = await res.text();
-      throw new Error(
-        `Expected JSON but got ${res.status} ${res.statusText} from ${url}. ` +
-        `First bytes: ${text.slice(0, 120)}`
-      );
-    }
-    const j = await res.json();
-    if (!res.ok) throw new Error(j.error || res.statusText);
-    return j;
-  }
 
   async function approve(id: number) {
     try {
-      await postJSON("/api/admin/submissions/approve", { id, reviewer: "admin", notes: "" });
+      await adminPostJSON("/api/admin/submissions/approve", { id, reviewer: "admin", notes: "" });
       await load();
       alert("Approved + published");
     } catch (e: any) {
@@ -87,7 +69,7 @@ export default function SubmissionsAdminPage() {
   async function reject(id: number) {
     try {
       const notes = prompt("Optional note for rejection") || "";
-      await postJSON("/api/admin/submissions/reject", { id, reviewer: "admin", notes });
+      await adminPostJSON("/api/admin/submissions/reject", { id, reviewer: "admin", notes });
       await load();
       alert("Rejected");
     } catch (e: any) {

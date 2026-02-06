@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/adminAuth";
 // app/api/submissions/reject/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "../../../../lib/supabaseServer";
@@ -5,6 +6,9 @@ import { supabaseServer } from "../../../../lib/supabaseServer";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { id, reviewer, notes } = (await req.json()) as {
       id: string; reviewer?: string; notes?: string;

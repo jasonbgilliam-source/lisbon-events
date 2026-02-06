@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/lib/adminAuth";
 // app/api/submissions/approve/route.ts
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
@@ -6,6 +7,9 @@ import { mapSubmissionToEvent } from "@/lib/submissionMapper";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
+  const denied = requireAdmin(req);
+  if (denied) return denied;
+
   try {
     const { id, reviewer, notes } = await req.json();
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });

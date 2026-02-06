@@ -1,4 +1,5 @@
 "use client";
+import { adminPostJSON } from "@/lib/adminFetch";
 
 import * as React from "react";
 
@@ -37,14 +38,7 @@ export default function AddEventPage() {
         return;
       }
 
-      const res = await fetch("/api/admin/events/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j.error ?? res.statusText);
+      await adminPostJSON("/api/admin/events/add", payload);
 
       setMessage("✅ Event submitted!");
       (e.currentTarget as HTMLFormElement).reset();
