@@ -6,6 +6,14 @@ import { buildLisbonGeocodeQuery, geocodeLisbonWithCache } from "@/lib/geocoding
 
 export const dynamic = "force-dynamic";
 
+function slugify(input: string) {
+  return input
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 export async function POST(req: Request) {
   const denied = requireAdmin(req);
   if (denied) return denied;
@@ -19,7 +27,6 @@ export async function POST(req: Request) {
 
     const supabase = supabaseServer();
 
-    // 1) Fetch submission
     const { data: rows, error: fetchErr } = await supabase
       .from("event_submissions")
       .select("*")
@@ -31,10 +38,9 @@ export async function POST(req: Request) {
     const sub = rows?.[0];
     if (!sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
 
-    // 2) Map submission -> event payload
     const ev = mapSubmissionToEvent(sub);
 
-    // 3) Insert into events (return inserted id so we can update geocode fields)
+    // Insert event WITHOUT slug first, so we can safely build a unique slug using the inserted id.
     const { data: inserted, error: insErr } = await supabase
       .from("events")
       .insert([
@@ -54,8 +60,6 @@ export async function POST(req: Request) {
           organizer_email: ev.organizer_email,
           youtube_url: ev.youtube_url,
           spotify_url: ev.spotify_url,
-
-          // Optional: set defaults for geocode status columns if you added them
           geocode_status: "unprocessed",
         },
       ])
@@ -67,7 +71,14 @@ export async function POST(req: Request) {
     const eventId = inserted?.id;
     if (!eventId) return NextResponse.json({ error: "Event insert failed" }, { status: 500 });
 
-    // 4) Geocode (non-blocking)
+    // Create a stable unique slug: "<id>-<slugified-title>"
+    const baseTitle = typeof ev.title === "string" && ev.title.trim().length > 0 ? ev.title : "event";
+    const slug = `${eventId}-${slugify(baseTitle)}`;
+
+    // Update the new event with slug
+    await supabase.from("events").update({ slug }).eq("id", eventId);
+
+    // Geocode (non-blocking)
     const geocodeQuery = buildLisbonGeocodeQuery({
       locationName: ev.location_name ?? null,
       address: ev.address ?? null,
@@ -80,7 +91,6 @@ export async function POST(req: Request) {
     });
 
     if (geo.ok) {
-      // Update event with lat/lng
       await supabase
         .from("events")
         .update({
@@ -95,7 +105,6 @@ export async function POST(req: Request) {
         })
         .eq("id", eventId);
     } else {
-      // Don't block approval; just mark failed
       await supabase
         .from("events")
         .update({
@@ -108,7 +117,6 @@ export async function POST(req: Request) {
         .eq("id", eventId);
     }
 
-    // 5) Mark submission approved
     const { error: upErr } = await supabase
       .from("event_submissions")
       .update({
@@ -121,7 +129,7 @@ export async function POST(req: Request) {
 
     if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
 
-    return NextResponse.json({ ok: true, eventId, geocoded: geo.ok });
+    return NextResponse.json({ ok: true, eventId, slug, geocoded: geo.ok });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "failed" }, { status: 500 });
   }
