@@ -1,5 +1,4 @@
 import { requireAdmin } from "@/lib/adminAuth";
-// app/api/submissions/list/route.ts
 import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
@@ -11,7 +10,6 @@ export async function GET(req: Request) {
 
   const supabase = supabaseServer();
 
-  // Grab latest 200, then keep only "pending" (tolerant of null/empty)
   const { data, error } = await supabase
     .from("event_submissions")
     .select("*")

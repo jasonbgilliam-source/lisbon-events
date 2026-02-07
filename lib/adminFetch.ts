@@ -1,11 +1,7 @@
-// lib/adminFetch.ts
-// Client-side helper for calling /api/admin/* routes.
-// Requires NEXT_PUBLIC_ADMIN_API_TOKEN to be set in .env.local.
+// Cookie-based admin fetch helpers (no tokens in browser JS)
 
-export function adminHeaders(): HeadersInit {
-  const token = process.env.NEXT_PUBLIC_ADMIN_API_TOKEN || "";
-  return token ? { "x-admin-token": token } : {};
-}
+const CSRF_HEADER_NAME = "x-le-csrf";
+const CSRF_HEADER_VALUE = "1";
 
 async function parseJsonSafe(text: string) {
   try {
@@ -18,16 +14,17 @@ async function parseJsonSafe(text: string) {
 export async function adminGetJSON<T = any>(url: string): Promise<T> {
   const res = await fetch(url, {
     method: "GET",
-    headers: { ...adminHeaders() },
+    credentials: "include",
     cache: "no-store",
   });
 
   const text = await res.text();
-  const data: any = await parseJsonSafe(text);
+  const data = await parseJsonSafe(text);
 
   if (!res.ok) {
     const msg =
-      data?.error ||
+      (data as any)?.error ||
+      (data as any)?.message ||
       `Admin request failed (${res.status})`;
     throw new Error(msg);
   }
@@ -40,18 +37,20 @@ export async function adminPostJSON<T = any>(url: string, body: unknown): Promis
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      ...adminHeaders(),
+      [CSRF_HEADER_NAME]: CSRF_HEADER_VALUE,
     },
+    credentials: "include",
     body: JSON.stringify(body),
     cache: "no-store",
   });
 
   const text = await res.text();
-  const data: any = await parseJsonSafe(text);
+  const data = await parseJsonSafe(text);
 
   if (!res.ok) {
     const msg =
-      data?.error ||
+      (data as any)?.error ||
+      (data as any)?.message ||
       `Admin request failed (${res.status})`;
     throw new Error(msg);
   }
