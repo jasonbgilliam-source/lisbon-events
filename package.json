@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.25.0",
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@microlink/react": "^5.4.0",
     "@supabase/supabase-js": "^2.45.0",
     "dayjs": "^1.11.10",

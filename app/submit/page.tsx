@@ -1,13 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+type Status = "idle" | "loading" | "success" | "error";
+
+const AUDIENCE_ALL = "All Ages";
+const AUDIENCE_SPECIFIC = ["Family", "Kids", "Teens", "Adults"] as const;
+const AUDIENCE_OPTIONS = [AUDIENCE_ALL, ...AUDIENCE_SPECIFIC] as const;
+
 export default function SubmitEventPage() {
+  const audienceOptions = useMemo(() => AUDIENCE_OPTIONS.slice(), []);
+
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -16,6 +24,10 @@ export default function SubmitEventPage() {
     location_name: "",
     address: "",
     city: "",
+    // ✅ Default is All Ages (exclusive)
+    // We send ONLY ["All Ages"] and let the server expand if it wants.
+    audience: [AUDIENCE_ALL] as string[],
+    // notes-only / legacy
     age: "",
     price: "",
     category: "",
@@ -28,14 +40,13 @@ export default function SubmitEventPage() {
   });
 
   const [categories, setCategories] = useState<string[]>([]);
-  const [status, setStatus] =
-    useState<"idle" | "loading" | "success" | "error">("idle");
+  const [status, setStatus] = useState<Status>("idle");
 
   useEffect(() => {
     async function loadCategories() {
       const { data, error } = await supabase.from("category_catalog").select("name");
       if (error) console.error(error);
-      else setCategories(data.map((c: any) => c.name));
+      else setCategories((data || []).map((c: any) => c.name));
     }
     loadCategories();
   }, []);
@@ -44,17 +55,53 @@ export default function SubmitEventPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  // ✅ Audience logic:
+  // - "All Ages" is exclusive
+  // - Selecting any specific audience removes "All Ages"
+  // - If user deselects all specifics, revert back to ["All Ages"]
+  const toggleAudience = (value: string) => {
+    setForm((prev) => {
+      const current = Array.isArray(prev.audience) ? prev.audience : [];
+
+      if (value === AUDIENCE_ALL) {
+        // If All Ages is clicked, set it as the only selection
+        // (or keep it selected)
+        return { ...prev, audience: [AUDIENCE_ALL] };
+      }
+
+      // Otherwise toggling a specific audience
+      const withoutAllAges = current.filter((x) => x !== AUDIENCE_ALL);
+
+      let next: string[];
+      if (withoutAllAges.includes(value)) {
+        next = withoutAllAges.filter((x) => x !== value);
+      } else {
+        next = [...withoutAllAges, value];
+      }
+
+      // If user removed all specifics, fall back to All Ages
+      if (next.length === 0) next = [AUDIENCE_ALL];
+
+      return { ...prev, audience: next };
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("loading");
+
     try {
+      const payload = { ...form };
+
       const res = await fetch("/api/submit-event", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
+
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Failed to submit");
+
       setStatus("success");
       setForm({
         title: "",
@@ -64,6 +111,7 @@ export default function SubmitEventPage() {
         location_name: "",
         address: "",
         city: "",
+        audience: [AUDIENCE_ALL],
         age: "",
         price: "",
         category: "",
@@ -90,7 +138,6 @@ export default function SubmitEventPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3 text-sm">
-          {/* Title */}
           <div>
             <label className="block font-medium mb-1">Event Title *</label>
             <input
@@ -103,7 +150,6 @@ export default function SubmitEventPage() {
             />
           </div>
 
-          {/* Start / End Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-medium mb-1">Start Date/Time *</label>
@@ -128,7 +174,6 @@ export default function SubmitEventPage() {
             </div>
           </div>
 
-          {/* Venue + City */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-medium mb-1">Venue *</label>
@@ -153,7 +198,6 @@ export default function SubmitEventPage() {
             </div>
           </div>
 
-          {/* Address */}
           <div>
             <label className="block font-medium mb-1">Address</label>
             <input
@@ -165,8 +209,7 @@ export default function SubmitEventPage() {
             />
           </div>
 
-          {/* Price / Free / Age */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-medium mb-1">Price</label>
               <input
@@ -199,19 +242,47 @@ export default function SubmitEventPage() {
                 <option value="true">Yes</option>
               </select>
             </div>
-            <div>
-              <label className="block font-medium mb-1">Age Restriction</label>
-              <input
-                name="age"
-                type="text"
-                value={form.age}
-                onChange={handleChange}
-                className="w-full border border-orange-200 rounded-md p-1.5 focus:ring-1 focus:ring-[#c94917]"
-              />
-            </div>
           </div>
 
-          {/* Organizer Email / Category */}
+          {/* ✅ Audience (exclusive All Ages, no client-side expansion) */}
+          <div>
+            <label className="block font-medium mb-1">Audience</label>
+            <div className="flex flex-wrap gap-2">
+              {audienceOptions.map((a) => {
+                const active = form.audience.includes(a);
+                return (
+                  <button
+                    type="button"
+                    key={a}
+                    onClick={() => toggleAudience(a)}
+                    className={`px-3 py-1 border rounded-full text-sm transition ${
+                      active
+                        ? "bg-[#c94917] text-white border-[#c94917]"
+                        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
+                    }`}
+                  >
+                    {a}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1 text-xs text-gray-600">
+              “All Ages” is a wildcard. Select specific groups (Teens/Adults/etc.) for targeted events.
+            </p>
+          </div>
+
+          <div>
+            <label className="block font-medium mb-1">Age Restriction / Notes</label>
+            <input
+              name="age"
+              type="text"
+              placeholder='Examples: "18+", "PG-13", "Adults only"'
+              value={form.age}
+              onChange={handleChange}
+              className="w-full border border-orange-200 rounded-md p-1.5 focus:ring-1 focus:ring-[#c94917]"
+            />
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-medium mb-1">Organizer Email *</label>
@@ -243,7 +314,6 @@ export default function SubmitEventPage() {
             </div>
           </div>
 
-          {/* URLs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { name: "ticket_url", label: "Ticket URL" },
@@ -264,7 +334,6 @@ export default function SubmitEventPage() {
             ))}
           </div>
 
-          {/* Description */}
           <div>
             <label className="block font-medium mb-1">Description *</label>
             <textarea
@@ -277,7 +346,6 @@ export default function SubmitEventPage() {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={status === "loading"}

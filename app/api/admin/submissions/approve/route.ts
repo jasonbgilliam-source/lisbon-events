@@ -14,6 +14,75 @@ function slugify(input: string) {
     .replace(/(^-|-$)/g, "");
 }
 
+const AUDIENCE_OPTIONS = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
+const AUDIENCE_DEFAULT_EXPANDED = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+
+function stripOuterQuotes(s: string): string {
+  const t = s.trim();
+  if (t.length >= 2 && t.startsWith('"') && t.endsWith('"')) return t.slice(1, -1).trim();
+  return t;
+}
+
+function tryParseJsonArrayString(s: string): string[] | null {
+  const t = s.trim();
+  if (!(t.startsWith("[") && t.endsWith("]"))) return null;
+  try {
+    const parsed = JSON.parse(t);
+    if (Array.isArray(parsed)) return parsed.map((x) => String(x));
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeAudience(input: any): string[] | null {
+  let arr: string[] = [];
+
+  if (Array.isArray(input)) {
+    arr = input.map((x) => String(x));
+  } else if (typeof input === "string") {
+    // ✅ Handle JSON-string arrays like '["Teens","Adults"]'
+    const parsed = tryParseJsonArrayString(input);
+    if (parsed) {
+      arr = parsed;
+    } else {
+      // Handles: {"Teens","Adults"} or {Teens,Adults} or "Teens, Adults"
+      const s = input.trim();
+      const stripped = s.startsWith("{") && s.endsWith("}") ? s.slice(1, -1) : s;
+      arr = stripped.split(/[|,;/]+/g).map((x) => stripOuterQuotes(x));
+    }
+  } else if (input != null) {
+    arr = [String(input)];
+  }
+
+  arr = arr.map((x) => stripOuterQuotes(String(x))).map((x) => x.trim()).filter(Boolean);
+  if (arr.length === 0) return null;
+
+  const normalized = arr
+    .map((s) => {
+      const hit = AUDIENCE_OPTIONS.find((opt) => opt.toLowerCase() === s.toLowerCase());
+      return hit ?? null;
+    })
+    .filter(Boolean) as string[];
+
+  if (normalized.length === 0) return null;
+
+  // Expand ONLY if "All Ages" explicitly present
+  const hasAllAges = normalized.includes("All Ages");
+  const expanded = hasAllAges ? AUDIENCE_DEFAULT_EXPANDED : normalized;
+
+  // Deduplicate
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const x of expanded) {
+    if (!seen.has(x)) {
+      seen.add(x);
+      out.push(x);
+    }
+  }
+  return out;
+}
+
 export async function POST(req: Request) {
   const denied = requireAdmin(req);
   if (denied) return denied;
@@ -27,6 +96,7 @@ export async function POST(req: Request) {
 
     const supabase = supabaseServer();
 
+    // Fetch submission
     const { data: rows, error: fetchErr } = await supabase
       .from("event_submissions")
       .select("*")
@@ -38,9 +108,14 @@ export async function POST(req: Request) {
     const sub = rows?.[0];
     if (!sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
 
+    // ✅ Normalize and set final audience to insert (fallback only if truly missing)
+    const normalizedAudience = normalizeAudience(sub.audience);
+    const audienceSent = normalizedAudience ?? AUDIENCE_DEFAULT_EXPANDED;
+
+    // Map the submission fields to event fields
     const ev = mapSubmissionToEvent(sub);
 
-    // Insert event WITHOUT slug first, so we can safely build a unique slug using the inserted id.
+    // Insert and SELECT BACK audience immediately (proof of what DB stored)
     const { data: inserted, error: insErr } = await supabase
       .from("events")
       .insert([
@@ -57,13 +132,14 @@ export async function POST(req: Request) {
           image_url: ev.image_url,
           all_day: ev.all_day,
           age: ev.age,
+          audience: audienceSent,
           organizer_email: ev.organizer_email,
           youtube_url: ev.youtube_url,
           spotify_url: ev.spotify_url,
           geocode_status: "unprocessed",
         },
       ])
-      .select("id")
+      .select("id,audience")
       .single();
 
     if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
@@ -71,14 +147,17 @@ export async function POST(req: Request) {
     const eventId = inserted?.id;
     if (!eventId) return NextResponse.json({ error: "Event insert failed" }, { status: 500 });
 
-    // Create a stable unique slug: "<id>-<slugified-title>"
-    const baseTitle = typeof ev.title === "string" && ev.title.trim().length > 0 ? ev.title : "event";
+    const audienceStored = inserted?.audience ?? null;
+
+    // Build slug
+    const baseTitle =
+      typeof ev.title === "string" && ev.title.trim().length > 0 ? ev.title : "event";
     const slug = `${eventId}-${slugify(baseTitle)}`;
 
-    // Update the new event with slug
-    await supabase.from("events").update({ slug }).eq("id", eventId);
+    const { error: slugErr } = await supabase.from("events").update({ slug }).eq("id", eventId);
+    if (slugErr) return NextResponse.json({ error: slugErr.message }, { status: 500 });
 
-    // Geocode (non-blocking)
+    // Geocode
     const geocodeQuery = buildLisbonGeocodeQuery({
       locationName: ev.location_name ?? null,
       address: ev.address ?? null,
@@ -111,12 +190,13 @@ export async function POST(req: Request) {
           geocode_provider: "google",
           geocode_confidence: 0,
           geocode_status: "failed",
-          geocode_error: geo.error,
+          geocode_error: (geo as any).error ?? "unknown",
           geocoded_at: new Date().toISOString(),
         })
         .eq("id", eventId);
     }
 
+    // Mark submission approved
     const { error: upErr } = await supabase
       .from("event_submissions")
       .update({
@@ -129,7 +209,24 @@ export async function POST(req: Request) {
 
     if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
 
-    return NextResponse.json({ ok: true, eventId, slug, geocoded: geo.ok });
+    console.log("approve audience proof:", {
+      submissionId: sub.id,
+      submissionTitle: sub.title,
+      submissionAudienceRaw: sub.audience,
+      normalizedAudience,
+      audienceSent,
+      audienceStored,
+    });
+
+    return NextResponse.json({
+      ok: true,
+      eventId,
+      slug,
+      geocoded: geo.ok,
+      audience_submission_raw: sub.audience ?? null,
+      audience_sent: audienceSent,
+      audience_stored: audienceStored,
+    });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "failed" }, { status: 500 });
   }

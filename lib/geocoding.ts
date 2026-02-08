@@ -1,4 +1,3 @@
-// src/lib/geocoding.ts
 import crypto from "crypto";
 
 export type GeocodeOk = {
@@ -33,8 +32,7 @@ function normalizeWhitespace(s: string) {
 }
 
 /**
- * Deterministic, Lisbon-biased query builder.
- * We force "Lisboa, Portugal" context so fuzzy inputs land in the right place.
+ * Deterministic Lisbon-biased query builder.
  */
 export function buildLisbonGeocodeQuery(args: {
   locationName?: string | null;
@@ -50,16 +48,12 @@ export function buildLisbonGeocodeQuery(args: {
   if (loc) parts.push(loc);
   if (addr) parts.push(addr);
 
-  // If city is missing, default to Lisboa for better results
   parts.push(city || "Lisboa");
   parts.push("Portugal");
 
   return parts.join(", ");
 }
 
-/**
- * Simple confidence heuristic based on Google geometry.location_type.
- */
 function confidenceFromLocationType(locationType?: string | null): number {
   switch (locationType) {
     case "ROOFTOP":
@@ -76,22 +70,22 @@ function confidenceFromLocationType(locationType?: string | null): number {
 }
 
 /**
- * Uses geocode_cache if available, but never hard-fails approval if cache read/write fails.
- * Requires a Supabase client that can read/write geocode_cache (ideally service role).
+ * Cache is best-effort: cache failures never break the flow.
+ * Requires Google key in process.env.GOOGLE_MAPS_API_KEY.
  */
 export async function geocodeLisbonWithCache(params: {
-  supabase: any; // Supabase client
+  supabase: any;
   inputText: string;
 }): Promise<GeocodeResult> {
   const inputText = normalizeWhitespace(params.inputText);
   const inputHash = sha256(inputText);
 
-  // 1) Cache lookup (non-fatal if it errors)
+  // 1) Cache lookup (best-effort)
   try {
     const { data: cached, error: cacheErr } = await params.supabase
       .from("geocode_cache")
       .select(
-        "input_text,input_hash,normalized_address,latitude,longitude,provider_place_id,location_type,confidence"
+        "normalized_address,latitude,longitude,provider_place_id,location_type,confidence"
       )
       .eq("input_hash", inputHash)
       .maybeSingle();
@@ -106,12 +100,13 @@ export async function geocodeLisbonWithCache(params: {
         normalizedAddress: cached.normalized_address ?? null,
         providerPlaceId: cached.provider_place_id ?? null,
         locationType: cached.location_type ?? null,
-        confidence: cached.confidence ?? confidenceFromLocationType(cached.location_type ?? null),
+        confidence:
+          cached.confidence ?? confidenceFromLocationType(cached.location_type ?? null),
         fromCache: true,
       };
     }
   } catch {
-    // Ignore cache failures
+    // ignore cache issues
   }
 
   // 2) Provider call
@@ -126,7 +121,7 @@ export async function geocodeLisbonWithCache(params: {
     };
   }
 
-  // Rough Lisbon bounds to bias results (SW|NE)
+  // Rough Lisbon bounds (SW|NE)
   const bounds = "38.6900,-9.2300|38.7800,-9.0900";
 
   const url =
@@ -151,7 +146,7 @@ export async function geocodeLisbonWithCache(params: {
   }
 
   if (!json || json.status !== "OK" || !Array.isArray(json.results) || json.results.length === 0) {
-    // Write a cache record if possible (non-fatal)
+    // Best-effort cache record (optional)
     try {
       await params.supabase.from("geocode_cache").upsert(
         {
@@ -163,9 +158,7 @@ export async function geocodeLisbonWithCache(params: {
         },
         { onConflict: "input_hash" }
       );
-    } catch {
-      // ignore
-    }
+    } catch {}
 
     return {
       ok: false,
@@ -192,7 +185,7 @@ export async function geocodeLisbonWithCache(params: {
 
   const confidence = confidenceFromLocationType(locationType);
 
-  // 3) Cache write (non-fatal)
+  // 3) Cache write (best-effort)
   try {
     await params.supabase.from("geocode_cache").upsert(
       {
@@ -209,9 +202,7 @@ export async function geocodeLisbonWithCache(params: {
       },
       { onConflict: "input_hash" }
     );
-  } catch {
-    // ignore
-  }
+  } catch {}
 
   return {
     ok: true,

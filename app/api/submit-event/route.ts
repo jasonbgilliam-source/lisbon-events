@@ -24,41 +24,79 @@ async function allowedCategories(): Promise<Set<string>> {
   return new Set((data || []).map((r: any) => String(r.name)));
 }
 
+const AUDIENCE_OPTIONS = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
+
+function defaultAudienceExpanded(): string[] {
+  return ["All Ages", "Family", "Kids", "Teens", "Adults"];
+}
+
+function normalizeAudience(input: any): string[] | null {
+  let arr: string[] = [];
+
+  if (Array.isArray(input)) {
+    arr = input.map((x) => String(x));
+  } else if (typeof input === "string") {
+    arr = input.split(/[|,;/]+/g).map((s) => s.trim());
+  } else if (input != null) {
+    arr = [String(input)];
+  }
+
+  arr = arr.map((s) => s.trim()).filter(Boolean);
+  if (arr.length === 0) return null;
+
+  const normalized = arr
+    .map((s) => {
+      const hit = AUDIENCE_OPTIONS.find((opt) => opt.toLowerCase() === s.toLowerCase());
+      return hit ?? null;
+    })
+    .filter(Boolean) as string[];
+
+  if (normalized.length === 0) return null;
+
+  const hasAllAges = normalized.includes("All Ages");
+  const expanded = hasAllAges ? defaultAudienceExpanded() : normalized;
+
+  const seen = new Set<string>();
+  const deduped: string[] = [];
+  for (const x of expanded) {
+    if (!seen.has(x)) {
+      seen.add(x);
+      deduped.push(x);
+    }
+  }
+
+  return deduped;
+}
+
+function toBool(v: any): boolean {
+  if (typeof v === "boolean") return v;
+  const s = String(v ?? "").trim().toLowerCase();
+  if (s === "true" || s === "1" || s === "yes") return true;
+  return false;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Helpful debug: what did the client actually send?
     console.log("🧾 submit-event payload keys:", Object.keys(body || {}));
+    console.log("🧾 submit-event raw audience:", body?.audience);
 
     const title = (body.title || "").trim();
     const description = (body.description || "").trim();
     const location_name = (body.location_name || "").trim();
     const organizer_email = (body.organizer_email || "").trim();
 
-    // Accept either starts_at/ends_at or start/end
     const starts_at = toIso(body.starts_at ?? body.start);
     const ends_at = toIso(body.ends_at ?? body.end);
-
-    console.log("📌 parsed fields:", {
-      title: !!title,
-      description: !!description,
-      location_name: !!location_name,
-      organizer_email: !!organizer_email,
-      starts_at,
-      ends_at,
-    });
 
     if (!title || !description || !location_name || !organizer_email || !starts_at) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
     const all_day =
-      String(body.all_day ?? "")
-        .trim()
-        .toLowerCase() === "true" || body.all_day === true;
+      String(body.all_day ?? "").trim().toLowerCase() === "true" || body.all_day === true;
 
-    // Category from catalog only
     const category = (body.category ?? "").toString().trim();
     if (!category) {
       return NextResponse.json({ error: "Category is required" }, { status: 400 });
@@ -71,6 +109,12 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    const normalizedAudience = normalizeAudience(body.audience);
+    console.log("🧾 submit-event normalized audience:", normalizedAudience);
+
+    // Default to All Ages (expanded) only when missing/empty
+    const audience = normalizedAudience ?? defaultAudienceExpanded();
 
     const supabase = supabaseServer();
     const { error } = await supabase.from("event_submissions").insert([
@@ -85,12 +129,13 @@ export async function POST(req: Request) {
         image_url: body.image_url ?? null,
         organizer_email,
         age: body.age ?? null,
+        audience,
         city: body.city ?? null,
         all_day,
         category,
         youtube_url: body.youtube_url ?? null,
         spotify_url: body.spotify_url ?? null,
-        is_free: body.is_free ?? false,
+        is_free: toBool(body.is_free),
         status: "pending",
       },
     ]);
@@ -100,7 +145,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, audience });
   } catch (e: any) {
     console.error("❌ submit-event exception:", e);
     return NextResponse.json({ error: e?.message ?? "unknown error" }, { status: 500 });

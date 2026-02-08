@@ -5,6 +5,7 @@ function toIso(s?: string | null) {
   if (Number.isNaN(d.getTime())) return null;
   return d.toISOString();
 }
+
 function toBool(v: any) {
   if (typeof v === "boolean") return v;
   if (v == null) return false;
@@ -13,13 +14,19 @@ function toBool(v: any) {
 
 export type EventRow = {
   title: string;
-  starts_at: string;      // ISO
+  starts_at: string; // ISO
   ends_at: string | null; // ISO
   all_day: boolean;
   location_name?: string | null;
   city?: string | null;
   address?: string | null;
+
+  // NEW: preferred structured audience (optional)
+  audience?: string[] | null;
+
+  // Optional free-text restriction notes (legacy field; may be empty)
   age?: string | null;
+
   category?: string | null;
   description?: string | null;
   organizer_email?: string | null;
@@ -37,6 +44,8 @@ export function mapSubmissionToEvent(sub: any): EventRow {
   const ends_at = toIso(sub.ends_at ?? sub.end ?? sub.end_time ?? sub.end_datetime) ?? null;
   const all_day = toBool(sub.all_day ?? sub.is_all_day ?? false);
 
+  const audience = Array.isArray(sub.audience) ? sub.audience : null;
+
   return {
     title,
     starts_at,
@@ -45,7 +54,13 @@ export function mapSubmissionToEvent(sub: any): EventRow {
     location_name: sub.location_name ?? sub.venue ?? sub.location ?? null,
     city: sub.city ?? null,
     address: sub.address ?? null,
+
+    // pass through if present
+    audience,
+
+    // keep legacy notes
     age: sub.age ?? null,
+
     category: sub.category ?? sub.type ?? null,
     description: sub.description ?? sub.details ?? null,
     organizer_email: sub.organizer_email ?? sub.organizer ?? null,

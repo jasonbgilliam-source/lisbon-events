@@ -3,18 +3,24 @@ import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Public endpoint: lightweight set of map pins for approved future events.
- *
- * Debug mode: /api/events/map-pins/?debug=1
- * Returns counts and sample rows so we can see why pins are empty.
- */
+function supabaseProjectRef() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  // https://<ref>.supabase.co
+  try {
+    const host = new URL(url).host;
+    return host.split(".")[0] || "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const category = url.searchParams.get("category");
     const limitParam = url.searchParams.get("limit");
     const debug = url.searchParams.get("debug") === "1";
+    const probeId = url.searchParams.get("probeId"); // optional: check a specific row
 
     let limit = 500;
     if (limitParam) {
@@ -39,6 +45,8 @@ export async function GET(req: Request) {
           "longitude",
           "geocode_status",
           "geocode_error",
+          "geocoded_at",
+          "normalized_address",
         ].join(",")
       )
       .order("starts_at", { ascending: true, nullsFirst: false })
@@ -47,7 +55,9 @@ export async function GET(req: Request) {
     if (category) q = q.eq("category", category);
 
     const { data, error } = await q;
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500, headers: { "Cache-Control": "no-store" } });
+    }
 
     const rows = data ?? [];
 
@@ -60,7 +70,9 @@ export async function GET(req: Request) {
     const futureWithSlug = future.filter(hasSlug);
     const pins = future.filter((r) => hasLatLng(r) && hasSlug(r)).slice(0, limit);
 
-    if (!debug) return NextResponse.json({ ok: true, pins });
+    if (!debug) {
+      return NextResponse.json({ ok: true, pins }, { headers: { "Cache-Control": "no-store" } });
+    }
 
     const sample = (arr: any[]) =>
       arr.slice(0, 8).map((r) => ({
@@ -72,27 +84,45 @@ export async function GET(req: Request) {
         longitude: r.longitude,
         geocode_status: r.geocode_status,
         geocode_error: r.geocode_error,
+        geocoded_at: r.geocoded_at,
+        normalized_address: r.normalized_address,
       }));
 
-    return NextResponse.json({
-      ok: true,
-      debug: {
-        nowIso,
-        total_rows_loaded: rows.length,
-        counts: {
-          future: future.length,
-          future_with_latlng: futureWithLatLng.length,
-          future_with_slug: futureWithSlug.length,
-          future_with_latlng_and_slug: pins.length,
-        },
-        samples: {
-          future: sample(future),
-          future_missing_latlng: sample(future.filter((r) => !hasLatLng(r))),
-          future_missing_slug: sample(future.filter((r) => !hasSlug(r))),
+    // Optional: directly probe a specific id from THIS route's perspective
+    let probe: any = null;
+    if (probeId) {
+      const { data: pr, error: pe } = await supabase
+        .from("events")
+        .select("id,latitude,longitude,geocode_status,geocode_error,geocoded_at,normalized_address")
+        .eq("id", probeId)
+        .limit(1);
+      probe = pe ? { error: pe.message } : pr?.[0] ?? null;
+    }
+
+    return NextResponse.json(
+      {
+        ok: true,
+        debug: {
+          nowIso,
+          supabase_project_ref: supabaseProjectRef(),
+          total_rows_loaded: rows.length,
+          counts: {
+            future: future.length,
+            future_with_latlng: futureWithLatLng.length,
+            future_with_slug: futureWithSlug.length,
+            future_with_latlng_and_slug: pins.length,
+          },
+          samples: {
+            future: sample(future),
+            future_missing_latlng: sample(future.filter((r) => !hasLatLng(r))),
+            future_missing_slug: sample(future.filter((r) => !hasSlug(r))),
+          },
+          probe,
         },
       },
-    });
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? "failed" }, { status: 500 });
+    return NextResponse.json({ error: e?.message ?? "failed" }, { status: 500, headers: { "Cache-Control": "no-store" } });
   }
 }

@@ -1,25 +1,18 @@
-// lib/supabaseServer.ts
 import { createClient } from "@supabase/supabase-js";
 
 export function supabaseServer() {
-  const url =
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    process.env.SUPABASE_URL ||
-    "";
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_SERVICE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    "";
+  if (!url) throw new Error("NEXT_PUBLIC_SUPABASE_URL not set");
+  if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY not set");
 
-  if (!url || !key) {
-    throw new Error(
-      "Supabase URL or KEY missing. Set NEXT_PUBLIC_SUPABASE_URL and either SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY."
-    );
-  }
-
-  return createClient(url, key, {
-    auth: { persistSession: false },
+  // Service role client for server-side routes ONLY (bypasses RLS)
+  return createClient(url, serviceKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
   });
 }
