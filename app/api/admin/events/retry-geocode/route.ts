@@ -40,15 +40,15 @@ export async function POST(req: Request) {
     if (!geo.ok) {
       // Persist failure, but *also* return the reason clearly
       const { data: updated, error: upErr } = await supabase
-        .from("events")
-        .update({
-          geocode_provider: "google",
-          geocode_confidence: 0,
-          geocode_status: "failed",
-          geocode_error: geo.error,
-          geocoded_at: new Date().toISOString(),
-        })
-        .eq("id", id)
+  .from("events")
+  .update({
+    geocode_provider: "google",
+    geocode_confidence: 0,
+    geocode_status: "failed",
+    geocode_error: "error" in geo ? geo.error : "Geocoding failed",
+    geocoded_at: new Date().toISOString(),
+  })
+  .eq("id", id)
         .select("id,latitude,longitude,geocode_status,geocode_error")
         .maybeSingle();
 
