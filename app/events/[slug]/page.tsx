@@ -1,236 +1,138 @@
-"use client";
-
-import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
+import { notFound } from "next/navigation";
 import Link from "next/link";
-import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
-import { createClient } from "@supabase/supabase-js";
-import FilterBar from "@/components/FilterBar";
+import { supabaseServer } from "@/lib/supabaseServer";
 
-dayjs.extend(isBetween);
+export const dynamic = "force-dynamic";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-type EventItem = {
-  id: number;
-  title: string;
-  description: string;
-  starts_at: string;
-  ends_at?: string;
-  location_name?: string;
-  address?: string;
-  city?: string;
-  price?: string;
-  age?: string;
-  category?: string;
-  image_url?: string;
-  youtube_url?: string;
-  spotify_url?: string;
+type Props = {
+  params: { slug: string };
 };
 
-export default function CategoryPage() {
-  const { slug } = useParams<{ slug: string }>();
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [filters, setFilters] = useState<any>({});
-  const [loading, setLoading] = useState(true);
+function fmt(dt: string | null) {
+  if (!dt) return "";
+  const d = new Date(dt);
+  return isNaN(d.getTime()) ? dt : d.toLocaleString();
+}
 
-  // 🟠 Load events by category
-  useEffect(() => {
-    async function loadCategoryEvents() {
-      setLoading(true);
-      const categoryName = decodeURIComponent(slug.replace(/-/g, " "));
-      const { data, error } = await supabase
-        .from("event_submissions")
-        .select("*")
-        .eq("status", "approved")
-        .eq("category", categoryName)
-        .order("starts_at", { ascending: true });
+export default async function EventDetailPage({ params }: Props) {
+  const slug = decodeURIComponent(params.slug || "").trim();
+  if (!slug) return notFound();
 
-      if (error) console.error(error);
-      else setEvents(data || []);
-      setLoading(false);
-    }
+  const supabase = supabaseServer();
 
-    loadCategoryEvents();
-  }, [slug]);
+  const { data, error } = await supabase
+    .from("events")
+    .select(
+      [
+        "id",
+        "slug",
+        "title",
+        "description",
+        "starts_at",
+        "ends_at",
+        "category",
+        "location_name",
+        "address",
+        "city",
+        "ticket_url",
+        "image_url",
+        "youtube_url",
+        "spotify_url",
+      ].join(",")
+    )
+    .eq("slug", slug)
+    .limit(1);
 
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return "";
-    return dayjs(dateStr).format("MMM D, YYYY h:mm A");
-  };
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <div className="mb-6">
+          <Link className="underline text-sm" href="/events">
+            ← Back to events
+          </Link>
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Event detail error</h1>
+        <pre className="text-sm bg-white border rounded-lg p-3 overflow-auto">{error.message}</pre>
+      </div>
+    );
+  }
 
-  // 🧠 Filter logic (same as /events)
-  const filteredEvents = useMemo(() => {
-    return events.filter((e) => {
-      const start = dayjs(e.starts_at);
-      const now = dayjs();
-
-      // Search
-      if (
-        filters.search &&
-        !`${e.title} ${e.description} ${e.location_name}`
-          .toLowerCase()
-          .includes(filters.search.toLowerCase())
-      )
-        return false;
-
-      // City
-      if (filters.city && e.city !== filters.city) return false;
-
-      // Date range
-      if (filters.dateRange === "today" && !start.isSame(now, "day")) return false;
-      if (
-        filters.dateRange === "week" &&
-        !start.isBetween(now.startOf("week"), now.endOf("week"), null, "[]")
-      )
-        return false;
-      if (
-        filters.dateRange === "month" &&
-        !start.isBetween(now.startOf("month"), now.endOf("month"), null, "[]")
-      )
-        return false;
-
-      // Free Only
-      if (filters.is_free && e.price && e.price.trim() !== "" && e.price.trim() !== "Free")
-        return false;
-
-      // Price Range
-      if (filters.priceRange === "under10") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num > 10) return false;
-      } else if (filters.priceRange === "10to30") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num < 10 || num > 30) return false;
-      } else if (filters.priceRange === "30plus") {
-        const num = parseFloat(e.price?.replace(/[^0-9.]/g, "") || "0");
-        if (num < 30) return false;
-      }
-
-      // Age Restriction
-      if (filters.age && e.age && !e.age.includes(filters.age)) return false;
-
-      return true;
-    });
-  }, [events, filters]);
+  const ev = data?.[0];
+  if (!ev) return notFound();
 
   return (
-    <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
-      <section className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-center text-[#c94917] capitalize">
-          {slug.replace(/-/g, " ")}
-        </h1>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="mb-6">
+        <Link className="underline text-sm" href="/events">
+          ← Back to events
+        </Link>
+      </div>
 
-        {/* 🟠 Filter Bar */}
-        <FilterBar onFilter={setFilters} />
+      <div className="inline-block text-xs font-semibold px-2 py-1 rounded bg-black text-white mb-3">
+        DETAIL PAGE
+      </div>
 
-        {loading ? (
-          <p className="text-center text-gray-600 mt-10">Loading events…</p>
-        ) : filteredEvents.length === 0 ? (
-          <p className="text-center text-gray-600 mt-10 italic">
-            No events found for this category.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-            {filteredEvents.map((e) => {
-              const imgSrc =
-                e.image_url ||
-                `/images/${e.category?.toLowerCase().replace(/\s+/g, "-") || "default"}.jpeg`;
-
-              return (
-                <div
-                  key={e.id}
-                  className="bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition transform hover:-translate-y-1"
-                >
-                  <div className="relative w-full h-56">
-                    <Image
-                      src={imgSrc}
-                      alt={e.title}
-                      fill
-                      className="object-cover"
-                      onError={(ev) => {
-                        const target = ev.target as HTMLImageElement;
-                        target.src = "/images/default.jpeg";
-                      }}
-                    />
-                  </div>
-                  <div className="p-5">
-                    <h2 className="text-xl font-semibold mb-1 text-[#c94917]">
-                      {e.title}
-                    </h2>
-
-                    <p className="text-sm text-gray-700 mb-1">
-                      📍 {e.location_name || "Location TBA"}
-                    </p>
-
-                    <p className="text-sm text-gray-700 mb-1">
-                      🕒 {formatDate(e.starts_at)}
-                      {e.ends_at ? ` – ${formatDate(e.ends_at)}` : ""}
-                    </p>
-
-                    {e.price ? (
-                      <p className="text-sm text-gray-700 mb-1">
-                        💶 {e.price}
-                      </p>
-                    ) : (
-                      <p className="text-sm text-green-700 font-medium mb-1">
-                        🆓 Free
-                      </p>
-                    )}
-
-                    {e.age && (
-                      <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>
-                    )}
-
-                    {e.description && (
-                      <p className="text-sm text-gray-700 mt-2 line-clamp-3">
-                        {e.description}
-                      </p>
-                    )}
-
-                    <div className="mt-3 flex gap-3">
-                      {e.youtube_url && (
-                        <a
-                          href={e.youtube_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎥 YouTube
-                        </a>
-                      )}
-                      {e.spotify_url && (
-                        <a
-                          href={e.spotify_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🎵 Spotify
-                        </a>
-                      )}
-                      {e.address && (
-                        <Link
-                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                            e.address
-                          )}`}
-                          target="_blank"
-                          className="text-sm text-[#c94917] underline"
-                        >
-                          🗺️ Map
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+      <h1 className="text-3xl font-bold mb-2">{ev.title}</h1>
+      <div className="text-sm text-gray-700 mb-6">
+        <div>
+          <span className="font-semibold">Slug:</span> {ev.slug}
+        </div>
+        <div>
+          <span className="font-semibold">Starts:</span> {fmt(ev.starts_at)}
+        </div>
+        {ev.ends_at ? (
+          <div>
+            <span className="font-semibold">Ends:</span> {fmt(ev.ends_at)}
           </div>
-        )}
-      </section>
-    </main>
+        ) : null}
+        {ev.category ? (
+          <div>
+            <span className="font-semibold">Category:</span> {ev.category}
+          </div>
+        ) : null}
+        {ev.location_name || ev.address ? (
+          <div>
+            <span className="font-semibold">Location:</span>{" "}
+            {[ev.location_name, ev.address, ev.city].filter(Boolean).join(" • ")}
+          </div>
+        ) : null}
+      </div>
+
+      {ev.image_url ? (
+        <div className="mb-6">
+          <img
+            src={ev.image_url}
+            alt={ev.title}
+            className="w-full max-h-[420px] object-cover rounded-xl border bg-white"
+          />
+        </div>
+      ) : null}
+
+      {ev.description ? (
+        <div className="prose max-w-none mb-6">
+          <p className="whitespace-pre-wrap">{ev.description}</p>
+        </div>
+      ) : (
+        <div className="text-sm text-gray-600 mb-6">No description.</div>
+      )}
+
+      <div className="flex flex-wrap gap-3">
+        {ev.ticket_url ? (
+          <a className="px-4 py-2 rounded-lg border bg-white hover:bg-orange-50" href={ev.ticket_url} target="_blank" rel="noreferrer">
+            Tickets / Info
+          </a>
+        ) : null}
+        {ev.youtube_url ? (
+          <a className="px-4 py-2 rounded-lg border bg-white hover:bg-orange-50" href={ev.youtube_url} target="_blank" rel="noreferrer">
+            YouTube
+          </a>
+        ) : null}
+        {ev.spotify_url ? (
+          <a className="px-4 py-2 rounded-lg border bg-white hover:bg-orange-50" href={ev.spotify_url} target="_blank" rel="noreferrer">
+            Spotify
+          </a>
+        ) : null}
+      </div>
+    </div>
   );
 }
