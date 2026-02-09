@@ -83,7 +83,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Props
     );
   }
 
-  const events = (data ?? []) as EventRow[];
+  const events = (data ?? []) as unknown as EventRow[];
 
   return (
     <main className="min-h-screen bg-[#fff8f2] text-[#40210f] px-4 py-10">
