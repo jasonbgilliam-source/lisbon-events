@@ -1,9 +1,16 @@
-import { NextResponse } from "next/server";
 import { requireAdmin, requireCsrf } from "@/lib/adminAuth";
+import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { buildLisbonGeocodeQuery, geocodeLisbonWithCache } from "@/lib/geocoding";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+function safeString(v: any): string | null {
+  if (v == null) return null;
+  const s = String(v).trim();
+  return s.length ? s : null;
+}
 
 export async function POST(req: Request) {
   const denied = requireAdmin(req);
@@ -13,86 +20,86 @@ export async function POST(req: Request) {
   if (csrfDenied) return csrfDenied;
 
   try {
-    const { id } = await req.json();
-    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    const body = await req.json().catch(() => ({}));
+    const id = safeString(body?.id);
+
+    if (!id) {
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    }
 
     const supabase = supabaseServer();
 
+    // Fetch event fields needed for geocoding
     const { data: rows, error: fetchErr } = await supabase
       .from("events")
-      .select("id,title,location_name,address,city")
+      .select("id,location_name,address,city")
       .eq("id", id)
       .limit(1);
 
-    if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    if (fetchErr) {
+      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    }
 
     const ev = rows?.[0];
-    if (!ev) return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    if (!ev) {
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
 
-    const inputText = buildLisbonGeocodeQuery({
-      locationName: ev.location_name ?? null,
-      address: ev.address ?? null,
-      city: ev.city ?? null,
+    const geocodeQuery = buildLisbonGeocodeQuery({
+      locationName: safeString(ev.location_name),
+      address: safeString(ev.address),
+      city: safeString(ev.city),
     });
 
-    const geo = await geocodeLisbonWithCache({ supabase, inputText });
+    const geo = await geocodeLisbonWithCache({
+      supabase,
+      inputText: geocodeQuery,
+    });
 
-    if (!geo.ok) {
-      // Persist failure, but *also* return the reason clearly
-      const { data: updated, error: upErr } = await supabase
-  .from("events")
-  .update({
-    geocode_provider: "google",
-    geocode_confidence: 0,
-    geocode_status: "failed",
-    geocode_error: "error" in geo ? geo.error : "Geocoding failed",
-    geocoded_at: new Date().toISOString(),
-  })
-  .eq("id", id)
-        .select("id,latitude,longitude,geocode_status,geocode_error")
-        .maybeSingle();
+    if (geo.ok) {
+      const { error: upOkErr } = await supabase
+        .from("events")
+        .update({
+          latitude: geo.latitude,
+          longitude: geo.longitude,
+          normalized_address: geo.normalizedAddress,
+          geocode_provider: "google",
+          geocode_confidence: geo.confidence,
+          geocode_status: "success",
+          geocode_error: null,
+          geocoded_at: new Date().toISOString(),
+        })
+        .eq("id", id);
 
-      if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
+      if (upOkErr) {
+        return NextResponse.json({ error: upOkErr.message }, { status: 500 });
+      }
 
-      return NextResponse.json({
-        ok: true,
-        geocoded: false,
-        provider_error: geo.error,
-        updated_row: updated ?? null,
-        note: "Geocoding provider returned an error; event row updated to failed status.",
-      });
+      return NextResponse.json({ ok: true, geocoded: true });
     }
 
-    // Success: write lat/lng + metadata and RETURN the updated row
-    const { data: updated, error: upErr } = await supabase
+    // ✅ IMPORTANT: Type-safe access to an error message on the "fail" shape
+    const failMessage =
+      "error" in geo && typeof (geo as any).error === "string"
+        ? (geo as any).error
+        : "Geocoding failed";
+
+    const { error: upFailErr } = await supabase
       .from("events")
       .update({
-        latitude: geo.latitude,
-        longitude: geo.longitude,
-        normalized_address: geo.normalizedAddress,
         geocode_provider: "google",
-        geocode_confidence: geo.confidence,
-        geocode_status: "success",
-        geocode_error: null,
+        geocode_confidence: 0,
+        geocode_status: "failed",
+        geocode_error: failMessage,
         geocoded_at: new Date().toISOString(),
       })
-      .eq("id", id)
-      .select("id,latitude,longitude,geocode_status,geocode_error,normalized_address")
-      .maybeSingle();
+      .eq("id", id);
 
-    if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
-
-    if (!updated) {
-      // This means update affected 0 rows (RLS or wrong id type mismatch)
-      return NextResponse.json(
-        {
-          error: "Update returned no row (0 rows updated). Likely RLS or permission issue in supabaseServer().",
-        },
-        { status: 500 }
-      );
+    if (upFailErr) {
+      return NextResponse.json({ error: upFailErr.message }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true, geocoded: true, updated_row: updated });
+    return NextResponse.json({ ok: true, geocoded: false, error: failMessage });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message ?? "failed" }, { status: 500 });
   }
