@@ -17,6 +17,7 @@ type EventItem = {
   address?: string | null;
   city?: string | null;
   price?: string | null;
+  ticket_url?: string | null;
 
   // NEW preferred field
   audience?: string[] | null;
@@ -83,7 +84,10 @@ function getDisplayAudience(e: EventItem): string[] {
 
 function getImage(e: EventItem) {
   if (e.image_url && e.source_folder) {
-    return `/${e.source_folder.replace(/^\/+/, "")}/${e.image_url.replace(/^\/+/, "")}`;
+    return `/${e.source_folder.replace(/^\/+/, "")}/${e.image_url.replace(
+      /^\/+/,
+      ""
+    )}`;
   }
   if (e.image_url?.startsWith("http")) return e.image_url;
   if (e.youtube_url) {
@@ -97,7 +101,12 @@ function getImage(e: EventItem) {
 
 export default function EventDetailPage() {
   const params = useParams();
-  const slug = typeof params?.slug === "string" ? params.slug : Array.isArray(params?.slug) ? params.slug[0] : "";
+  const slug =
+    typeof params?.slug === "string"
+      ? params.slug
+      : Array.isArray(params?.slug)
+      ? params.slug[0]
+      : "";
 
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,11 +119,13 @@ export default function EventDetailPage() {
       setError(null);
 
       try {
-        // We don't know if you have a dedicated /api/events/by-slug endpoint.
-        // So we use the existing list endpoint and find the matching slug.
-        const res = await fetch("/api/events/list/?limit=2000", { cache: "no-store" });
+        // Use the existing list endpoint and find the matching slug.
+        const res = await fetch("/api/events/list/?limit=2000", {
+          cache: "no-store",
+        });
         const json = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(json?.error || `Failed to load events (${res.status})`);
+        if (!res.ok)
+          throw new Error(json?.error || `Failed to load events (${res.status})`);
 
         const items = Array.isArray(json?.items) ? (json.items as EventItem[]) : [];
         const found = items.find((x) => String(x.slug) === String(slug)) ?? null;
@@ -159,7 +170,9 @@ export default function EventDetailPage() {
   }
 
   const audience = getDisplayAudience(event);
-  const when = event.starts_at ? dayjs(event.starts_at).format("ddd, MMM D, YYYY h:mm A") : "";
+  const when = event.starts_at
+    ? dayjs(event.starts_at).format("ddd, MMM D, YYYY h:mm A")
+    : "";
   const ends = event.ends_at ? dayjs(event.ends_at).format("h:mm A") : "";
 
   return (
@@ -172,18 +185,30 @@ export default function EventDetailPage() {
 
       <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
         <div className="relative w-full h-72">
-          <Image src={getImage(event)} alt={event.title} fill className="object-cover" />
+          <Image
+            src={getImage(event)}
+            alt={event.title}
+            fill
+            className="object-cover"
+          />
         </div>
 
         <div className="p-5 sm:p-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#c94917]">{event.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#c94917]">
+            {event.title}
+          </h1>
 
           <div className="mt-3 space-y-1 text-sm text-gray-800">
             {event.location_name && <p>📍 {event.location_name}</p>}
-            {when && <p>🕒 {when}{ends ? ` – ${ends}` : ""}</p>}
+            {when && (
+              <p>
+                🕒 {when}
+                {ends ? ` – ${ends}` : ""}
+              </p>
+            )}
             {event.city && <p>🏙️ {event.city}</p>}
             {event.address && <p>🗺️ {event.address}</p>}
-            {(event.is_free || (event.price || "").toLowerCase() === "free") ? (
+            {event.is_free || (event.price || "").toLowerCase() === "free" ? (
               <p>💸 Free</p>
             ) : event.price ? (
               <p>💸 {event.price}</p>
@@ -192,7 +217,9 @@ export default function EventDetailPage() {
 
           {/* Audience chips */}
           <div className="mt-4">
-            <div className="text-xs font-semibold text-gray-600 mb-2">Audience</div>
+            <div className="text-xs font-semibold text-gray-600 mb-2">
+              Audience
+            </div>
             <div className="flex flex-wrap gap-2">
               {audience.map((a) => (
                 <span
@@ -205,7 +232,9 @@ export default function EventDetailPage() {
 
               {/* If age contains non-audience restriction notes, show it as a grey tag */}
               {event.age &&
-                !/all ages|all-ages|family|kids|children|teen|adult/i.test(event.age) && (
+                !/all ages|all-ages|family|kids|children|teen|adult/i.test(
+                  event.age
+                ) && (
                   <span className="px-2 py-0.5 text-xs rounded-full border border-gray-200 text-gray-700 bg-gray-50">
                     {event.age}
                   </span>
@@ -216,8 +245,12 @@ export default function EventDetailPage() {
           {/* Description */}
           {event.description && (
             <div className="mt-5">
-              <div className="text-xs font-semibold text-gray-600 mb-2">Details</div>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">{event.description}</p>
+              <div className="text-xs font-semibold text-gray-600 mb-2">
+                Details
+              </div>
+              <p className="text-sm text-gray-800 whitespace-pre-wrap">
+                {event.description}
+              </p>
             </div>
           )}
 
