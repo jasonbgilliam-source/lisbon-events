@@ -13,8 +13,7 @@ import EmptyState from "@/components/EmptyState";
  * Later: replace with a DB field like is_sponsored / sponsor_rank.
  */
 const SPONSORED_EVENT_SLUGS = new Set<string>([
-  // "my-sponsor-event-slug",
-  // "another-sponsored-event",
+  // "PASTE-THE-SLUG-HERE",
 ]);
 
 type EventItem = {
