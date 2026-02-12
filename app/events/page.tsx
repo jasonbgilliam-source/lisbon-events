@@ -78,18 +78,14 @@ function extractAudienceFromLegacyAge(age?: string | null): string[] {
 }
 
 function getAudienceKeys(e: EventItem): string[] {
-  // Prefer structured audience array
   if (Array.isArray(e.audience) && e.audience.length > 0) {
     const keys = e.audience.map(normalizeAudienceValue).filter(Boolean);
     return keys.length > 0 ? keys : ["all ages"];
   }
 
-  // Fall back to legacy age text if it contains audience words
   const legacy = extractAudienceFromLegacyAge(e.age);
   if (legacy.length > 0) return legacy;
 
-  // CRITICAL DEFAULT:
-  // If we have no audience info, treat as "All Ages" so filters don't hide everything.
   return ["all ages"];
 }
 
@@ -116,10 +112,8 @@ function audienceChipOrder(a: string) {
 function getAudienceForCard(e: EventItem): string[] {
   const keys = getAudienceKeys(e);
 
-  // If it’s All Ages, show only that chip (cleaner)
   if (keys.includes("all ages")) return ["all ages"];
 
-  // Otherwise show distinct, ordered keys
   const uniq = Array.from(new Set(keys.map(normalizeAudienceValue).filter(Boolean)));
   return uniq.sort((a, b) => audienceChipOrder(a) - audienceChipOrder(b));
 }
@@ -161,7 +155,6 @@ export default function EventsPage() {
   const handleFilter = (filters: any) => {
     let filtered = [...events];
 
-    // Search
     if (filters.search) {
       const term = String(filters.search).toLowerCase();
       filtered = filtered.filter(
@@ -172,7 +165,6 @@ export default function EventsPage() {
       );
     }
 
-    // Categories
     const selectedKeys =
       filters.category_keys?.length > 0
         ? filters.category_keys
@@ -185,26 +177,20 @@ export default function EventsPage() {
       });
     }
 
-    // Audience
     if (filters.audience && filters.audience.length > 0) {
       const selected = (filters.audience as string[])
         .map(normalizeAudienceValue)
         .filter(Boolean);
 
-      // If "All Ages" is selected, treat it as "no audience filtering"
       if (!selected.includes("all ages")) {
         filtered = filtered.filter((e) => {
           const aud = getAudienceKeys(e);
-
-          // Event "All Ages" matches any selected audience filter
           if (aud.includes("all ages")) return true;
-
           return selected.some((a) => aud.includes(a));
         });
       }
     }
 
-    // Free
     if (filters.is_free || filters.isFree) {
       filtered = filtered.filter(
         (e) => e.is_free === true || (e.price || "").toLowerCase() === "free"
@@ -231,17 +217,14 @@ export default function EventsPage() {
     return "/images/default.jpeg";
   };
 
-  // Featured / Editor’s Picks (explicit, no DB, reversible)
   const featuredEvents = useMemo(() => {
-    const hasPromo = (e: EventItem) =>
-      Boolean(e.image_url || e.youtube_url || e.spotify_url);
+    const hasPromo = (e: EventItem) => Boolean(e.image_url || e.youtube_url || e.spotify_url);
 
     const toTime = (s?: string | null) => {
       const t = s ? new Date(s).getTime() : NaN;
       return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
     };
 
-    // Soonest upcoming-ish first; if dates are missing, they sink.
     return [...events]
       .filter((e) => hasPromo(e))
       .sort((a, b) => toTime(a.starts_at) - toTime(b.starts_at))
@@ -293,6 +276,7 @@ export default function EventsPage() {
 
   const renderFeaturedCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
+
     return (
       <Link
         key={e.id}
@@ -301,7 +285,15 @@ export default function EventsPage() {
       >
         <div className="relative h-36 w-full">
           <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
+
+          {/* Featured pill */}
+          <div className="absolute left-3 top-3">
+            <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm border border-orange-200">
+              Featured
+            </span>
+          </div>
         </div>
+
         <div className="p-3">
           <div className="text-sm text-neutral-600">{formatDate(e.starts_at) || "Date TBA"}</div>
           <div className="mt-1 line-clamp-2 font-semibold text-[#c94917] group-hover:underline">
