@@ -7,6 +7,16 @@ import dayjs from "dayjs";
 import FilterBar from "@/components/FilterBar";
 import EmptyState from "@/components/EmptyState";
 
+/**
+ * Sponsored pill scaffolding (NO DB REQUIRED)
+ * Add slugs here when you sell a sponsored placement.
+ * Later: replace with a DB field like is_sponsored / sponsor_rank.
+ */
+const SPONSORED_EVENT_SLUGS = new Set<string>([
+  // "my-sponsor-event-slug",
+  // "another-sponsored-event",
+]);
+
 type EventItem = {
   id: string;
   slug: string;
@@ -19,10 +29,7 @@ type EventItem = {
   city?: string | null;
   price?: string | null;
 
-  // NEW preferred field
   audience?: string[] | null;
-
-  // Legacy / optional restriction notes
   age?: string | null;
 
   category?: string | null;
@@ -231,6 +238,8 @@ export default function EventsPage() {
       .slice(0, 6);
   }, [events]);
 
+  const isSponsored = (e: EventItem) => SPONSORED_EVENT_SLUGS.has(String(e.slug || ""));
+
   const renderEventRowCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
 
@@ -276,6 +285,7 @@ export default function EventsPage() {
 
   const renderFeaturedCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
+    const label = isSponsored(e) ? "Sponsored" : "Featured";
 
     return (
       <Link
@@ -286,10 +296,10 @@ export default function EventsPage() {
         <div className="relative h-36 w-full">
           <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
 
-          {/* Featured pill */}
+          {/* Featured/Sponsored pill */}
           <div className="absolute left-3 top-3">
             <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm border border-orange-200">
-              Featured
+              {label}
             </span>
           </div>
         </div>
@@ -336,13 +346,11 @@ export default function EventsPage() {
         <div className="mt-6">
           {featuredEvents.length > 0 ? (
             <div className="mb-8">
-              <div className="mb-3 flex items-end justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-neutral-900">Editor’s Picks</h2>
-                  <p className="text-sm text-neutral-600">
-                    A few highlighted events with good visuals (for now).
-                  </p>
-                </div>
+              <div className="mb-3">
+                <h2 className="text-lg font-semibold text-neutral-900">Editor’s Picks</h2>
+                <p className="text-sm text-neutral-600">
+                  A few highlighted events with good visuals (for now).
+                </p>
               </div>
 
               <div className="flex gap-4 overflow-x-auto pb-2">
