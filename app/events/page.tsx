@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
 import FilterBar from "@/components/FilterBar";
+import EmptyState from "@/components/EmptyState";
 
 type EventItem = {
   id: string;
@@ -99,7 +100,6 @@ function titleCaseAudienceKey(key: string) {
   if (k === "kids") return "Kids";
   if (k === "teens") return "Teens";
   if (k === "adults") return "Adults";
-  // fallback
   return key;
 }
 
@@ -233,11 +233,6 @@ export default function EventsPage() {
 
   return (
     <section className="max-w-5xl mx-auto">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[#c94917]">Upcoming events</h2>
-        <p className="text-sm text-gray-700">Browse what’s happening next in Lisbon.</p>
-      </div>
-
       <Suspense fallback={<p className="text-center italic">Loading filters…</p>}>
         <FilterBar onFilter={handleFilter} />
       </Suspense>
@@ -247,7 +242,10 @@ export default function EventsPage() {
       ) : loading ? (
         <p>Loading events…</p>
       ) : filteredEvents.length === 0 ? (
-        <p className="italic">No events found.</p>
+        <EmptyState
+          title="No events match your filters"
+          description="Try clearing filters, changing categories/audience, or searching a different keyword."
+        />
       ) : (
         <div className="flex flex-col gap-6 mt-8">
           {filteredEvents.map((e) => {
@@ -265,10 +263,9 @@ export default function EventsPage() {
 
                 <div className="flex-1 p-4">
                   <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
-                  <p>📍 {e.location_name}</p>
+                  <p>📍 {e.location_name || "Location TBA"}</p>
                   <p>🕒 {formatDate(e.starts_at)}</p>
 
-                  {/* Audience chips */}
                   <div className="mt-2 flex flex-wrap gap-2">
                     {audKeys.map((k) => (
                       <span
@@ -280,7 +277,6 @@ export default function EventsPage() {
                       </span>
                     ))}
 
-                    {/* Optional: show legacy note if it looks like a restriction and isn't just audience words */}
                     {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
                       <span
                         className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
