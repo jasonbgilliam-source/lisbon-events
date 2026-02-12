@@ -28,14 +28,52 @@ const CATEGORIES: CategoryCard[] = [
   { name: "Workshop", slug: "workshop", image: "/images/workshop.jpeg" },
 ];
 
+const AUDIENCE_ORDER = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
+
+function parsePgArrayString(v: string): string[] {
+  return v.replace(/[{}"]/g, "").split(",").map(x => x.trim()).filter(Boolean);
+}
+
+function normalizeAudienceValue(aud: unknown): string[] {
+  if (!aud) return [];
+  if (Array.isArray(aud)) return aud.map(String);
+  if (typeof aud === "string") {
+    if (aud.startsWith("{")) return parsePgArrayString(aud);
+    if (aud.includes(",")) return aud.split(",").map(x => x.trim());
+    return [aud];
+  }
+  return [];
+}
+
+function audiencePreviewFromRows(rows: Array<{ audience?: unknown }>, max = 3): string[] {
+  const set = new Set<string>();
+
+  for (const r of rows) {
+    for (const v of normalizeAudienceValue(r.audience)) {
+      const match = AUDIENCE_ORDER.find(x => x.toLowerCase() === v.toLowerCase());
+      set.add(match ?? v);
+    }
+  }
+
+  if (set.has("All Ages")) return ["All Ages"];
+
+  return Array.from(set)
+    .sort(
+      (a, b) =>
+        AUDIENCE_ORDER.indexOf(a as any) - AUDIENCE_ORDER.indexOf(b as any)
+    )
+    .slice(0, max);
+}
+
 export default async function CategoriesPage() {
   const supabase = supabaseServer();
   const nowIso = new Date().toISOString();
 
-  // Build counts with fuzzy category matching
   const counts: Record<string, number> = {};
+  const previews: Record<string, string[]> = {};
 
   for (const cat of CATEGORIES) {
+    // Count
     const { count } = await supabase
       .from("events")
       .select("id", { count: "exact", head: true })
@@ -43,6 +81,21 @@ export default async function CategoriesPage() {
       .ilike("category", `%${cat.name}%`);
 
     counts[cat.slug] = count ?? 0;
+
+    // Preview (safe)
+    const { data, error } = await supabase
+      .from("events")
+      .select("audience, starts_at")
+      .gte("starts_at", nowIso)
+      .ilike("category", `%${cat.name}%`)
+      .order("starts_at", { ascending: true })
+      .limit(10);
+
+    if (!error && data) {
+      previews[cat.slug] = audiencePreviewFromRows(data);
+    } else {
+      previews[cat.slug] = [];
+    }
   }
 
   return (
@@ -60,27 +113,35 @@ export default async function CategoriesPage() {
               className="group bg-white rounded-2xl border border-orange-200 overflow-hidden shadow-sm hover:shadow-lg transition"
             >
               <div className="relative h-40">
-                <Image
-                  src={cat.image}
-                  alt={cat.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform"
-                />
+                <Image src={cat.image} alt={cat.name} fill className="object-cover" />
               </div>
 
-              <div className="p-4 flex items-center justify-between">
-                <div>
-                  <div className="text-lg font-semibold text-[#c94917]">
-                    {cat.name}
+              <div className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="text-lg font-semibold text-[#c94917]">
+                      {cat.name}
+                    </div>
+                    <div className="text-sm text-gray-600">View events →</div>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    View events →
+
+                  <div className="text-sm font-semibold bg-orange-100 text-[#c94917] px-3 py-1 rounded-full">
+                    {counts[cat.slug] ?? 0}
                   </div>
                 </div>
 
-                <div className="text-sm font-semibold bg-orange-100 text-[#c94917] px-3 py-1 rounded-full">
-                  {counts[cat.slug] ?? 0}
-                </div>
+                {previews[cat.slug]?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {previews[cat.slug].map(a => (
+                      <span
+                        key={a}
+                        className="bg-orange-50 text-[#c94917] text-xs font-semibold px-2 py-1 rounded-full border border-orange-200"
+                      >
+                        {a}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </Link>
           ))}

@@ -26,6 +26,7 @@
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",
+    "baseline-browser-mapping": "^2.9.19",
     "dayjs": "^1.11.10",
     "postcss": "^8.4.41",
     "react-cookie-consent": "^9.0.0",

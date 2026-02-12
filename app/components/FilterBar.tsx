@@ -30,7 +30,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
 
   const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
-  const toggle = (value: string, list: string[], setter: any) => {
+  const toggle = (value: string, list: string[], setter: (v: string[]) => void) => {
     if (list.includes(value)) {
       setter(list.filter((x) => x !== value));
     } else {
@@ -47,9 +47,24 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
     });
   };
 
+  const clearFilters = () => {
+    // Explicit, reversible reset (no magic)
+    setSearch("");
+    setCategory([]);
+    setAudience([]);
+    setIsFree(false);
+
+    onFilter({
+      search: "",
+      categories: [],
+      audience: [],
+      is_free: false,
+    });
+  };
+
   return (
     <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
         <input
           type="text"
           placeholder="Search events..."
@@ -57,12 +72,24 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
         />
-        <button
-          onClick={applyFilters}
-          className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
-        >
-          Apply Filters
-        </button>
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={applyFilters}
+            className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
+          >
+            Apply
+          </button>
+
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="px-4 py-2 border border-[#c94917] text-[#c94917] rounded-lg hover:bg-orange-50 transition"
+          >
+            Clear
+          </button>
+        </div>
       </div>
 
       {/* Category Filter */}
@@ -72,6 +99,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           {allCategories.map((c) => (
             <button
               key={c}
+              type="button"
               onClick={() => toggle(c, category, setCategory)}
               className={`px-3 py-1 border rounded-full text-sm transition ${
                 category.includes(c)
@@ -92,6 +120,7 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
           {allAudiences.map((a) => (
             <button
               key={a}
+              type="button"
               onClick={() => toggle(a, audience, setAudience)}
               className={`px-3 py-1 border rounded-full text-sm transition ${
                 audience.includes(a)
@@ -116,6 +145,11 @@ export default function FilterBar({ onFilter }: FilterBarProps) {
         <label htmlFor="free" className="text-sm text-gray-700">
           Show only free events
         </label>
+      </div>
+
+      <div className="mt-3 text-xs text-neutral-500">
+        Filters apply when you click <span className="font-medium">Apply</span> (or{" "}
+        <span className="font-medium">Clear</span>).
       </div>
     </div>
   );

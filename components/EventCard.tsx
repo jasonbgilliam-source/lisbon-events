@@ -17,9 +17,10 @@ export type EventItem = {
   address?: string;
   city?: string;
   price?: string;
-  age?: string;
-  category?: string;              // legacy single value
-  categories?: string[] | string; // new array field
+  age?: string; // legacy notes field
+  audience?: string[] | string; // NEW: canonical audience TEXT[] (or serialized)
+  category?: string; // legacy single value
+  categories?: string[] | string; // new array field (or serialized)
   image_url?: string;
   source_url?: string;
   source_folder?: string;
@@ -27,6 +28,63 @@ export type EventItem = {
   spotify_url?: string;
   is_free?: boolean;
 };
+
+const AUDIENCE_ORDER = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
+
+function parsePgArrayString(v: string): string[] {
+  // handles "{Kids,Teens}" and "{\"Kids\",\"Teens\"}"
+  return v
+    .replace(/[{}"]/g, "")
+    .split(",")
+    .map((x) => x.trim())
+    .filter(Boolean);
+}
+
+function normalizeAudience(aud?: string[] | string): string[] {
+  if (!aud) return [];
+  if (Array.isArray(aud)) return aud.map((x) => String(x).trim()).filter(Boolean);
+  if (typeof aud === "string") {
+    const s = aud.trim();
+    if (!s) return [];
+    if (s.startsWith("{") && s.endsWith("}")) return parsePgArrayString(s);
+    // if someone sent "Kids,Teens"
+    if (s.includes(",")) return s.split(",").map((x) => x.trim()).filter(Boolean);
+    return [s];
+  }
+  return [];
+}
+
+function getAudienceForDisplay(aud?: string[] | string): string[] {
+  const raw = normalizeAudience(aud);
+  if (raw.length === 0) return [];
+
+  // Canonicalize to known values when possible
+  const set = new Set<string>();
+  for (const v of raw) {
+    // preserve exact canonical casing if it matches
+    const match = AUDIENCE_ORDER.find((x) => x.toLowerCase() === v.toLowerCase());
+    set.add(match ?? v);
+  }
+
+  if (set.has("All Ages")) return ["All Ages"];
+
+  // Stable order for known values; unknown values at end
+  const known: string[] = [];
+  const unknown: string[] = [];
+  for (const v of set) {
+    if ((AUDIENCE_ORDER as readonly string[]).includes(v)) known.push(v);
+    else unknown.push(v);
+  }
+
+  known.sort(
+    (a, b) =>
+      (AUDIENCE_ORDER as readonly string[]).indexOf(a) -
+      (AUDIENCE_ORDER as readonly string[]).indexOf(b)
+  );
+  unknown.sort((a, b) => a.localeCompare(b));
+
+  return [...known, ...unknown];
+}
 
 export default function EventCard({ e }: { e: EventItem }) {
   const [expanded, setExpanded] = useState(false);
@@ -61,11 +119,7 @@ export default function EventCard({ e }: { e: EventItem }) {
       } else if (Array.isArray(e.categories) && e.categories.length > 0) {
         catName = e.categories[0];
       } else if (typeof e.categories === "string" && e.categories.includes("{")) {
-        const arr = e.categories
-          .replace(/[{}"]/g, "")
-          .split(",")
-          .map((x) => x.trim())
-          .filter(Boolean);
+        const arr = parsePgArrayString(e.categories);
         if (arr.length > 0) catName = arr[0];
       }
       if (catName)
@@ -96,6 +150,8 @@ export default function EventCard({ e }: { e: EventItem }) {
   const start = e.starts_at || e.start;
   const end = e.ends_at || e.end;
   const loc = e.location_name || e.venue;
+
+  const audience = getAudienceForDisplay(e.audience);
 
   return (
     <div
@@ -133,12 +189,33 @@ export default function EventCard({ e }: { e: EventItem }) {
           🕒 {formatDate(start)}
           {end ? ` – ${formatDate(end)}` : ""}
         </p>
+
         {e.price ? (
           <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
         ) : (
           <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
         )}
-        {e.age && <p className="text-sm text-gray-700 mb-1">🔞 {e.age}</p>}
+
+        {/* 👥 Audience chips (canonical) */}
+        {audience.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {audience.map((a) => (
+              <span
+                key={a}
+                className="bg-orange-50 text-[#c94917] text-xs font-semibold px-2 py-1 rounded-full border border-orange-200"
+              >
+                {a}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* legacy "age" notes field (keep for now) */}
+        {e.age && (
+          <p className="text-sm text-gray-700 mt-2">
+            🔞 {e.age}
+          </p>
+        )}
 
         {e.description && (
           <p
@@ -175,6 +252,7 @@ export default function EventCard({ e }: { e: EventItem }) {
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm text-[#c94917] underline"
+                onClick={(ev) => ev.stopPropagation()}
               >
                 🎥 YouTube
               </a>
@@ -185,6 +263,7 @@ export default function EventCard({ e }: { e: EventItem }) {
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm text-[#c94917] underline"
+                onClick={(ev) => ev.stopPropagation()}
               >
                 🎵 Spotify
               </a>
@@ -196,6 +275,7 @@ export default function EventCard({ e }: { e: EventItem }) {
                 )}`}
                 target="_blank"
                 className="text-sm text-[#c94917] underline"
+                onClick={(ev) => ev.stopPropagation()}
               >
                 🗺️ Map
               </Link>
