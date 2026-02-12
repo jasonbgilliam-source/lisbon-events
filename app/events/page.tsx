@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useMemo, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -231,6 +231,100 @@ export default function EventsPage() {
     return "/images/default.jpeg";
   };
 
+  // Featured / Editor’s Picks (explicit, no DB, reversible)
+  const featuredEvents = useMemo(() => {
+    const hasPromo = (e: EventItem) =>
+      Boolean(e.image_url || e.youtube_url || e.spotify_url);
+
+    const toTime = (s?: string | null) => {
+      const t = s ? new Date(s).getTime() : NaN;
+      return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
+    };
+
+    // Soonest upcoming-ish first; if dates are missing, they sink.
+    return [...events]
+      .filter((e) => hasPromo(e))
+      .sort((a, b) => toTime(a.starts_at) - toTime(b.starts_at))
+      .slice(0, 6);
+  }, [events]);
+
+  const renderEventRowCard = (e: EventItem) => {
+    const audKeys = getAudienceForCard(e);
+
+    return (
+      <Link
+        key={e.id}
+        href={`/events/${encodeURIComponent(e.slug)}`}
+        className="flex bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md"
+      >
+        <div className="relative w-56 h-40">
+          <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
+        </div>
+
+        <div className="flex-1 p-4">
+          <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
+          <p>📍 {e.location_name || "Location TBA"}</p>
+          <p>🕒 {formatDate(e.starts_at)}</p>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            {audKeys.map((k) => (
+              <span
+                key={k}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                title="Audience"
+              >
+                {titleCaseAudienceKey(k)}
+              </span>
+            ))}
+
+            {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
+              <span
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
+                title="Age restriction / notes"
+              >
+                {e.age}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
+  const renderFeaturedCard = (e: EventItem) => {
+    const audKeys = getAudienceForCard(e);
+    return (
+      <Link
+        key={e.id}
+        href={`/events/${encodeURIComponent(e.slug)}`}
+        className="group block min-w-[260px] max-w-[260px] rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
+      >
+        <div className="relative h-36 w-full">
+          <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
+        </div>
+        <div className="p-3">
+          <div className="text-sm text-neutral-600">{formatDate(e.starts_at) || "Date TBA"}</div>
+          <div className="mt-1 line-clamp-2 font-semibold text-[#c94917] group-hover:underline">
+            {e.title}
+          </div>
+          <div className="mt-1 text-sm text-neutral-700">📍 {e.location_name || "Location TBA"}</div>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            {audKeys.slice(0, 2).map((k) => (
+              <span
+                key={k}
+                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                title="Audience"
+              >
+                {titleCaseAudienceKey(k)}
+              </span>
+            ))}
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
   return (
     <section className="max-w-5xl mx-auto">
       <Suspense fallback={<p className="text-center italic">Loading filters…</p>}>
@@ -247,49 +341,27 @@ export default function EventsPage() {
           description="Try clearing filters, changing categories/audience, or searching a different keyword."
         />
       ) : (
-        <div className="flex flex-col gap-6 mt-8">
-          {filteredEvents.map((e) => {
-            const audKeys = getAudienceForCard(e);
-
-            return (
-              <Link
-                key={e.id}
-                href={`/events/${encodeURIComponent(e.slug)}`}
-                className="flex bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md"
-              >
-                <div className="relative w-56 h-40">
-                  <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
+        <div className="mt-6">
+          {featuredEvents.length > 0 ? (
+            <div className="mb-8">
+              <div className="mb-3 flex items-end justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-neutral-900">Editor’s Picks</h2>
+                  <p className="text-sm text-neutral-600">
+                    A few highlighted events with good visuals (for now).
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex-1 p-4">
-                  <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
-                  <p>📍 {e.location_name || "Location TBA"}</p>
-                  <p>🕒 {formatDate(e.starts_at)}</p>
+              <div className="flex gap-4 overflow-x-auto pb-2">
+                {featuredEvents.map(renderFeaturedCard)}
+              </div>
+            </div>
+          ) : null}
 
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {audKeys.map((k) => (
-                      <span
-                        key={k}
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
-                        title="Audience"
-                      >
-                        {titleCaseAudienceKey(k)}
-                      </span>
-                    ))}
-
-                    {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
-                      <span
-                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
-                        title="Age restriction / notes"
-                      >
-                        {e.age}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          <div className="flex flex-col gap-6">
+            {filteredEvents.map(renderEventRowCard)}
+          </div>
         </div>
       )}
     </section>
