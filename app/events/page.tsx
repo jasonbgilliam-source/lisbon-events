@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, Suspense } from "react";
+import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -8,7 +8,7 @@ import FilterBar from "@/components/FilterBar";
 import EmptyState from "@/components/EmptyState";
 
 /**
- * Sponsored pill + placement scaffolding (NO DB REQUIRED)
+ * Sponsored placement control
  * Put sponsored event slugs here to force top placement.
  */
 const SPONSORED_EVENT_SLUGS = new Set<string>([
@@ -27,10 +27,7 @@ type EventItem = {
   city?: string | null;
   price?: string | null;
 
-  // NEW preferred field
   audience?: string[] | null;
-
-  // Legacy / optional restriction notes
   age?: string | null;
 
   category?: string | null;
@@ -86,17 +83,14 @@ function extractAudienceFromLegacyAge(age?: string | null): string[] {
 }
 
 function getAudienceKeys(e: EventItem): string[] {
-  // Prefer structured audience array
   if (Array.isArray(e.audience) && e.audience.length > 0) {
     const keys = e.audience.map(normalizeAudienceValue).filter(Boolean);
     return keys.length > 0 ? keys : ["all ages"];
   }
 
-  // Fall back to legacy age text if it contains audience words
   const legacy = extractAudienceFromLegacyAge(e.age);
   if (legacy.length > 0) return legacy;
 
-  // CRITICAL DEFAULT:
   return ["all ages"];
 }
 
@@ -122,13 +116,48 @@ function audienceChipOrder(a: string) {
 
 function getAudienceForCard(e: EventItem): string[] {
   const keys = getAudienceKeys(e);
-
-  // If it’s All Ages, show only that chip (cleaner)
   if (keys.includes("all ages")) return ["all ages"];
 
-  // Otherwise show distinct, ordered keys
   const uniq = Array.from(new Set(keys.map(normalizeAudienceValue).filter(Boolean)));
   return uniq.sort((a, b) => audienceChipOrder(a) - audienceChipOrder(b));
+}
+
+function toTime(s?: string | null) {
+  const t = s ? new Date(s).getTime() : NaN;
+  return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
+}
+
+/**
+ * Metrics tracking (explicit)
+ * Uses sendBeacon when possible so clicks still log during navigation.
+ */
+function trackMetric(payload: { metric: "impression" | "click"; event_slug: string; page_path: string }) {
+  try {
+    const body = JSON.stringify({
+      ...payload,
+      referrer: document.referrer || null,
+      user_agent: navigator.userAgent || null,
+    });
+
+    const url = "/api/metrics/track";
+
+    // Best-effort: beacon survives navigation better
+    if (navigator.sendBeacon) {
+      const blob = new Blob([body], { type: "application/json" });
+      navigator.sendBeacon(url, blob);
+      return;
+    }
+
+    // Fallback
+    fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    // swallow — metrics should never break UX
+  }
 }
 
 export default function EventsPage() {
@@ -136,6 +165,9 @@ export default function EventsPage() {
   const [filteredEvents, setFilteredEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Prevent duplicate impression logs per page view
+  const impressedSlugsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     async function loadEvents() {
@@ -145,9 +177,7 @@ export default function EventsPage() {
       try {
         const res = await fetch("/api/events/list/?limit=500", { cache: "no-store" });
         const json = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(json?.error || `Failed to load events (${res.status})`);
-        }
+        if (!res.ok) throw new Error(json?.error || `Failed to load events (${res.status})`);
 
         const rows = pickEvents(json);
         setEvents(rows);
@@ -168,7 +198,6 @@ export default function EventsPage() {
   const handleFilter = (filters: any) => {
     let filtered = [...events];
 
-    // Search
     if (filters.search) {
       const term = String(filters.search).toLowerCase();
       filtered = filtered.filter(
@@ -179,43 +208,29 @@ export default function EventsPage() {
       );
     }
 
-    // Categories
     const selectedKeys =
       filters.category_keys?.length > 0
         ? filters.category_keys
         : (filters.categories || []).map(categoryKey);
 
     if (selectedKeys.length > 0) {
-      filtered = filtered.filter((e) => {
-        const key = categoryKey(e.category || "");
-        return selectedKeys.includes(key);
-      });
+      filtered = filtered.filter((e) => selectedKeys.includes(categoryKey(e.category || "")));
     }
 
-    // Audience
     if (filters.audience && filters.audience.length > 0) {
-      const selected = (filters.audience as string[])
-        .map(normalizeAudienceValue)
-        .filter(Boolean);
+      const selected = (filters.audience as string[]).map(normalizeAudienceValue).filter(Boolean);
 
-      // If "All Ages" is selected, treat it as "no audience filtering"
       if (!selected.includes("all ages")) {
         filtered = filtered.filter((e) => {
           const aud = getAudienceKeys(e);
-
-          // Event "All Ages" matches any selected audience filter
           if (aud.includes("all ages")) return true;
-
           return selected.some((a) => aud.includes(a));
         });
       }
     }
 
-    // Free
     if (filters.is_free || filters.isFree) {
-      filtered = filtered.filter(
-        (e) => e.is_free === true || (e.price || "").toLowerCase() === "free"
-      );
+      filtered = filtered.filter((e) => e.is_free === true || (e.price || "").toLowerCase() === "free");
     }
 
     setFilteredEvents(filtered);
@@ -238,11 +253,6 @@ export default function EventsPage() {
     return "/images/default.jpeg";
   };
 
-  const toTime = (s?: string | null) => {
-    const t = s ? new Date(s).getTime() : NaN;
-    return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
-  };
-
   const sponsoredEvents = useMemo(() => {
     return [...events]
       .filter((e) => SPONSORED_EVENT_SLUGS.has(String(e.slug || "")))
@@ -253,11 +263,39 @@ export default function EventsPage() {
     const hasPromo = (e: EventItem) => Boolean(e.image_url || e.youtube_url || e.spotify_url);
 
     return [...events]
-      .filter((e) => !SPONSORED_EVENT_SLUGS.has(String(e.slug || ""))) // keep rails distinct
+      .filter((e) => !SPONSORED_EVENT_SLUGS.has(String(e.slug || "")))
       .filter((e) => hasPromo(e))
       .sort((a, b) => toTime(a.starts_at) - toTime(b.starts_at))
       .slice(0, 6);
   }, [events]);
+
+  // IntersectionObserver for sponsored impressions
+  useEffect(() => {
+    if (sponsoredEvents.length === 0) return;
+
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-sponsored-slug]"));
+    if (els.length === 0) return;
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const slug = (entry.target as HTMLElement).dataset.sponsoredSlug;
+          if (!slug) continue;
+
+          if (!impressedSlugsRef.current.has(slug)) {
+            impressedSlugsRef.current.add(slug);
+            trackMetric({ metric: "impression", event_slug: slug, page_path: window.location.pathname });
+          }
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    els.forEach((el) => obs.observe(el));
+
+    return () => obs.disconnect();
+  }, [sponsoredEvents]);
 
   const renderEventRowCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
@@ -304,12 +342,19 @@ export default function EventsPage() {
 
   const renderPromoCard = (e: EventItem, label: "Sponsored" | "Featured") => {
     const audKeys = getAudienceForCard(e);
+    const isSponsored = label === "Sponsored";
 
     return (
       <Link
         key={e.id}
         href={`/events/${encodeURIComponent(e.slug)}`}
         className="group block min-w-[260px] max-w-[260px] rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
+        data-sponsored-slug={isSponsored ? e.slug : undefined}
+        onClick={() => {
+          if (isSponsored) {
+            trackMetric({ metric: "click", event_slug: e.slug, page_path: window.location.pathname });
+          }
+        }}
       >
         <div className="relative h-36 w-full">
           <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
@@ -365,9 +410,7 @@ export default function EventsPage() {
             <div className="mb-8">
               <div className="mb-3">
                 <h2 className="text-lg font-semibold text-neutral-900">Sponsored Events</h2>
-                <p className="text-sm text-neutral-600">
-                  Paid placements. Guaranteed visibility.
-                </p>
+                <p className="text-sm text-neutral-600">Paid placements. Guaranteed visibility.</p>
               </div>
 
               <div className="flex gap-4 overflow-x-auto pb-2">
@@ -380,9 +423,7 @@ export default function EventsPage() {
             <div className="mb-8">
               <div className="mb-3">
                 <h2 className="text-lg font-semibold text-neutral-900">Editor’s Picks</h2>
-                <p className="text-sm text-neutral-600">
-                  Highlighted events with good visuals (for now).
-                </p>
+                <p className="text-sm text-neutral-600">Highlighted events with good visuals (for now).</p>
               </div>
 
               <div className="flex gap-4 overflow-x-auto pb-2">
@@ -391,9 +432,7 @@ export default function EventsPage() {
             </div>
           ) : null}
 
-          <div className="flex flex-col gap-6">
-            {filteredEvents.map(renderEventRowCard)}
-          </div>
+          <div className="flex flex-col gap-6">{filteredEvents.map(renderEventRowCard)}</div>
         </div>
       )}
     </section>
