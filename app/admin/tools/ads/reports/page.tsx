@@ -13,6 +13,38 @@ type Row = {
   total: number;
 };
 
+type SummarySlot = {
+  slot_key: string;
+  impressions: number;
+  clicks: number;
+  ctr: number; // 0..1
+};
+
+type SummaryCampaign = {
+  campaign_name: string;
+  impressions: number;
+  clicks: number;
+  ctr: number; // 0..1
+};
+
+type SummaryAdvertiser = {
+  advertiser_name: string;
+  impressions: number;
+  clicks: number;
+  ctr: number; // 0..1
+};
+
+type ApiResponse = {
+  ok: boolean;
+  from: string | null;
+  to: string | null;
+  totals: Record<string, number>;
+  rows: Row[];
+  slot_summary: SummarySlot[];
+  campaign_summary: SummaryCampaign[];
+  advertiser_summary: SummaryAdvertiser[];
+};
+
 function todayISO() {
   const d = new Date();
   const y = d.getFullYear();
@@ -30,7 +62,58 @@ function daysAgoISO(n: number) {
   return `${y}-${m}-${day}`;
 }
 
-function toCSV(rows: Row[]) {
+function fmtPct(x: number) {
+  if (!Number.isFinite(x)) return "0.00%";
+  return `${(x * 100).toFixed(2)}%`;
+}
+
+function escCSV(v: any) {
+  return `"${String(v ?? "").replace(/"/g, '""')}"`;
+}
+
+function toCSV(
+  rows: Row[],
+  slotSummary: SummarySlot[],
+  advSummary: SummaryAdvertiser[],
+  campSummary: SummaryCampaign[]
+) {
+  const lines: string[] = [];
+
+  // Sheet 1: Slot Summary
+  lines.push(escCSV("SLOT SUMMARY"));
+  lines.push(["slot_key", "impressions", "clicks", "ctr"].map(escCSV).join(","));
+  for (const s of slotSummary) {
+    lines.push(
+      [s.slot_key, s.impressions, s.clicks, fmtPct(s.ctr)].map(escCSV).join(",")
+    );
+  }
+
+  lines.push(""); // blank line
+
+  // Sheet 2: Advertiser Summary
+  lines.push(escCSV("ADVERTISER SUMMARY"));
+  lines.push(["advertiser_name", "impressions", "clicks", "ctr"].map(escCSV).join(","));
+  for (const a of advSummary) {
+    lines.push(
+      [a.advertiser_name, a.impressions, a.clicks, fmtPct(a.ctr)].map(escCSV).join(",")
+    );
+  }
+
+  lines.push("");
+
+  // Sheet 3: Campaign Summary
+  lines.push(escCSV("CAMPAIGN SUMMARY"));
+  lines.push(["campaign_name", "impressions", "clicks", "ctr"].map(escCSV).join(","));
+  for (const c of campSummary) {
+    lines.push(
+      [c.campaign_name, c.impressions, c.clicks, fmtPct(c.ctr)].map(escCSV).join(",")
+    );
+  }
+
+  lines.push("");
+
+  // Sheet 4: Detailed rows
+  lines.push(escCSV("DETAIL ROWS"));
   const header = [
     "day",
     "slot_key",
@@ -41,8 +124,7 @@ function toCSV(rows: Row[]) {
     "metric",
     "total",
   ];
-  const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const lines = [header.map(esc).join(",")];
+  lines.push(header.map(escCSV).join(","));
   for (const r of rows) {
     lines.push(
       [
@@ -55,10 +137,11 @@ function toCSV(rows: Row[]) {
         r.metric,
         r.total,
       ]
-        .map(esc)
+        .map(escCSV)
         .join(",")
     );
   }
+
   return lines.join("\n");
 }
 
@@ -66,8 +149,12 @@ export default function AdsReportsPage() {
   const [from, setFrom] = useState(daysAgoISO(14));
   const [to, setTo] = useState(todayISO());
   const [loading, setLoading] = useState(false);
+
   const [rows, setRows] = useState<Row[]>([]);
   const [totals, setTotals] = useState<Record<string, number>>({});
+  const [slotSummary, setSlotSummary] = useState<SummarySlot[]>([]);
+  const [advSummary, setAdvSummary] = useState<SummaryAdvertiser[]>([]);
+  const [campSummary, setCampSummary] = useState<SummaryCampaign[]>([]);
 
   async function load() {
     setLoading(true);
@@ -75,13 +162,19 @@ export default function AdsReportsPage() {
       const res = await fetch(
         `/api/admin/ads/reports/?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
       );
-      const json = await res.json();
+      const json = (await res.json()) as ApiResponse;
       if (json?.ok) {
         setRows(json.rows || []);
         setTotals(json.totals || {});
+        setSlotSummary(json.slot_summary || []);
+        setAdvSummary(json.advertiser_summary || []);
+        setCampSummary(json.campaign_summary || []);
       } else {
         setRows([]);
         setTotals({});
+        setSlotSummary([]);
+        setAdvSummary([]);
+        setCampSummary([]);
       }
     } finally {
       setLoading(false);
@@ -95,6 +188,7 @@ export default function AdsReportsPage() {
 
   const sortedRows = useMemo(() => {
     return [...rows].sort((a, b) => {
+      // day desc, then slot, then metric
       if (a.day !== b.day) return a.day < b.day ? 1 : -1;
       if (a.slot_key !== b.slot_key) return a.slot_key < b.slot_key ? -1 : 1;
       if (a.metric !== b.metric) return a.metric < b.metric ? -1 : 1;
@@ -103,7 +197,7 @@ export default function AdsReportsPage() {
   }, [rows]);
 
   const downloadCSV = () => {
-    const csv = toCSV(sortedRows);
+    const csv = toCSV(sortedRows, slotSummary, advSummary, campSummary);
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -115,6 +209,8 @@ export default function AdsReportsPage() {
 
   const impressions = totals.impression || 0;
   const clicks = totals.click || 0;
+  const ctr = impressions > 0 ? clicks / impressions : 0;
+
   const other = Object.entries(totals)
     .filter(([k]) => k !== "impression" && k !== "click")
     .reduce((acc, [, v]) => acc + (v || 0), 0);
@@ -125,7 +221,7 @@ export default function AdsReportsPage() {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Ads Reports</h1>
           <p className="text-sm text-black/60 mt-1">
-            Enriched with event title + advertiser/campaign (when DB placements exist)
+            Invoice-ready rollups (slot / advertiser / campaign) + detailed rows + CSV export.
           </p>
         </div>
 
@@ -165,7 +261,7 @@ export default function AdsReportsPage() {
         </div>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-3 mt-6">
+      <div className="grid sm:grid-cols-4 gap-3 mt-6">
         <div className="border rounded-xl p-4 bg-white">
           <div className="text-xs text-black/60">Impressions</div>
           <div className="text-2xl font-bold mt-1">{impressions}</div>
@@ -175,14 +271,127 @@ export default function AdsReportsPage() {
           <div className="text-2xl font-bold mt-1">{clicks}</div>
         </div>
         <div className="border rounded-xl p-4 bg-white">
+          <div className="text-xs text-black/60">CTR</div>
+          <div className="text-2xl font-bold mt-1">{fmtPct(ctr)}</div>
+        </div>
+        <div className="border rounded-xl p-4 bg-white">
           <div className="text-xs text-black/60">Other</div>
           <div className="text-2xl font-bold mt-1">{other}</div>
         </div>
       </div>
 
+      {/* SLOT SUMMARY */}
       <div className="mt-6 border rounded-xl overflow-hidden bg-white">
         <div className="px-4 py-3 border-b text-sm font-semibold">
-          Breakdown ({sortedRows.length} rows)
+          Slot Summary ({slotSummary.length})
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-black/5">
+              <tr>
+                <th className="text-left px-4 py-2">Slot</th>
+                <th className="text-right px-4 py-2">Impressions</th>
+                <th className="text-right px-4 py-2">Clicks</th>
+                <th className="text-right px-4 py-2">CTR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slotSummary.map((s) => (
+                <tr key={s.slot_key} className="border-t">
+                  <td className="px-4 py-2 whitespace-nowrap">{s.slot_key}</td>
+                  <td className="px-4 py-2 text-right">{s.impressions}</td>
+                  <td className="px-4 py-2 text-right">{s.clicks}</td>
+                  <td className="px-4 py-2 text-right">{fmtPct(s.ctr)}</td>
+                </tr>
+              ))}
+              {slotSummary.length === 0 && (
+                <tr>
+                  <td className="px-4 py-6 text-black/60" colSpan={4}>
+                    No slot summary rows.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ADVERTISER SUMMARY */}
+      <div className="mt-6 border rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b text-sm font-semibold">
+          Advertiser Summary ({advSummary.length})
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-black/5">
+              <tr>
+                <th className="text-left px-4 py-2">Advertiser</th>
+                <th className="text-right px-4 py-2">Impressions</th>
+                <th className="text-right px-4 py-2">Clicks</th>
+                <th className="text-right px-4 py-2">CTR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {advSummary.map((a) => (
+                <tr key={a.advertiser_name} className="border-t">
+                  <td className="px-4 py-2 whitespace-nowrap">{a.advertiser_name}</td>
+                  <td className="px-4 py-2 text-right">{a.impressions}</td>
+                  <td className="px-4 py-2 text-right">{a.clicks}</td>
+                  <td className="px-4 py-2 text-right">{fmtPct(a.ctr)}</td>
+                </tr>
+              ))}
+              {advSummary.length === 0 && (
+                <tr>
+                  <td className="px-4 py-6 text-black/60" colSpan={4}>
+                    No advertiser summary rows.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* CAMPAIGN SUMMARY */}
+      <div className="mt-6 border rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b text-sm font-semibold">
+          Campaign Summary ({campSummary.length})
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-black/5">
+              <tr>
+                <th className="text-left px-4 py-2">Campaign</th>
+                <th className="text-right px-4 py-2">Impressions</th>
+                <th className="text-right px-4 py-2">Clicks</th>
+                <th className="text-right px-4 py-2">CTR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {campSummary.map((c) => (
+                <tr key={c.campaign_name} className="border-t">
+                  <td className="px-4 py-2 whitespace-nowrap">{c.campaign_name}</td>
+                  <td className="px-4 py-2 text-right">{c.impressions}</td>
+                  <td className="px-4 py-2 text-right">{c.clicks}</td>
+                  <td className="px-4 py-2 text-right">{fmtPct(c.ctr)}</td>
+                </tr>
+              ))}
+              {campSummary.length === 0 && (
+                <tr>
+                  <td className="px-4 py-6 text-black/60" colSpan={4}>
+                    No campaign summary rows.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* DETAIL ROWS */}
+      <div className="mt-6 border rounded-xl overflow-hidden bg-white">
+        <div className="px-4 py-3 border-b text-sm font-semibold">
+          Detail Rows ({sortedRows.length})
         </div>
 
         <div className="overflow-x-auto">
@@ -206,9 +415,7 @@ export default function AdsReportsPage() {
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">{r.slot_key}</td>
                   <td className="px-4 py-2">
-                    <div className="font-medium">
-                      {r.event_title || r.event_slug}
-                    </div>
+                    <div className="font-medium">{r.event_title || r.event_slug}</div>
                     <div className="text-xs text-black/60">{r.event_slug}</div>
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">

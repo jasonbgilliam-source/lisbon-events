@@ -20,6 +20,11 @@ type DailyRow = {
   total: number;
 };
 
+function pct(n: number) {
+  if (!Number.isFinite(n)) return 0;
+  return n;
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
 
@@ -53,37 +58,29 @@ export async function GET(req: NextRequest) {
     totals[r.metric] = (totals[r.metric] || 0) + (r.total || 0);
   }
 
-  // ----- Enrichment: event titles -----
+  // Enrichment: event titles
   const uniqueSlugs = Array.from(new Set(rows.map((r) => r.event_slug).filter(Boolean)));
-
   const eventTitleBySlug = new Map<string, string>();
+
   if (uniqueSlugs.length > 0) {
     const { data: events, error: evErr } = await supabase
       .from("events")
       .select("slug, title")
       .in("slug", uniqueSlugs);
 
-    if (evErr) {
-      console.error("ads/reports events lookup error:", evErr);
-    } else {
+    if (evErr) console.error("ads/reports events lookup error:", evErr);
+    else {
       for (const e of events || []) {
         if (e?.slug) eventTitleBySlug.set(e.slug, e.title || "");
       }
     }
   }
 
-  // ----- Enrichment: placement -> campaign -> advertiser -----
-  // We match placements by (slot_key, event_slug). This will be null for ENV-only ads.
-  type PlacementJoin = {
-    slot_key: string;
-    event_slug: string;
-    ad_campaigns?: {
-      name: string;
-      advertisers?: { name: string };
-    } | null;
-  };
-
-  const placementByKey = new Map<string, { campaign_name?: string; advertiser_name?: string }>();
+  // Enrichment: placement -> campaign -> advertiser (match by slot_key + event_slug)
+  const placementByKey = new Map<
+    string,
+    { campaign_name?: string; advertiser_name?: string }
+  >();
 
   if (uniqueSlugs.length > 0) {
     const uniqueSlotKeys = Array.from(new Set(rows.map((r) => r.slot_key).filter(Boolean)));
@@ -106,11 +103,12 @@ export async function GET(req: NextRequest) {
     if (plErr) {
       console.error("ads/reports placements lookup error:", plErr);
     } else {
-      for (const p of (placements || []) as any as PlacementJoin[]) {
+      for (const p of (placements || []) as any[]) {
         const key = `${p.slot_key}::${p.event_slug}`;
-        const campaign_name = p.ad_campaigns?.name || undefined;
-        const advertiser_name = p.ad_campaigns?.advertisers?.name || undefined;
-        placementByKey.set(key, { campaign_name, advertiser_name });
+        placementByKey.set(key, {
+          campaign_name: p?.ad_campaigns?.name || undefined,
+          advertiser_name: p?.ad_campaigns?.advertisers?.name || undefined,
+        });
       }
     }
   }
@@ -126,11 +124,71 @@ export async function GET(req: NextRequest) {
     };
   });
 
+  // Build rollups for invoice-ready reporting
+  const slotAgg = new Map<string, { impressions: number; clicks: number }>();
+  const campAgg = new Map<string, { impressions: number; clicks: number }>();
+  const advAgg = new Map<string, { impressions: number; clicks: number }>();
+
+  for (const r of enrichedRows as any[]) {
+    const impressionsAdd = r.metric === "impression" ? (r.total || 0) : 0;
+    const clicksAdd = r.metric === "click" ? (r.total || 0) : 0;
+
+    // Slot
+    const sKey = r.slot_key || "unknown";
+    const s = slotAgg.get(sKey) || { impressions: 0, clicks: 0 };
+    s.impressions += impressionsAdd;
+    s.clicks += clicksAdd;
+    slotAgg.set(sKey, s);
+
+    // Campaign
+    const cKey = r.campaign_name || "—";
+    const c = campAgg.get(cKey) || { impressions: 0, clicks: 0 };
+    c.impressions += impressionsAdd;
+    c.clicks += clicksAdd;
+    campAgg.set(cKey, c);
+
+    // Advertiser
+    const aKey = r.advertiser_name || "—";
+    const a = advAgg.get(aKey) || { impressions: 0, clicks: 0 };
+    a.impressions += impressionsAdd;
+    a.clicks += clicksAdd;
+    advAgg.set(aKey, a);
+  }
+
+  const slot_summary = Array.from(slotAgg.entries()).map(([slot_key, v]) => ({
+    slot_key,
+    impressions: v.impressions,
+    clicks: v.clicks,
+    ctr: v.impressions > 0 ? pct(v.clicks / v.impressions) : 0,
+  }));
+
+  const campaign_summary = Array.from(campAgg.entries()).map(([campaign_name, v]) => ({
+    campaign_name,
+    impressions: v.impressions,
+    clicks: v.clicks,
+    ctr: v.impressions > 0 ? pct(v.clicks / v.impressions) : 0,
+  }));
+
+  const advertiser_summary = Array.from(advAgg.entries()).map(([advertiser_name, v]) => ({
+    advertiser_name,
+    impressions: v.impressions,
+    clicks: v.clicks,
+    ctr: v.impressions > 0 ? pct(v.clicks / v.impressions) : 0,
+  }));
+
+  // sort summaries by impressions desc
+  slot_summary.sort((a, b) => b.impressions - a.impressions);
+  campaign_summary.sort((a, b) => b.impressions - a.impressions);
+  advertiser_summary.sort((a, b) => b.impressions - a.impressions);
+
   return NextResponse.json({
     ok: true,
     from,
     to,
     totals,
     rows: enrichedRows,
+    slot_summary,
+    campaign_summary,
+    advertiser_summary,
   });
 }
