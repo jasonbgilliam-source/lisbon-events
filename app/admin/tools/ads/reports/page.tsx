@@ -71,7 +71,17 @@ function escCSV(v: any) {
   return `"${String(v ?? "").replace(/"/g, '""')}"`;
 }
 
-function toCSV(
+function downloadTextFile(filename: string, contents: string) {
+  const blob = new Blob([contents], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function toCSVAll(
   rows: Row[],
   slotSummary: SummarySlot[],
   advSummary: SummaryAdvertiser[],
@@ -79,7 +89,6 @@ function toCSV(
 ) {
   const lines: string[] = [];
 
-  // Sheet 1: Slot Summary
   lines.push(escCSV("SLOT SUMMARY"));
   lines.push(["slot_key", "impressions", "clicks", "ctr"].map(escCSV).join(","));
   for (const s of slotSummary) {
@@ -88,9 +97,8 @@ function toCSV(
     );
   }
 
-  lines.push(""); // blank line
+  lines.push("");
 
-  // Sheet 2: Advertiser Summary
   lines.push(escCSV("ADVERTISER SUMMARY"));
   lines.push(["advertiser_name", "impressions", "clicks", "ctr"].map(escCSV).join(","));
   for (const a of advSummary) {
@@ -101,7 +109,6 @@ function toCSV(
 
   lines.push("");
 
-  // Sheet 3: Campaign Summary
   lines.push(escCSV("CAMPAIGN SUMMARY"));
   lines.push(["campaign_name", "impressions", "clicks", "ctr"].map(escCSV).join(","));
   for (const c of campSummary) {
@@ -112,7 +119,6 @@ function toCSV(
 
   lines.push("");
 
-  // Sheet 4: Detailed rows
   lines.push(escCSV("DETAIL ROWS"));
   const header = [
     "day",
@@ -145,6 +151,130 @@ function toCSV(
   return lines.join("\n");
 }
 
+function toCSVSlotInvoice(rows: Row[], slotKey: string) {
+  // A compact invoice-style export: totals by event + metric, with CTR per event
+  // We compute event-level impressions/clicks for the slot.
+  const perEvent = new Map<
+    string,
+    {
+      event_slug: string;
+      event_title: string | null;
+      advertiser_name: string | null;
+      campaign_name: string | null;
+      impressions: number;
+      clicks: number;
+    }
+  >();
+
+  for (const r of rows) {
+    if (r.slot_key !== slotKey) continue;
+
+    const key = `${r.event_slug}`;
+    const cur =
+      perEvent.get(key) || {
+        event_slug: r.event_slug,
+        event_title: r.event_title,
+        advertiser_name: r.advertiser_name,
+        campaign_name: r.campaign_name,
+        impressions: 0,
+        clicks: 0,
+      };
+
+    if (r.metric === "impression") cur.impressions += r.total || 0;
+    if (r.metric === "click") cur.clicks += r.total || 0;
+
+    // keep latest non-null labels
+    cur.event_title = cur.event_title || r.event_title;
+    cur.advertiser_name = cur.advertiser_name || r.advertiser_name;
+    cur.campaign_name = cur.campaign_name || r.campaign_name;
+
+    perEvent.set(key, cur);
+  }
+
+  const items = Array.from(perEvent.values()).sort(
+    (a, b) => b.impressions - a.impressions
+  );
+
+  const lines: string[] = [];
+  lines.push(escCSV(`SLOT INVOICE EXPORT: ${slotKey}`));
+  lines.push(
+    [
+      "slot_key",
+      "event_slug",
+      "event_title",
+      "advertiser_name",
+      "campaign_name",
+      "impressions",
+      "clicks",
+      "ctr",
+    ]
+      .map(escCSV)
+      .join(",")
+  );
+
+  for (const e of items) {
+    const ctr = e.impressions > 0 ? e.clicks / e.impressions : 0;
+    lines.push(
+      [
+        slotKey,
+        e.event_slug,
+        e.event_title,
+        e.advertiser_name,
+        e.campaign_name,
+        e.impressions,
+        e.clicks,
+        fmtPct(ctr),
+      ]
+        .map(escCSV)
+        .join(",")
+    );
+  }
+
+  lines.push("");
+  lines.push(escCSV("DETAIL ROWS"));
+  lines.push(
+    [
+      "day",
+      "slot_key",
+      "event_slug",
+      "event_title",
+      "advertiser_name",
+      "campaign_name",
+      "metric",
+      "total",
+    ]
+      .map(escCSV)
+      .join(",")
+  );
+
+  const detail = rows
+    .filter((r) => r.slot_key === slotKey)
+    .sort((a, b) => {
+      if (a.day !== b.day) return a.day < b.day ? 1 : -1;
+      if (a.metric !== b.metric) return a.metric < b.metric ? -1 : 1;
+      return a.event_slug < b.event_slug ? -1 : 1;
+    });
+
+  for (const r of detail) {
+    lines.push(
+      [
+        r.day,
+        r.slot_key,
+        r.event_slug,
+        r.event_title,
+        r.advertiser_name,
+        r.campaign_name,
+        r.metric,
+        r.total,
+      ]
+        .map(escCSV)
+        .join(",")
+    );
+  }
+
+  return lines.join("\n");
+}
+
 export default function AdsReportsPage() {
   const [from, setFrom] = useState(daysAgoISO(14));
   const [to, setTo] = useState(todayISO());
@@ -155,6 +285,8 @@ export default function AdsReportsPage() {
   const [slotSummary, setSlotSummary] = useState<SummarySlot[]>([]);
   const [advSummary, setAdvSummary] = useState<SummaryAdvertiser[]>([]);
   const [campSummary, setCampSummary] = useState<SummaryCampaign[]>([]);
+
+  const [hideUnknown, setHideUnknown] = useState(true);
 
   async function load() {
     setLoading(true);
@@ -186,25 +318,36 @@ export default function AdsReportsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const filteredRows = useMemo(() => {
+    if (!hideUnknown) return rows;
+    return rows.filter((r) => r.slot_key !== "unknown");
+  }, [rows, hideUnknown]);
+
+  const filteredSlotSummary = useMemo(() => {
+    if (!hideUnknown) return slotSummary;
+    return slotSummary.filter((s) => s.slot_key !== "unknown");
+  }, [slotSummary, hideUnknown]);
+
+  const filteredAdvSummary = useMemo(() => advSummary, [advSummary]);
+  const filteredCampSummary = useMemo(() => campSummary, [campSummary]);
+
   const sortedRows = useMemo(() => {
-    return [...rows].sort((a, b) => {
-      // day desc, then slot, then metric
+    return [...filteredRows].sort((a, b) => {
       if (a.day !== b.day) return a.day < b.day ? 1 : -1;
       if (a.slot_key !== b.slot_key) return a.slot_key < b.slot_key ? -1 : 1;
       if (a.metric !== b.metric) return a.metric < b.metric ? -1 : 1;
       return a.event_slug < b.event_slug ? -1 : 1;
     });
-  }, [rows]);
+  }, [filteredRows]);
 
-  const downloadCSV = () => {
-    const csv = toCSV(sortedRows, slotSummary, advSummary, campSummary);
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `ads_reports_${from}_to_${to}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const downloadAllCSV = () => {
+    const csv = toCSVAll(sortedRows, filteredSlotSummary, filteredAdvSummary, filteredCampSummary);
+    downloadTextFile(`ads_reports_${from}_to_${to}.csv`, csv);
+  };
+
+  const downloadSlotCSV = (slotKey: string) => {
+    const csv = toCSVSlotInvoice(sortedRows, slotKey);
+    downloadTextFile(`ads_invoice_${slotKey}_${from}_to_${to}.csv`, csv);
   };
 
   const impressions = totals.impression || 0;
@@ -252,12 +395,21 @@ export default function AdsReportsPage() {
             {loading ? "Loading…" : "Run"}
           </button>
           <button
-            onClick={downloadCSV}
+            onClick={downloadAllCSV}
             className="px-4 py-2 rounded-lg border text-sm"
             disabled={loading || sortedRows.length === 0}
           >
             Export CSV
           </button>
+
+          <label className="flex items-center gap-2 text-sm border rounded-lg px-3 py-2 bg-white">
+            <input
+              type="checkbox"
+              checked={hideUnknown}
+              onChange={(e) => setHideUnknown(e.target.checked)}
+            />
+            Hide “unknown”
+          </label>
         </div>
       </div>
 
@@ -283,7 +435,7 @@ export default function AdsReportsPage() {
       {/* SLOT SUMMARY */}
       <div className="mt-6 border rounded-xl overflow-hidden bg-white">
         <div className="px-4 py-3 border-b text-sm font-semibold">
-          Slot Summary ({slotSummary.length})
+          Slot Summary ({filteredSlotSummary.length})
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -293,20 +445,30 @@ export default function AdsReportsPage() {
                 <th className="text-right px-4 py-2">Impressions</th>
                 <th className="text-right px-4 py-2">Clicks</th>
                 <th className="text-right px-4 py-2">CTR</th>
+                <th className="text-right px-4 py-2">Invoice CSV</th>
               </tr>
             </thead>
             <tbody>
-              {slotSummary.map((s) => (
+              {filteredSlotSummary.map((s) => (
                 <tr key={s.slot_key} className="border-t">
                   <td className="px-4 py-2 whitespace-nowrap">{s.slot_key}</td>
                   <td className="px-4 py-2 text-right">{s.impressions}</td>
                   <td className="px-4 py-2 text-right">{s.clicks}</td>
                   <td className="px-4 py-2 text-right">{fmtPct(s.ctr)}</td>
+                  <td className="px-4 py-2 text-right">
+                    <button
+                      className="px-3 py-1 rounded-lg border text-xs hover:bg-black/5"
+                      onClick={() => downloadSlotCSV(s.slot_key)}
+                      disabled={sortedRows.length === 0}
+                    >
+                      Export
+                    </button>
+                  </td>
                 </tr>
               ))}
-              {slotSummary.length === 0 && (
+              {filteredSlotSummary.length === 0 && (
                 <tr>
-                  <td className="px-4 py-6 text-black/60" colSpan={4}>
+                  <td className="px-4 py-6 text-black/60" colSpan={5}>
                     No slot summary rows.
                   </td>
                 </tr>
@@ -319,7 +481,7 @@ export default function AdsReportsPage() {
       {/* ADVERTISER SUMMARY */}
       <div className="mt-6 border rounded-xl overflow-hidden bg-white">
         <div className="px-4 py-3 border-b text-sm font-semibold">
-          Advertiser Summary ({advSummary.length})
+          Advertiser Summary ({filteredAdvSummary.length})
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -332,7 +494,7 @@ export default function AdsReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {advSummary.map((a) => (
+              {filteredAdvSummary.map((a) => (
                 <tr key={a.advertiser_name} className="border-t">
                   <td className="px-4 py-2 whitespace-nowrap">{a.advertiser_name}</td>
                   <td className="px-4 py-2 text-right">{a.impressions}</td>
@@ -340,7 +502,7 @@ export default function AdsReportsPage() {
                   <td className="px-4 py-2 text-right">{fmtPct(a.ctr)}</td>
                 </tr>
               ))}
-              {advSummary.length === 0 && (
+              {filteredAdvSummary.length === 0 && (
                 <tr>
                   <td className="px-4 py-6 text-black/60" colSpan={4}>
                     No advertiser summary rows.
@@ -355,7 +517,7 @@ export default function AdsReportsPage() {
       {/* CAMPAIGN SUMMARY */}
       <div className="mt-6 border rounded-xl overflow-hidden bg-white">
         <div className="px-4 py-3 border-b text-sm font-semibold">
-          Campaign Summary ({campSummary.length})
+          Campaign Summary ({filteredCampSummary.length})
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -368,7 +530,7 @@ export default function AdsReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {campSummary.map((c) => (
+              {filteredCampSummary.map((c) => (
                 <tr key={c.campaign_name} className="border-t">
                   <td className="px-4 py-2 whitespace-nowrap">{c.campaign_name}</td>
                   <td className="px-4 py-2 text-right">{c.impressions}</td>
@@ -376,7 +538,7 @@ export default function AdsReportsPage() {
                   <td className="px-4 py-2 text-right">{fmtPct(c.ctr)}</td>
                 </tr>
               ))}
-              {campSummary.length === 0 && (
+              {filteredCampSummary.length === 0 && (
                 <tr>
                   <td className="px-4 py-6 text-black/60" colSpan={4}>
                     No campaign summary rows.
