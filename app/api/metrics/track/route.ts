@@ -1,78 +1,56 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-type Body = {
-  metric?: "impression" | "click";
-  event_slug?: string;
-  page_path?: string;
-  referrer?: string | null;
-  user_agent?: string | null;
-};
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !key) return null;
-
-  return createClient(url, key, {
-    auth: { persistSession: false },
-  });
-}
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json().catch(() => ({}))) as Body;
+    const body = await req.json();
 
-    const metric = body.metric;
-    const event_slug = body.event_slug;
-    const page_path = body.page_path;
-
-    if (metric !== "impression" && metric !== "click") {
-      return NextResponse.json({ error: "Invalid metric" }, { status: 400 });
-    }
-    if (!event_slug || typeof event_slug !== "string") {
-      return NextResponse.json({ error: "Missing event_slug" }, { status: 400 });
-    }
-    if (!page_path || typeof page_path !== "string") {
-      return NextResponse.json({ error: "Missing page_path" }, { status: 400 });
-    }
-
-    const referrer =
-      typeof body.referrer === "string" ? body.referrer : req.headers.get("referer");
-    const user_agent =
-      typeof body.user_agent === "string" ? body.user_agent : req.headers.get("user-agent");
-
-    const supabase = getSupabaseAdmin();
-
-    // Explicit fallback: if env isn't set, don't crash the app.
-    if (!supabase) {
-      console.log("[metrics.track] (no supabase env) ", {
-        metric,
-        event_slug,
-        page_path,
-        referrer,
-        user_agent,
-      });
-      return NextResponse.json({ ok: true, stored: false });
-    }
-
-    const { error } = await supabase.from("sponsor_metrics").insert({
+    const {
       metric,
       event_slug,
       page_path,
       referrer,
       user_agent,
-    });
+      slot_key
+    } = body;
 
-    if (error) {
-      console.error("[metrics.track] supabase insert error:", error);
-      return NextResponse.json({ error: "Failed to store metric" }, { status: 500 });
+    if (!metric || !event_slug) {
+      return NextResponse.json(
+        { ok: false, error: "Missing metric or event_slug" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json({ ok: true, stored: true });
-  } catch (e: any) {
-    console.error("[metrics.track] error:", e);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    const { error } = await supabase
+      .from("sponsor_metrics")
+      .insert({
+        metric,
+        event_slug,
+        page_path: page_path || null,
+        referrer: referrer || null,
+        user_agent: user_agent || null,
+        slot_key: slot_key || "unknown"
+      });
+
+    if (error) {
+      console.error("Metrics insert error:", error);
+      return NextResponse.json(
+        { ok: false, error: "Insert failed" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("Metrics route error:", err);
+    return NextResponse.json(
+      { ok: false, error: "Server error" },
+      { status: 500 }
+    );
   }
 }
