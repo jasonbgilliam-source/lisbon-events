@@ -6,6 +6,9 @@ type Row = {
   day: string;
   slot_key: string;
   event_slug: string;
+  event_title: string | null;
+  advertiser_name: string | null;
+  campaign_name: string | null;
   metric: string;
   total: number;
 };
@@ -28,11 +31,33 @@ function daysAgoISO(n: number) {
 }
 
 function toCSV(rows: Row[]) {
-  const header = ["day", "slot_key", "event_slug", "metric", "total"];
+  const header = [
+    "day",
+    "slot_key",
+    "event_slug",
+    "event_title",
+    "advertiser_name",
+    "campaign_name",
+    "metric",
+    "total",
+  ];
   const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
   const lines = [header.map(esc).join(",")];
   for (const r of rows) {
-    lines.push([r.day, r.slot_key, r.event_slug, r.metric, r.total].map(esc).join(","));
+    lines.push(
+      [
+        r.day,
+        r.slot_key,
+        r.event_slug,
+        r.event_title,
+        r.advertiser_name,
+        r.campaign_name,
+        r.metric,
+        r.total,
+      ]
+        .map(esc)
+        .join(",")
+    );
   }
   return lines.join("\n");
 }
@@ -100,8 +125,7 @@ export default function AdsReportsPage() {
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight">Ads Reports</h1>
           <p className="text-sm text-black/60 mt-1">
-            Metrics from{" "}
-            <code className="px-1 py-0.5 rounded bg-black/5">ad_metrics_daily</code>
+            Enriched with event title + advertiser/campaign (when DB placements exist)
           </p>
         </div>
 
@@ -160,13 +184,16 @@ export default function AdsReportsPage() {
         <div className="px-4 py-3 border-b text-sm font-semibold">
           Breakdown ({sortedRows.length} rows)
         </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-black/5">
               <tr>
                 <th className="text-left px-4 py-2">Day</th>
                 <th className="text-left px-4 py-2">Slot</th>
-                <th className="text-left px-4 py-2">Slug</th>
+                <th className="text-left px-4 py-2">Event</th>
+                <th className="text-left px-4 py-2">Advertiser</th>
+                <th className="text-left px-4 py-2">Campaign</th>
                 <th className="text-left px-4 py-2">Metric</th>
                 <th className="text-right px-4 py-2">Total</th>
               </tr>
@@ -178,14 +205,26 @@ export default function AdsReportsPage() {
                     {new Date(r.day).toISOString().slice(0, 10)}
                   </td>
                   <td className="px-4 py-2 whitespace-nowrap">{r.slot_key}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">{r.event_slug}</td>
+                  <td className="px-4 py-2">
+                    <div className="font-medium">
+                      {r.event_title || r.event_slug}
+                    </div>
+                    <div className="text-xs text-black/60">{r.event_slug}</div>
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {r.advertiser_name || "—"}
+                  </td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    {r.campaign_name || "—"}
+                  </td>
                   <td className="px-4 py-2 whitespace-nowrap">{r.metric}</td>
                   <td className="px-4 py-2 text-right">{r.total}</td>
                 </tr>
               ))}
+
               {sortedRows.length === 0 && (
                 <tr>
-                  <td className="px-4 py-6 text-black/60" colSpan={5}>
+                  <td className="px-4 py-6 text-black/60" colSpan={7}>
                     No rows for this date range.
                   </td>
                 </tr>
