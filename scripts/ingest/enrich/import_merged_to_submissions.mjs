@@ -1,0 +1,509 @@
+import fs from "node:fs";
+import path from "node:path";
+import Papa from "papaparse";
+import { createClient } from "@supabase/supabase-js";
+
+const INPUT_CSV = process.env.IMPORT_INPUT_CSV || process.argv[2];
+const OUTPUT_DIR =
+  process.env.IMPORT_OUTPUT_DIR || path.join("tmp", "ingest", "imports");
+
+const SUPABASE_URL =
+  process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const SUPABASE_SERVICE_ROLE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || "";
+
+const DEFAULT_ORGANIZER_EMAIL =
+  process.env.IMPORT_DEFAULT_ORGANIZER_EMAIL || "imports@local.invalid";
+
+const DEFAULT_CATEGORY =
+  (process.env.IMPORT_DEFAULT_CATEGORY || "").trim();
+
+const IMPORT_ONLY_PENDING_REVIEW =
+  String(process.env.IMPORT_ONLY_PENDING_REVIEW ?? "true").toLowerCase() !== "false";
+
+const IMPORT_REQUIRE_ENRICH_OK =
+  String(process.env.IMPORT_REQUIRE_ENRICH_OK ?? "true").toLowerCase() !== "false";
+
+const DRY_RUN =
+  String(process.env.IMPORT_DRY_RUN ?? "false").toLowerCase() === "true";
+
+const BATCH_SIZE = Number(process.env.IMPORT_BATCH_SIZE || 100);
+
+if (!INPUT_CSV) {
+  console.error(
+    'Usage: IMPORT_INPUT_CSV="tmp/ingest/merged/events_merged_...csv" node scripts/ingest/enrich/import_merged_to_submissions.mjs'
+  );
+  process.exit(1);
+}
+
+if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  console.error(
+    "Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
+  );
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+  auth: { persistSession: false },
+});
+
+const AUDIENCE_OPTIONS = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+const DEFAULT_AUDIENCE = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+
+function nowStamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(
+    d.getUTCDate()
+  )}_${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(
+    d.getUTCSeconds()
+  )}Z`;
+}
+
+function readCsv(csvPath) {
+  const txt = fs.readFileSync(csvPath, "utf8");
+  const parsed = Papa.parse(txt, { header: true, skipEmptyLines: true });
+  return parsed.data || [];
+}
+
+function writeJson(filePath, obj) {
+  fs.writeFileSync(filePath, JSON.stringify(obj, null, 2) + "\n", "utf8");
+}
+
+function firstNonEmpty(...vals) {
+  for (const v of vals) {
+    if (v !== null && v !== undefined && String(v).trim() !== "") {
+      return String(v).trim();
+    }
+  }
+  return "";
+}
+
+function normalizeText(v) {
+  return String(v || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toIsoMaybe(s) {
+  if (!s) return null;
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function toBool(v) {
+  if (typeof v === "boolean") return v;
+  const s = String(v ?? "").trim().toLowerCase();
+  return s === "true" || s === "1" || s === "yes";
+}
+
+function inferIsFree(price) {
+  const s = normalizeText(price);
+  if (!s) return false;
+  return s.includes("free") || s.includes("free entry") || s.includes("gratuito");
+}
+
+function normalizeAudience(input) {
+  let arr = [];
+
+  if (Array.isArray(input)) {
+    arr = input.map((x) => String(x));
+  } else if (typeof input === "string") {
+    const t = input.trim();
+    if (t.startsWith("[") && t.endsWith("]")) {
+      try {
+        const parsed = JSON.parse(t);
+        if (Array.isArray(parsed)) arr = parsed.map((x) => String(x));
+      } catch {}
+    }
+    if (arr.length === 0) {
+      arr = t.split(/[|,;/]+/g).map((s) => s.trim());
+    }
+  } else if (input != null) {
+    arr = [String(input)];
+  }
+
+  arr = arr.map((s) => s.trim()).filter(Boolean);
+  if (!arr.length) return DEFAULT_AUDIENCE;
+
+  const normalized = arr
+    .map((s) => {
+      const hit = AUDIENCE_OPTIONS.find((opt) => opt.toLowerCase() === s.toLowerCase());
+      return hit ?? null;
+    })
+    .filter(Boolean);
+
+  if (!normalized.length) return DEFAULT_AUDIENCE;
+  if (normalized.includes("All Ages")) return DEFAULT_AUDIENCE;
+
+  return [...new Set(normalized)];
+}
+
+function makeSubmissionKey(title, startsAt, locationName) {
+  return [
+    normalizeText(title),
+    normalizeText(startsAt),
+    normalizeText(locationName),
+  ].join("::");
+}
+
+function shouldSelectRow(row) {
+  if (IMPORT_ONLY_PENDING_REVIEW) {
+    const s = normalizeText(row.enrichment_review_status);
+    if (s !== "pending_review") return false;
+  }
+
+  if (IMPORT_REQUIRE_ENRICH_OK) {
+    const ok = normalizeText(row.enrichment_enrich_ok);
+    if (ok !== "true") return false;
+  }
+
+  return true;
+}
+
+function inferCategory(rawTitle, rawNotes, allowedCategories) {
+  const title = normalizeText(rawTitle);
+  const notes = normalizeText(rawNotes);
+  const text = `${title} ${notes}`.trim();
+
+  const rules = [
+    {
+      category: "Festival",
+      patterns: [/\bfestival\b/, /\bfest\b/],
+    },
+    {
+      category: "Market",
+      patterns: [/\bmarket\b/, /\bfeira\b/, /\bfair\b/, /\balfarrabistas\b/, /\bhandicrafts\b/],
+    },
+    {
+      category: "Exhibition",
+      patterns: [/\bexhibition\b/, /\bexposicao\b/, /\bcollection\b/, /\bretrospective\b/],
+    },
+    {
+      category: "Theater",
+      patterns: [/\btheatre\b/, /\btheater\b/, /\bmusical\b/, /\bteatro\b/, /\bstage\b/],
+    },
+    {
+      category: "Music",
+      patterns: [/\bconcert\b/, /\bguitar\b/, /\bguitarra\b/, /\bfado\b/, /\borchestra\b/, /\bsymphony\b/, /\blive music\b/],
+    },
+    {
+      category: "Workshop",
+      patterns: [/\bworkshop\b/, /\bmasterclass\b/, /\boficina\b/],
+    },
+    {
+      category: "Cinema",
+      patterns: [/\bcinema\b/, /\bfilm\b/, /\bscreening\b/, /\bmovie\b/, /\banimation\b/],
+    },
+    {
+      category: "Dance",
+      patterns: [/\bdance\b/, /\bballet\b/, /\bchoreography\b/],
+    },
+    {
+      category: "Lecture",
+      patterns: [/\blecture\b/, /\btalk\b/, /\bdebate\b/, /\bconference\b/, /\bpanel\b/],
+    },
+    {
+      category: "Comedy",
+      patterns: [/\bcomedy\b/, /\bstand up\b/, /\bstand-up\b/, /\bimprov\b/],
+    },
+    {
+      category: "Food & Drink",
+      patterns: [/\bfood\b/, /\bdrink\b/, /\btasting\b/, /\bwine\b/, /\bbeer\b/, /\bgastronomy\b/],
+    },
+    {
+      category: "Sports",
+      patterns: [/\bmarathon\b/, /\brun\b/, /\brace\b/, /\bsport\b/, /\bmatch\b/, /\btournament\b/],
+    },
+    {
+      category: "Outdoor",
+      patterns: [/\boutdoor\b/, /\bopen air\b/, /\bopen-air\b/, /\bgarden\b/, /\bpark\b/],
+    },
+    {
+      category: "Arts",
+      patterns: [/\bart\b/, /\barts\b/, /\bartist\b/, /\bartists\b/, /\bcreative\b/],
+    },
+  ];
+
+  for (const rule of rules) {
+    if (!allowedCategories.has(rule.category)) continue;
+    if (rule.patterns.some((re) => re.test(text))) {
+      return {
+        category: rule.category,
+        inferred: true,
+        inference_basis: "rule_match",
+      };
+    }
+  }
+
+  return {
+    category: "",
+    inferred: false,
+    inference_basis: "no_confident_match",
+  };
+}
+
+function resolveCategory(row, allowedCategories) {
+  const existing = firstNonEmpty(row.category, DEFAULT_CATEGORY);
+  if (existing && allowedCategories.has(existing)) {
+    return {
+      category: existing,
+      inferred: false,
+      inference_basis: existing === DEFAULT_CATEGORY && DEFAULT_CATEGORY ? "default_category" : "existing_value",
+    };
+  }
+
+  return inferCategory(
+    firstNonEmpty(row.title),
+    firstNonEmpty(row.enrichment_source_notes),
+    allowedCategories
+  );
+}
+
+function mapRowToSubmission(row, allowedCategories) {
+  const title = firstNonEmpty(row.title);
+  const starts_at = toIsoMaybe(firstNonEmpty(row.starts_at));
+  const ends_at = toIsoMaybe(firstNonEmpty(row.ends_at));
+  const location_name = firstNonEmpty(row.location_name, row.venue_name);
+
+  const categoryResolved = resolveCategory(row, allowedCategories);
+  const category = firstNonEmpty(categoryResolved.category);
+
+  const description = firstNonEmpty(
+    row.description,
+    row.enrichment_source_notes,
+    row.title
+  );
+
+  const missing = [];
+  if (!title) missing.push("title");
+  if (!starts_at) missing.push("starts_at");
+  if (!location_name) missing.push("location_name");
+  if (!category) missing.push("category");
+  if (!description) missing.push("description");
+
+  if (missing.length) {
+    return {
+      ok: false,
+      reason: "missing_required_fields",
+      missing_fields: missing,
+      debug: {
+        title: firstNonEmpty(row.title),
+        starts_at: firstNonEmpty(row.starts_at),
+        location_name: firstNonEmpty(row.location_name, row.venue_name),
+        category: firstNonEmpty(row.category),
+        resolved_category: category,
+        category_inference_basis: categoryResolved.inference_basis,
+        description: firstNonEmpty(row.description),
+        enrichment_source_notes: firstNonEmpty(row.enrichment_source_notes),
+      },
+    };
+  }
+
+  if (!allowedCategories.has(category)) {
+    return {
+      ok: false,
+      reason: "invalid_category",
+      missing_fields: [],
+      debug: {
+        title,
+        category,
+        category_inference_basis: categoryResolved.inference_basis,
+      },
+    };
+  }
+
+  const submission = {
+    title,
+    description,
+    starts_at,
+    ends_at,
+    location_name,
+    address: firstNonEmpty(row.address) || null,
+    ticket_url: firstNonEmpty(row.ticket_url, row.url, row.source_url) || null,
+    image_url: firstNonEmpty(row.image_url) || null,
+    organizer_email: DEFAULT_ORGANIZER_EMAIL,
+    age: firstNonEmpty(row.age) || null,
+    audience: normalizeAudience(row.audience),
+    city: firstNonEmpty(row.city, "Lisbon") || null,
+    all_day: toBool(row.all_day),
+    category,
+    youtube_url: firstNonEmpty(row.youtube_url) || null,
+    spotify_url: firstNonEmpty(row.spotify_url) || null,
+    is_free: inferIsFree(firstNonEmpty(row.price)),
+    status: "pending",
+  };
+
+  return {
+    ok: true,
+    submission,
+    category_inferred: categoryResolved.inferred,
+    category_inference_basis: categoryResolved.inference_basis,
+  };
+}
+
+async function fetchAllowedCategories() {
+  const { data, error } = await supabase.from("category_catalog").select("name");
+  if (error) throw new Error(`category_catalog fetch failed: ${error.message}`);
+  return new Set((data || []).map((r) => String(r.name)));
+}
+
+async function fetchExistingSubmissions() {
+  const { data, error } = await supabase
+    .from("event_submissions")
+    .select("title,starts_at,location_name,status")
+    .limit(5000);
+
+  if (error) throw new Error(`event_submissions fetch failed: ${error.message}`);
+  return data || [];
+}
+
+async function fetchExistingEvents() {
+  const { data, error } = await supabase
+    .from("events")
+    .select("title,starts_at,location_name")
+    .limit(5000);
+
+  if (error) throw new Error(`events fetch failed: ${error.message}`);
+  return data || [];
+}
+
+async function insertInBatches(rows) {
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    const batch = rows.slice(i, i + BATCH_SIZE);
+    const { error } = await supabase.from("event_submissions").insert(batch);
+    if (error) {
+      throw new Error(`insert batch failed at row ${i + 1}: ${error.message}`);
+    }
+  }
+}
+
+async function main() {
+  const stamp = nowStamp();
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+  const inputRows = readCsv(INPUT_CSV);
+  const allowedCategories = await fetchAllowedCategories();
+  const existingSubs = await fetchExistingSubmissions();
+  const existingEvents = await fetchExistingEvents();
+
+  const existingSubmissionKeys = new Set(
+    existingSubs.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name))
+  );
+
+  const existingEventKeys = new Set(
+    existingEvents.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name))
+  );
+
+  const selected = [];
+  const readyToInsert = [];
+  const skipped = [];
+
+  for (const row of inputRows) {
+    if (!shouldSelectRow(row)) {
+      skipped.push({
+        title: firstNonEmpty(row.title),
+        reason: "not_selected_by_import_filters",
+      });
+      continue;
+    }
+
+    selected.push({
+      title: firstNonEmpty(row.title),
+      enrich_ok: firstNonEmpty(row.enrichment_enrich_ok),
+      review_status: firstNonEmpty(row.enrichment_review_status),
+    });
+
+    const mapped = mapRowToSubmission(row, allowedCategories);
+    if (!mapped.ok) {
+      skipped.push({
+        title: firstNonEmpty(row.title),
+        reason: mapped.reason,
+        missing_fields: mapped.missing_fields || [],
+        debug: mapped.debug || null,
+      });
+      continue;
+    }
+
+    const submission = mapped.submission;
+
+    const dedupeKey = makeSubmissionKey(
+      submission.title,
+      submission.starts_at,
+      submission.location_name
+    );
+
+    if (existingSubmissionKeys.has(dedupeKey)) {
+      skipped.push({
+        title: submission.title,
+        reason: "already_in_event_submissions",
+      });
+      continue;
+    }
+
+    if (existingEventKeys.has(dedupeKey)) {
+      skipped.push({
+        title: submission.title,
+        reason: "already_published_in_events",
+      });
+      continue;
+    }
+
+    readyToInsert.push({
+      ...submission,
+      __meta: {
+        category_inferred: mapped.category_inferred,
+        category_inference_basis: mapped.category_inference_basis,
+      },
+    });
+
+    existingSubmissionKeys.add(dedupeKey);
+  }
+
+  const insertPayload = readyToInsert.map(({ __meta, ...row }) => row);
+
+  if (!DRY_RUN && insertPayload.length) {
+    await insertInBatches(insertPayload);
+  }
+
+  const reportPath = path.join(
+    OUTPUT_DIR,
+    `import_to_event_submissions_report_${stamp}.json`
+  );
+
+  writeJson(reportPath, {
+    created_at: stamp,
+    input_csv: INPUT_CSV,
+    dry_run: DRY_RUN,
+    import_only_pending_review: IMPORT_ONLY_PENDING_REVIEW,
+    import_require_enrich_ok: IMPORT_REQUIRE_ENRICH_OK,
+    default_organizer_email: DEFAULT_ORGANIZER_EMAIL,
+    default_category: DEFAULT_CATEGORY || null,
+    input_row_count: inputRows.length,
+    selected_count: selected.length,
+    ready_to_insert_count: insertPayload.length,
+    skipped_count: skipped.length,
+    selected_sample: selected.slice(0, 50),
+    ready_to_insert_sample: readyToInsert.slice(0, 50),
+    skipped_sample: skipped.slice(0, 100),
+    allowed_categories_sample: [...allowedCategories].slice(0, 50),
+  });
+
+  console.log(`Input rows:                 ${inputRows.length}`);
+  console.log(`Selected rows:              ${selected.length}`);
+  console.log(`Ready to insert:            ${insertPayload.length}`);
+  console.log(`Skipped:                    ${skipped.length}`);
+  console.log(`Dry run:                    ${DRY_RUN ? "true" : "false"}`);
+  console.log(`Default category:           ${DEFAULT_CATEGORY || "(none)"}`);
+  console.log(`\n✅ Import step complete`);
+  console.log(`Report: ${reportPath}`);
+}
+
+main().catch((err) => {
+  console.error("Import to event_submissions failed:", err);
+  process.exit(1);
+});

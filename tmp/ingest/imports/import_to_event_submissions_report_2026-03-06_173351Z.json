@@ -1,0 +1,804 @@
+{
+  "created_at": "2026-03-06_173351Z",
+  "input_csv": "tmp/ingest/merged/events_merged_2026-03-06_133205Z.csv",
+  "dry_run": false,
+  "import_only_pending_review": true,
+  "import_require_enrich_ok": true,
+  "default_organizer_email": "imports@local.invalid",
+  "default_category": null,
+  "input_row_count": 229,
+  "selected_count": 11,
+  "ready_to_insert_count": 10,
+  "skipped_count": 219,
+  "selected_sample": [
+    {
+      "title": "Festival CriaSons",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Benfica Handicrafts Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Hercules - The Heroic Musical",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Centenary exhibition of Júlio Pomar",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "1st Exhibition Cycle",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Lx Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "CCB Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Feira do Relógio",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Louis Lui | São Luiz Theatre",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Festival de Guitarra Portuguesa",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    }
+  ],
+  "ready_to_insert_sample": [
+    {
+      "title": "Festival CriaSons",
+      "description": "Event page with detailed description and official program link",
+      "starts_at": "2026-01-10T00:00:00.000Z",
+      "ends_at": "2026-03-28T00:00:00.000Z",
+      "location_name": "vários locais",
+      "address": null,
+      "ticket_url": "https://musicamera.pt/festival-criasons-regressa-com-edicao-dedicada-a-musica-e-literatura/",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzY2NjYsInB1ciI6ImJsb2JfaWQifX0=--13a04ed0ef88d886bf4104c990ab2ee0ad590cb2/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/crias.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Festival",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Benfica Handicrafts Market",
+      "description": "Event page with recurring monthly dates on 2nd Saturday, next dates listed for 2026, free entry, no ticket URL",
+      "starts_at": "2026-03-14T00:00:00.000Z",
+      "ends_at": "2026-03-14T00:00:00.000Z",
+      "location_name": "Estrada de benfica",
+      "address": "Estrada de Benfica, 700, Benfica, 1500-088, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MjY1NTMsInB1ciI6ImJsb2JfaWQifX0=--57d5b1e990a1587bcd63f2426ec3a6829cb4eb15/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/Feita-de-Artesanato-de-Benfica_25.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Hercules - The Heroic Musical",
+      "description": "Event details from agendalx.pt event page",
+      "starts_at": "2025-10-17T00:00:00.000Z",
+      "ends_at": "2026-04-26T00:00:00.000Z",
+      "location_name": "Teatro Politeama",
+      "address": "Rua das Portas de Santo Antão, 109",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzY0NDMsInB1ciI6ImJsb2JfaWQifX0=--a559fe8cf06589d938eb6d9783e6da77e3fd7b42/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/lf2222222.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Theater",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Centenary exhibition of Júlio Pomar",
+      "description": "Centenary exhibition of Júlio Pomar",
+      "starts_at": "2026-01-10T00:00:00.000Z",
+      "ends_at": "2026-06-13T00:00:00.000Z",
+      "location_name": "CAMB - Centro de Arte Manuel de Brito",
+      "address": "Campo Grande, 113 A",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzYwMDcsInB1ciI6ImJsb2JfaWQifX0=--d23188ebef50a1eef77a2dddfc95345c81b69dad/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/2026-visit-lisboa-Julio-Pomar-Mojiganga-segundo-Goya-1963-oleo-sobre-tela-162-x-130-cm-scaled.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Exhibition",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "1st Exhibition Cycle",
+      "description": "1st Exhibition Cycle",
+      "starts_at": "2026-02-10T00:00:00.000Z",
+      "ends_at": "2026-05-10T00:00:00.000Z",
+      "location_name": "Arpad Szenes - Vieira da Silva Foundation",
+      "address": "Praça das Amoreiras, 56, 1250-020, Lisboa",
+      "ticket_url": "https://fasvs.pt/visitar-museu/",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzYwNDgsInB1ciI6ImJsb2JfaWQifX0=--313c3b10fe53b87fc66e63bff1bcab8503d09170/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/2026-visit-lisboa-arpad.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Exhibition",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Lx Market",
+      "description": "Event recurring every Sunday at Lx Factory; specific date example 2026-03-08; no ticket URL provided",
+      "starts_at": "2026-03-08T00:00:00.000Z",
+      "ends_at": "2026-03-08T00:00:00.000Z",
+      "location_name": "Lx Factory",
+      "address": "Rua Rodrigues Faria, 103, 1300-501, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MjY2MTAsInB1ciI6ImJsb2JfaWQifX0=--8d7c634691a0517f141c166d3c069ba16a558d32/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/LX-Market-2025.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "CCB Market",
+      "description": "Event page from visitlisboa.com with recurring monthly dates on first Sunday",
+      "starts_at": "2026-04-05T00:00:00.000Z",
+      "ends_at": "2026-04-05T00:00:00.000Z",
+      "location_name": "Centro Cultural de Belém",
+      "address": "Praça do Império. Free entry. (Tram: 15) (Bus: 729) Centro Cultural de BelémPraça do Império",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6ODA5MSwicHVyIjoiYmxvYl9pZCJ9fQ==--26384d0a18bec63618134bc2b85f1add33c5998e/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/MERCADO-CCB.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Feira do Relógio",
+      "description": "Event listing with multiple occurrences on Sundays from March to December 2026, free entry",
+      "starts_at": "2026-03-08T00:00:00.000Z",
+      "ends_at": "2026-12-27T00:00:00.000Z",
+      "location_name": "Avenida de Santo Condestável",
+      "address": "Avenida de Santo Condestável",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzU2ODcsInB1ciI6ImJsb2JfaWQifX0=--5a68e652b5e573b503849a2106934e7e1952cdaa/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/feira-do-relogio-visit-lisboa.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Louis Lui | São Luiz Theatre",
+      "description": "Event details extracted from agendalx.pt event page",
+      "starts_at": "2026-03-06T00:00:00.000Z",
+      "ends_at": "2026-03-08T00:00:00.000Z",
+      "location_name": "São Luiz Teatro Municipal",
+      "address": "Rua António Maria Cardoso, 38",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzY2NTgsInB1ciI6ImJsb2JfaWQifX0=--f6190c60293136563c4ea95de04ce92c2a15a1c1/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/slu.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Theater",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "description": "Event occurs every Saturday from 10 am to 5 pm; multiple future dates listed through 2027-02-27",
+      "starts_at": "2026-03-07T00:00:00.000Z",
+      "ends_at": "2026-03-07T00:00:00.000Z",
+      "location_name": "Rua Anchieta",
+      "address": "Rua da Anchieta to buy a rare or second-hand book calmly exhibited on the booksellers’ stalls all day long. From 10 am to 5 pm",
+      "ticket_url": "https://www.visitlisboa.com/en/events",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6NTA2NCwicHVyIjoiYmxvYl9pZCJ9fQ==--494753ffdec1dd1485e142bfef003bb37262c333/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiI1MTJ4NTEyXHUwMDNlIn0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--0ba8b7f58340100b312280e63751a8a851d1f9fb/feira-de-alfarrabistas-antique-book-fair-cover.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    }
+  ],
+  "skipped_sample": [
+    {
+      "title": "Secret Guide to Lisbon: Discover the hidden corners of the city",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visit Lisbon: Guide to Lisbon's Best Landmarks, Attractions, and Activities",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The “Queens’ Treasure” and a tour through the streets of Lisbon: experiences to mark International Women’s Day",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The official portrait of President Marcelo Rebelo de Sousa, created by artist Vhils, has been unveiled.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "An iconic seafood restaurant in Lisbon is the most booked restaurant in Portugal in 2025 — and the capital dominates The Fork’s Top 50.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Less crowding, more respect: the Madrid Metro has declared war on backpacks. Will Lisbon be next?",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Music guide: the best concerts already confirmed for 2026",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon is blooming: your guide to an unforgettable weekend",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Goodbye, winter: from this date onwards, you will sleep one hour less, but spend more time in the sun in Lisbon.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rock in Rio “traveled” to Madrid to present the latest Spanish headliner",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "One of the most memorable plans for 2026 is located in the heart of Lisbon: classical music and thousands of candles in stunning locations.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "From the “Roaring Twenties” to the future of Lisbon: a series of free talks that unveil the mysteries of Avenida da Liberdade",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "This is Portugal’s “It City”: Lisbon shines among the top 15 in Europe in a report that evaluated more than 100 metropolitan areas.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "What women would most like to receive on Women’s Day, according to our readers",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon’s historic transport system to reopen after months of auditing: find out what will change on the Graça Funicular",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Unique light and renowned cuisine: the reasons that make Lisbon one of the ten best European destinations in 2026",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Madrid and Lisbon closer: a €24 million bridge over the River Sever will revolutionize the border and save 85 km of travel",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Time travel in Lisbon: 13 essential stops among medieval ruins and masterpieces of national engineering",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon’s ‘green lung’ is a National Monument and an exotic refuge with more than 600 plants from (almost) all over the world.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The jewel of Lisbon where princesses get married: this Basilica has a hidden viewpoint with incredible views and is a National Monument.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The famous sandwich that originated in New York and is conquering Lisbon: it has an irresistible flavor and aroma.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jethro Tull",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Tide Line. CAM’s Collection",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Camões: epic, lyrical, universal.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Museu Banksy Lisbon",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ah, Amália - Living Experience",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Connections",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Istanbul and Lisbon – Soulmates",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Take 1 | The Collection of Artist Julião Sarmento",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "InArt – Community Arts Festival",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Chronicles of an unknown Lisbon",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Power and Glory",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Scheherazade, the Never-ending Collection of CAM",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Open Storage",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Just one world: photographs of Derek Charlwood",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Supercreatures!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Avenida 211",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Underground visit to the Loreto Gallery",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Once upon a time...",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Carlos Bunga. Inhabit the Contradiction",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Children of All… Children of Whom? \"The Foundlings of the Wheel of Lisbon\"",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The self as multiple",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Between Word and Silence",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Place To Be: The Burle Marx Legacy",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The Eternal Ark – Fernando Pessoa and Posterity",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "José de Guimarães | Modos de ver – Camões III",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Meu nome António. Photographs by Teresa Couto Pinto 1981-1983",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fairs and Markets of Príncipe Real",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fado in Chiado",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Comunicar é Natural. A Botânica nas Comunicações",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Happiness | Mariana Mizarela",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Changing the Guard",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jardim Aberto (Open garden)",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jacob Kirkegaard. Testimonium",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Nadir Afonso | Territory of Absolute Freedom",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rituals of light | The bright of Nossa Senhora das Candeias",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Phoebe Collings-James",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Toma! 150 Years of Zé Povinho",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Guided tour to the Águas Livres Aqueduct",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Hut Hut",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Movie Experiments, Los Angeles",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mafolofolo",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Bruno Zhu. Belas Artes",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "March | Shad Month",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Feiralegria",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Markets - Crafts & Design",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Feira da Ladra (Flea Market)",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Festival de Guitarra Portuguesa",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "location_name"
+      ],
+      "debug": {
+        "title": "Festival de Guitarra Portuguesa",
+        "starts_at": "2026-03-06",
+        "location_name": "",
+        "category": "",
+        "resolved_category": "Festival",
+        "category_inference_basis": "rule_match",
+        "description": "",
+        "enrichment_source_notes": "Event details extracted from visitlisboa.com event page; multiple venues listed but no single venue specified for entire event"
+      }
+    },
+    {
+      "title": "The Kooks",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sábados da Ribeira",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Agrobio Organic Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Cartoon Xira",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Yasmine",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon Half Marathon'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Beethoven’S Heroic Symphony",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Nauticampo'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Futurália",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "ModaLisboa - Lisboa Fashion Week'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ana, Carolina e Adelaide: ainda estamos aqui",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Monstra - Lisboa Animation Film Festival'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Michael Lives Forever",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Expresso Transatlântico | Capitólio",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Artur Pizarro/Prokofiev 2",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Kysha & Mine: Lance de Escola – Das aulas ao verão",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sacramento Handicrafts Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Concerto delle donne",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "All Birds",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Poetry Book Fair",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Suede",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Salão Motorclássico",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Festival Internacional do Ouriço do Mar",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Revenge of the 90's",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Colours Market at Santa Clara Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Largo da Graça Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Meia Maratona Baía do Seixal",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Evita",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "In the Heights",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Hornfuckers, by Diana Niepce",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "TecStorm’26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "50 Years of “Wish You Were Here” & “The Dark Side Of The Moon”",
+      "reason": "not_selected_by_import_filters"
+    }
+  ],
+  "allowed_categories_sample": [
+    "Music",
+    "Food & Drink",
+    "Arts",
+    "Sports",
+    "Nightlife",
+    "Festival",
+    "Theater",
+    "Dance",
+    "Cinema",
+    "Market",
+    "Lecture",
+    "Comedy",
+    "Exhibition",
+    "Outdoor",
+    "Workshop"
+  ]
+}

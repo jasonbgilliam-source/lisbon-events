@@ -14,19 +14,35 @@ export default function SiteHeader({ city, theme }: Props) {
     return `https://${slug}.${rootDomain}/`;
   };
 
+  const navLinkClass = "hover:underline whitespace-nowrap";
+
   return (
     <div className="w-full">
       <div className="bg-white/80 backdrop-blur border-b border-black/5">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
-          <Link href="/" className="font-extrabold tracking-tight text-lg">
+          <Link href="/" className="font-extrabold tracking-tight text-lg whitespace-nowrap">
             <span style={{ color: theme.accent }}>{theme.brandName}</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-3 text-sm">
-            <Link href="/events" className="hover:underline">Events</Link>
-            <Link href="/categories" className="hover:underline">Categories</Link>
-            <Link href="/calendar" className="hover:underline">Calendar</Link>
-            <Link href="/submit" className="hover:underline">Submit</Link>
+            <Link href="/" className={navLinkClass}>
+              Featured
+            </Link>
+            <Link href="/events" className={navLinkClass}>
+              Events
+            </Link>
+            <Link href="/map" className={navLinkClass}>
+              Map
+            </Link>
+            <Link href="/categories" className={navLinkClass}>
+              Categories
+            </Link>
+            <Link href="/calendar" className={navLinkClass}>
+              Calendar
+            </Link>
+            <Link href="/submit" className={navLinkClass}>
+              Submit
+            </Link>
           </nav>
 
           <div className="ml-auto flex items-center gap-2">

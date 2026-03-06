@@ -16,6 +16,23 @@ type Pin = {
   longitude: number;
 };
 
+const LISBON_DATE_TIME = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+  timeZone: "Europe/Lisbon",
+});
+
+function formatLisbonDateTime(dt: string | null | undefined) {
+  if (!dt) return "";
+  const d = new Date(dt);
+  return Number.isNaN(d.getTime()) ? String(dt) : LISBON_DATE_TIME.format(d);
+}
+
 export default function MapPage() {
   const router = useRouter();
 
@@ -109,7 +126,6 @@ export default function MapPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left: list */}
         <div className="border rounded-xl bg-white p-4">
           <h2 className="text-lg font-semibold mb-2">
             Events {loading ? "" : `(${pins.length})`}
@@ -125,10 +141,14 @@ export default function MapPage() {
             <ul className="space-y-2">
               {pins.map((p) => (
                 <li key={p.id} className="flex items-start justify-between gap-3">
-                  <button className="text-left hover:underline" onClick={() => goToPin(p)} title="View details">
+                  <button
+                    className="text-left hover:underline"
+                    onClick={() => goToPin(p)}
+                    title="View details"
+                  >
                     <div className="font-semibold">{p.title}</div>
                     <div className="text-xs text-gray-600">
-                      {p.starts_at ? new Date(p.starts_at).toLocaleString() : ""}
+                      {formatLisbonDateTime(p.starts_at)}
                       {p.category ? ` • ${p.category}` : ""}
                     </div>
                   </button>
@@ -142,7 +162,6 @@ export default function MapPage() {
           )}
         </div>
 
-        {/* Right: real map */}
         <div className="border rounded-xl bg-white p-4">
           <h2 className="text-lg font-semibold mb-2">Map view</h2>
           <GoogleMap pins={pins} onPinClick={goToPin} />

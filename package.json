@@ -13,12 +13,15 @@
     "@googlemaps/markerclusterer": "^2.6.2",
     "@microlink/react": "^5.4.0",
     "@supabase/supabase-js": "^2.45.0",
+    "cheerio": "^1.2.0",
     "dayjs": "^1.11.10",
     "leaflet": "^1.9.4",
     "next": "14.2.5",
-    "papaparse": "^5.4.1",
+    "papaparse": "^5.5.3",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "serpapi": "^2.2.1",
+    "undici": "^7.22.0"
   },
   "devDependencies": {
     "@microlink/react": "^5.4.0",

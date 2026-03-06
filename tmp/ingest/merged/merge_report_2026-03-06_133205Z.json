@@ -1,0 +1,310 @@
+{
+  "created_at": "2026-03-06_133205Z",
+  "input_csv": "tmp/ingest/export/2026-03-05_200523Z/events.csv",
+  "patch_csv": "tmp/ingest/enriched/serpapi_openai_patch_2026-03-06_132238Z.csv",
+  "output_csv": "tmp/ingest/merged/events_merged_2026-03-06_133205Z.csv",
+  "output_columns": [
+    "title",
+    "starts_at",
+    "ends_at",
+    "location_name",
+    "address",
+    "city",
+    "url",
+    "image_url",
+    "category",
+    "audience",
+    "price",
+    "status",
+    "source",
+    "source_id",
+    "source_url",
+    "dedupe_key",
+    "start_time",
+    "end_time",
+    "venue_name",
+    "currency",
+    "ticket_url",
+    "enrichment_review_status",
+    "enrichment_needs_review",
+    "enrichment_enrich_ok",
+    "enrichment_patch_source",
+    "enrichment_query_title",
+    "enrichment_chosen_url",
+    "enrichment_source_notes",
+    "enrichment_candidate_score",
+    "enrichment_candidate_strong_signals",
+    "enrichment_candidate_reasons",
+    "enrichment_patch_merged_at",
+    "enrichment_filled_fields"
+  ],
+  "input_row_count": 229,
+  "patch_row_count": 12,
+  "matched_rows": 12,
+  "patched_rows": 12,
+  "total_fields_filled": 70,
+  "patch_rows_with_no_match": 0,
+  "duplicate_patch_keys": [],
+  "changed_rows_sample": [
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/festival-criasons_",
+      "original_title": "Festival CriaSons",
+      "query_title": "Festival CriaSons",
+      "chosen_url": "https://www.agendalx.pt/events/event/festival-criasons-3/",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "price",
+        "ticket_url"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/benfica-handicrafts-market",
+      "original_title": "Benfica Handicrafts Market",
+      "query_title": "Benfica Handicrafts Market",
+      "chosen_url": "https://www.visitlisboa.com/en/events/benfica-handicrafts-market",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "address",
+        "price"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/hercules-the-heroic-musical",
+      "original_title": "Hercules - The Heroic Musical",
+      "query_title": "Hercules - The Heroic Musical",
+      "chosen_url": "https://www.agendalx.pt/events/event/hercules-2/",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "start_time",
+        "end_time",
+        "venue_name",
+        "location_name",
+        "address"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/centenary-exhibition-of-julio-pomar",
+      "original_title": "Centenary exhibition of Júlio Pomar",
+      "query_title": "Centenary exhibition of Júlio Pomar",
+      "chosen_url": "https://www.agendalx.pt/events/event/centenary-exhibition-of-julio-pomar/?lang=en",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "address"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/1st-exhibition-cycle",
+      "original_title": "1st Exhibition Cycle",
+      "query_title": "1st Exhibition Cycle",
+      "chosen_url": "https://www.visitlisboa.com/en/events/1st-exhibition-cycle",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "address",
+        "ticket_url"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/lx-market",
+      "original_title": "Lx Market",
+      "query_title": "Lx Market",
+      "chosen_url": "https://www.visitlisboa.com/en/events/lx-market",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "address",
+        "price"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/ccb-market",
+      "original_title": "CCB Market",
+      "query_title": "CCB Market",
+      "chosen_url": "https://www.visitlisboa.com/en/events/ccb-market",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "venue_name",
+        "location_name",
+        "price"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "address",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/feira-do-relogio",
+      "original_title": "Feira do Relógio",
+      "query_title": "Feira do Relógio",
+      "chosen_url": "https://www.timeout.pt/lisboa/pt/coisas-para-fazer/feira-do-relogio",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "start_time",
+        "venue_name",
+        "location_name",
+        "price"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "address",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/feira-da-ladra-flea-market",
+      "original_title": "Feira da Ladra (Flea Market)",
+      "query_title": "Feira da Ladra (Flea Market)",
+      "chosen_url": "",
+      "enrich_ok": false,
+      "needs_review": true,
+      "filled_fields": [],
+      "skipped_populated_fields": []
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/louis-lui-sao-luiz-theatre",
+      "original_title": "Louis Lui | São Luiz Theatre",
+      "query_title": "Louis Lui | São Luiz Theatre",
+      "chosen_url": "https://www.agendalx.pt/events/event/louis-lui/?lang=en",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "start_time",
+        "end_time",
+        "venue_name",
+        "location_name",
+        "address",
+        "price",
+        "currency"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/festival-de-guitarra-portuguesa",
+      "original_title": "Festival de Guitarra Portuguesa",
+      "query_title": "Festival de Guitarra Portuguesa",
+      "chosen_url": "https://www.visitlisboa.com/en/events/festival-de-guitarra-portuguesa",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "start_time",
+        "end_time",
+        "price",
+        "currency",
+        "ticket_url"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "city",
+        "image_url"
+      ]
+    },
+    {
+      "source": "visitlisboa",
+      "source_id": "en/events/feira-de-alfarrabistas-antique-book-fair",
+      "original_title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "query_title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "chosen_url": "https://www.visitlisboa.com/en/events/feira-de-alfarrabistas-antique-book-fair",
+      "enrich_ok": true,
+      "needs_review": true,
+      "filled_fields": [
+        "starts_at",
+        "ends_at",
+        "start_time",
+        "end_time",
+        "venue_name",
+        "location_name",
+        "price"
+      ],
+      "skipped_populated_fields": [
+        "title",
+        "address",
+        "city",
+        "image_url"
+      ]
+    }
+  ]
+}

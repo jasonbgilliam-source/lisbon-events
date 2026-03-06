@@ -1,0 +1,612 @@
+{
+  "created_at": "2026-03-06_164712Z",
+  "input_csv": "tmp/ingest/merged/events_merged_2026-03-06_133205Z.csv",
+  "dry_run": true,
+  "import_only_pending_review": true,
+  "import_require_enrich_ok": true,
+  "default_organizer_email": "imports@local.invalid",
+  "default_category": null,
+  "input_row_count": 229,
+  "selected_count": 11,
+  "ready_to_insert_count": 0,
+  "skipped_count": 229,
+  "selected_sample": [
+    {
+      "title": "Festival CriaSons",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Benfica Handicrafts Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Hercules - The Heroic Musical",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Centenary exhibition of Júlio Pomar",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "1st Exhibition Cycle",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Lx Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "CCB Market",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Feira do Relógio",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Louis Lui | São Luiz Theatre",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Festival de Guitarra Portuguesa",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    },
+    {
+      "title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "enrich_ok": "true",
+      "review_status": "pending_review"
+    }
+  ],
+  "ready_to_insert_sample": [],
+  "skipped_sample": [
+    {
+      "title": "Secret Guide to Lisbon: Discover the hidden corners of the city",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visit Lisbon: Guide to Lisbon's Best Landmarks, Attractions, and Activities",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The “Queens’ Treasure” and a tour through the streets of Lisbon: experiences to mark International Women’s Day",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The official portrait of President Marcelo Rebelo de Sousa, created by artist Vhils, has been unveiled.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "An iconic seafood restaurant in Lisbon is the most booked restaurant in Portugal in 2025 — and the capital dominates The Fork’s Top 50.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Less crowding, more respect: the Madrid Metro has declared war on backpacks. Will Lisbon be next?",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Music guide: the best concerts already confirmed for 2026",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon is blooming: your guide to an unforgettable weekend",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Goodbye, winter: from this date onwards, you will sleep one hour less, but spend more time in the sun in Lisbon.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rock in Rio “traveled” to Madrid to present the latest Spanish headliner",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "One of the most memorable plans for 2026 is located in the heart of Lisbon: classical music and thousands of candles in stunning locations.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "From the “Roaring Twenties” to the future of Lisbon: a series of free talks that unveil the mysteries of Avenida da Liberdade",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "This is Portugal’s “It City”: Lisbon shines among the top 15 in Europe in a report that evaluated more than 100 metropolitan areas.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "What women would most like to receive on Women’s Day, according to our readers",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon’s historic transport system to reopen after months of auditing: find out what will change on the Graça Funicular",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Unique light and renowned cuisine: the reasons that make Lisbon one of the ten best European destinations in 2026",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Madrid and Lisbon closer: a €24 million bridge over the River Sever will revolutionize the border and save 85 km of travel",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Time travel in Lisbon: 13 essential stops among medieval ruins and masterpieces of national engineering",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon’s ‘green lung’ is a National Monument and an exotic refuge with more than 600 plants from (almost) all over the world.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The jewel of Lisbon where princesses get married: this Basilica has a hidden viewpoint with incredible views and is a National Monument.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The famous sandwich that originated in New York and is conquering Lisbon: it has an irresistible flavor and aroma.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jethro Tull",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Festival CriaSons",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Festival CriaSons",
+        "starts_at": "2026-01-10",
+        "location_name": "vários locais",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event page with detailed description and official program link"
+      }
+    },
+    {
+      "title": "Tide Line. CAM’s Collection",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Camões: epic, lyrical, universal.",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Museu Banksy Lisbon",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ah, Amália - Living Experience",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Benfica Handicrafts Market",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Benfica Handicrafts Market",
+        "starts_at": "2026-03-14",
+        "location_name": "Estrada de benfica",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event page with recurring monthly dates on 2nd Saturday, next dates listed for 2026, free entry, no ticket URL"
+      }
+    },
+    {
+      "title": "Connections",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Istanbul and Lisbon – Soulmates",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Take 1 | The Collection of Artist Julião Sarmento",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "InArt – Community Arts Festival",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Chronicles of an unknown Lisbon",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Power and Glory",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Scheherazade, the Never-ending Collection of CAM",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Open Storage",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Just one world: photographs of Derek Charlwood",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Hercules - The Heroic Musical",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Hercules - The Heroic Musical",
+        "starts_at": "2025-10-17",
+        "location_name": "Teatro Politeama",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event details from agendalx.pt event page"
+      }
+    },
+    {
+      "title": "Supercreatures!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Avenida 211",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Underground visit to the Loreto Gallery",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Once upon a time...",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Carlos Bunga. Inhabit the Contradiction",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Children of All… Children of Whom? \"The Foundlings of the Wheel of Lisbon\"",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The self as multiple",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Between Word and Silence",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Place To Be: The Burle Marx Legacy",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The Eternal Ark – Fernando Pessoa and Posterity",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "José de Guimarães | Modos de ver – Camões III",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Meu nome António. Photographs by Teresa Couto Pinto 1981-1983",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fairs and Markets of Príncipe Real",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fado in Chiado",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Comunicar é Natural. A Botânica nas Comunicações",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Happiness | Mariana Mizarela",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Centenary exhibition of Júlio Pomar",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Centenary exhibition of Júlio Pomar",
+        "starts_at": "2026-01-10",
+        "location_name": "CAMB - Centro de Arte Manuel de Brito",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": ""
+      }
+    },
+    {
+      "title": "Changing the Guard",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jardim Aberto (Open garden)",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Jacob Kirkegaard. Testimonium",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Nadir Afonso | Territory of Absolute Freedom",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rituals of light | The bright of Nossa Senhora das Candeias",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Phoebe Collings-James",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "1st Exhibition Cycle",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "1st Exhibition Cycle",
+        "starts_at": "2026-02-10",
+        "location_name": "Arpad Szenes - Vieira da Silva Foundation",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": ""
+      }
+    },
+    {
+      "title": "Toma! 150 Years of Zé Povinho",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Guided tour to the Águas Livres Aqueduct",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Hut Hut",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Movie Experiments, Los Angeles",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mafolofolo",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Bruno Zhu. Belas Artes",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "March | Shad Month",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lx Market",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Lx Market",
+        "starts_at": "2026-03-08",
+        "location_name": "Lx Factory",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event recurring every Sunday at Lx Factory; specific date example 2026-03-08; no ticket URL provided"
+      }
+    },
+    {
+      "title": "Feiralegria",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "CCB Market",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "CCB Market",
+        "starts_at": "2026-04-05",
+        "location_name": "Centro Cultural de Belém",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event page from visitlisboa.com with recurring monthly dates on first Sunday"
+      }
+    },
+    {
+      "title": "Markets - Crafts & Design",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Feira do Relógio",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Feira do Relógio",
+        "starts_at": "2026-03-08",
+        "location_name": "Avenida de Santo Condestável",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event listing with multiple occurrences on Sundays from March to December 2026, free entry"
+      }
+    },
+    {
+      "title": "Feira da Ladra (Flea Market)",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Louis Lui | São Luiz Theatre",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Louis Lui | São Luiz Theatre",
+        "starts_at": "2026-03-06",
+        "location_name": "São Luiz Teatro Municipal",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event details extracted from agendalx.pt event page"
+      }
+    },
+    {
+      "title": "Festival de Guitarra Portuguesa",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "location_name",
+        "category"
+      ],
+      "debug": {
+        "title": "Festival de Guitarra Portuguesa",
+        "starts_at": "2026-03-06",
+        "location_name": "",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event details extracted from visitlisboa.com event page; multiple venues listed but no single venue specified for entire event"
+      }
+    },
+    {
+      "title": "The Kooks",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sábados da Ribeira",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Feira de Alfarrabistas (Antique Book Fair)",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "category"
+      ],
+      "debug": {
+        "title": "Feira de Alfarrabistas (Antique Book Fair)",
+        "starts_at": "2026-03-07",
+        "location_name": "Rua Anchieta",
+        "category": "",
+        "description": "",
+        "enrichment_source_notes": "Event occurs every Saturday from 10 am to 5 pm; multiple future dates listed through 2027-02-27"
+      }
+    },
+    {
+      "title": "Agrobio Organic Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Cartoon Xira",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Yasmine",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon Half Marathon'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Beethoven’S Heroic Symphony",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Nauticampo'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Futurália",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "ModaLisboa - Lisboa Fashion Week'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ana, Carolina e Adelaide: ainda estamos aqui",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Monstra - Lisboa Animation Film Festival'26",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Michael Lives Forever",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Expresso Transatlântico | Capitólio",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Artur Pizarro/Prokofiev 2",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Kysha & Mine: Lance de Escola – Das aulas ao verão",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sacramento Handicrafts Market",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Concerto delle donne",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "All Birds",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Poetry Book Fair",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Suede",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Salão Motorclássico",
+      "reason": "not_selected_by_import_filters"
+    }
+  ],
+  "allowed_categories_sample": [
+    "Music",
+    "Food & Drink",
+    "Arts",
+    "Sports",
+    "Nightlife",
+    "Festival",
+    "Theater",
+    "Dance",
+    "Cinema",
+    "Market",
+    "Lecture",
+    "Comedy",
+    "Exhibition",
+    "Outdoor",
+    "Workshop"
+  ]
+}

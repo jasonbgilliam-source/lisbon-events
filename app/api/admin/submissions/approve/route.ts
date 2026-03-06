@@ -41,12 +41,10 @@ function normalizeAudience(input: any): string[] | null {
   if (Array.isArray(input)) {
     arr = input.map((x) => String(x));
   } else if (typeof input === "string") {
-    // ✅ Handle JSON-string arrays like '["Teens","Adults"]'
     const parsed = tryParseJsonArrayString(input);
     if (parsed) {
       arr = parsed;
     } else {
-      // Handles: {"Teens","Adults"} or {Teens,Adults} or "Teens, Adults"
       const s = input.trim();
       const stripped = s.startsWith("{") && s.endsWith("}") ? s.slice(1, -1) : s;
       arr = stripped.split(/[|,;/]+/g).map((x) => stripOuterQuotes(x));
@@ -67,11 +65,9 @@ function normalizeAudience(input: any): string[] | null {
 
   if (normalized.length === 0) return null;
 
-  // Expand ONLY if "All Ages" explicitly present
   const hasAllAges = normalized.includes("All Ages");
   const expanded = hasAllAges ? AUDIENCE_DEFAULT_EXPANDED : normalized;
 
-  // Deduplicate
   const seen = new Set<string>();
   const out: string[] = [];
   for (const x of expanded) {
@@ -83,6 +79,44 @@ function normalizeAudience(input: any): string[] | null {
   return out;
 }
 
+function cleanString(v: any): string | null {
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  return s === "" ? null : s;
+}
+
+function cleanBool(v: any): boolean {
+  if (typeof v === "boolean") return v;
+  const s = String(v ?? "").trim().toLowerCase();
+  return s === "true" || s === "1" || s === "yes";
+}
+
+function applyOverrides(sub: any, overrides: any) {
+  if (!overrides || typeof overrides !== "object") return sub;
+
+  return {
+    ...sub,
+    title: cleanString(overrides.title) ?? sub.title ?? null,
+    description: cleanString(overrides.description) ?? sub.description ?? null,
+    starts_at: cleanString(overrides.starts_at) ?? sub.starts_at ?? null,
+    ends_at: cleanString(overrides.ends_at) ?? sub.ends_at ?? null,
+    location_name: cleanString(overrides.location_name) ?? sub.location_name ?? null,
+    city: cleanString(overrides.city) ?? sub.city ?? null,
+    address: cleanString(overrides.address) ?? sub.address ?? null,
+    category: cleanString(overrides.category) ?? sub.category ?? null,
+    organizer_email: cleanString(overrides.organizer_email) ?? sub.organizer_email ?? null,
+    ticket_url: cleanString(overrides.ticket_url) ?? sub.ticket_url ?? null,
+    image_url: cleanString(overrides.image_url) ?? sub.image_url ?? null,
+    age: cleanString(overrides.age) ?? sub.age ?? null,
+    youtube_url: cleanString(overrides.youtube_url) ?? sub.youtube_url ?? null,
+    spotify_url: cleanString(overrides.spotify_url) ?? sub.spotify_url ?? null,
+    all_day:
+      overrides.all_day === undefined ? sub.all_day ?? false : cleanBool(overrides.all_day),
+    audience:
+      overrides.audience === undefined ? sub.audience ?? null : normalizeAudience(overrides.audience),
+  };
+}
+
 export async function POST(req: Request) {
   const denied = requireAdmin(req);
   if (denied) return denied;
@@ -91,12 +125,11 @@ export async function POST(req: Request) {
   if (csrfDenied) return csrfDenied;
 
   try {
-    const { id, reviewer, notes } = await req.json();
+    const { id, reviewer, notes, overrides } = await req.json();
     if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
 
     const supabase = supabaseServer();
 
-    // Fetch submission
     const { data: rows, error: fetchErr } = await supabase
       .from("event_submissions")
       .select("*")
@@ -108,14 +141,25 @@ export async function POST(req: Request) {
     const sub = rows?.[0];
     if (!sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
 
-    // ✅ Normalize and set final audience to insert (fallback only if truly missing)
-    const normalizedAudience = normalizeAudience(sub.audience);
+    const reviewedSub = applyOverrides(sub, overrides);
+
+    if (
+      !cleanString(reviewedSub.title) ||
+      !cleanString(reviewedSub.starts_at) ||
+      !cleanString(reviewedSub.location_name) ||
+      !cleanString(reviewedSub.category)
+    ) {
+      return NextResponse.json(
+        { error: "title, starts_at, location_name, and category are required before approval" },
+        { status: 400 }
+      );
+    }
+
+    const normalizedAudience = normalizeAudience(reviewedSub.audience);
     const audienceSent = normalizedAudience ?? AUDIENCE_DEFAULT_EXPANDED;
 
-    // Map the submission fields to event fields
-    const ev = mapSubmissionToEvent(sub);
+    const ev = mapSubmissionToEvent(reviewedSub);
 
-    // Insert and SELECT BACK audience immediately (proof of what DB stored)
     const { data: inserted, error: insErr } = await supabase
       .from("events")
       .insert([
@@ -149,7 +193,6 @@ export async function POST(req: Request) {
 
     const audienceStored = inserted?.audience ?? null;
 
-    // Build slug
     const baseTitle =
       typeof ev.title === "string" && ev.title.trim().length > 0 ? ev.title : "event";
     const slug = `${eventId}-${slugify(baseTitle)}`;
@@ -157,7 +200,6 @@ export async function POST(req: Request) {
     const { error: slugErr } = await supabase.from("events").update({ slug }).eq("id", eventId);
     if (slugErr) return NextResponse.json({ error: slugErr.message }, { status: 500 });
 
-    // Geocode
     const geocodeQuery = buildLisbonGeocodeQuery({
       locationName: ev.location_name ?? null,
       address: ev.address ?? null,
@@ -196,10 +238,25 @@ export async function POST(req: Request) {
         .eq("id", eventId);
     }
 
-    // Mark submission approved
     const { error: upErr } = await supabase
       .from("event_submissions")
       .update({
+        title: reviewedSub.title ?? null,
+        description: reviewedSub.description ?? null,
+        starts_at: reviewedSub.starts_at ?? null,
+        ends_at: reviewedSub.ends_at ?? null,
+        location_name: reviewedSub.location_name ?? null,
+        city: reviewedSub.city ?? null,
+        address: reviewedSub.address ?? null,
+        category: reviewedSub.category ?? null,
+        organizer_email: reviewedSub.organizer_email ?? null,
+        image_url: reviewedSub.image_url ?? null,
+        ticket_url: reviewedSub.ticket_url ?? null,
+        all_day: reviewedSub.all_day ?? false,
+        age: reviewedSub.age ?? null,
+        audience: reviewedSub.audience ?? null,
+        youtube_url: reviewedSub.youtube_url ?? null,
+        spotify_url: reviewedSub.spotify_url ?? null,
         status: "approved",
         reviewer,
         review_notes: notes ?? null,
@@ -209,21 +266,12 @@ export async function POST(req: Request) {
 
     if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
 
-    console.log("approve audience proof:", {
-      submissionId: sub.id,
-      submissionTitle: sub.title,
-      submissionAudienceRaw: sub.audience,
-      normalizedAudience,
-      audienceSent,
-      audienceStored,
-    });
-
     return NextResponse.json({
       ok: true,
       eventId,
       slug,
       geocoded: geo.ok,
-      audience_submission_raw: sub.audience ?? null,
+      audience_submission_raw: reviewedSub.audience ?? null,
       audience_sent: audienceSent,
       audience_stored: audienceStored,
     });
