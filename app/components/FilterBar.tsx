@@ -1,155 +1,166 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
-type FilterBarProps = {
-  onFilter: (filters: any) => void;
+export type EventFilters = {
+  search: string;
+  categories: string[];
+  audience: string[];
+  is_free: boolean;
 };
 
-export default function FilterBar({ onFilter }: FilterBarProps) {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<string[]>([]);
-  const [audience, setAudience] = useState<string[]>([]);
-  const [isFree, setIsFree] = useState(false);
+type FilterBarProps = {
+  value: EventFilters;
+  onChange: (next: EventFilters) => void;
+  availableCategories?: string[];
+};
 
-  // You can edit these lists anytime
-  const allCategories = [
-    "Music",
-    "Theatre",
-    "Cinema",
-    "Festival",
-    "Market",
-    "Exhibition",
-    "Workshop",
-    "Dance",
-    "Comedy",
-    "Lecture",
-    "Outdoor",
-    "Food & Drink",
-  ];
+const ALL_AUDIENCES = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
-  const allAudiences = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+function isDefaultFilters(value: EventFilters) {
+  return (
+    value.search === "" &&
+    value.categories.length === 0 &&
+    value.audience.length === 0 &&
+    value.is_free === false
+  );
+}
 
-  const toggle = (value: string, list: string[], setter: (v: string[]) => void) => {
-    if (list.includes(value)) {
-      setter(list.filter((x) => x !== value));
-    } else {
-      setter([...list, value]);
-    }
-  };
+export default function FilterBar({
+  value,
+  onChange,
+  availableCategories = [],
+}: FilterBarProps) {
+  function toggleCategory(category: string) {
+    const nextCategories = value.categories.includes(category)
+      ? value.categories.filter((x) => x !== category)
+      : [...value.categories, category];
 
-  const applyFilters = () => {
-    onFilter({
-      search,
-      categories: category,
-      audience,
-      is_free: isFree,
+    onChange({
+      ...value,
+      categories: nextCategories,
     });
-  };
+  }
 
-  const clearFilters = () => {
-    // Explicit, reversible reset (no magic)
-    setSearch("");
-    setCategory([]);
-    setAudience([]);
-    setIsFree(false);
+  function toggleAudience(aud: string) {
+    const has = value.audience.includes(aud);
 
-    onFilter({
+    if (aud === "All Ages") {
+      onChange({
+        ...value,
+        audience: has ? [] : ["All Ages"],
+      });
+      return;
+    }
+
+    let nextAudience = has
+      ? value.audience.filter((x) => x !== aud)
+      : [...value.audience, aud];
+
+    nextAudience = nextAudience.filter((x) => x !== "All Ages");
+
+    onChange({
+      ...value,
+      audience: nextAudience,
+    });
+  }
+
+  function clearFilters() {
+    onChange({
       search: "",
       categories: [],
       audience: [],
       is_free: false,
     });
-  };
+  }
+
+  const chipClass = (active: boolean) =>
+    [
+      "px-2.5 py-1 rounded-full text-xs border transition",
+      active
+        ? "bg-[#c94917] text-white border-[#c94917]"
+        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50",
+    ].join(" ");
 
   return (
-    <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
-        <input
-          type="text"
-          placeholder="Search events..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
-        />
+    <div className="mb-6 rounded-xl border border-orange-200 bg-white p-3 shadow-sm">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={value.search}
+            onChange={(e) =>
+              onChange({
+                ...value,
+                search: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+          />
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={applyFilters}
-            className="px-4 py-2 bg-[#c94917] text-white rounded-lg hover:bg-orange-600 transition"
-          >
-            Apply
-          </button>
+          <label className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
+            <input
+              id="free"
+              type="checkbox"
+              checked={value.is_free}
+              onChange={(e) =>
+                onChange({
+                  ...value,
+                  is_free: e.target.checked,
+                })
+              }
+            />
+            <span>Free only</span>
+          </label>
 
           <button
             type="button"
             onClick={clearFilters}
-            className="px-4 py-2 border border-[#c94917] text-[#c94917] rounded-lg hover:bg-orange-50 transition"
+            disabled={isDefaultFilters(value)}
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Clear
           </button>
         </div>
-      </div>
 
-      {/* Category Filter */}
-      <div className="mb-3">
-        <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
-        <div className="flex flex-wrap gap-2">
-          {allCategories.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => toggle(c, category, setCategory)}
-              className={`px-3 py-1 border rounded-full text-sm transition ${
-                category.includes(c)
-                  ? "bg-[#c94917] text-white border-[#c94917]"
-                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+        {availableCategories.length > 0 ? (
+          <div>
+            <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+              Categories
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {availableCategories.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => toggleCategory(c)}
+                  className={chipClass(value.categories.includes(c))}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Audience
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ALL_AUDIENCES.map((a) => (
+              <button
+                key={a}
+                type="button"
+                onClick={() => toggleAudience(a)}
+                className={chipClass(value.audience.includes(a))}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Audience Filter */}
-      <div className="mb-3">
-        <h3 className="font-semibold text-[#c94917] mb-2">Audience</h3>
-        <div className="flex flex-wrap gap-2">
-          {allAudiences.map((a) => (
-            <button
-              key={a}
-              type="button"
-              onClick={() => toggle(a, audience, setAudience)}
-              className={`px-3 py-1 border rounded-full text-sm transition ${
-                audience.includes(a)
-                  ? "bg-[#c94917] text-white border-[#c94917]"
-                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-              }`}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Free Events Toggle */}
-      <div className="flex items-center gap-2 mt-3">
-        <input
-          id="free"
-          type="checkbox"
-          checked={isFree}
-          onChange={(e) => setIsFree(e.target.checked)}
-        />
-        <label htmlFor="free" className="text-sm text-gray-700">
-          Show only free events
-        </label>
-      </div>
-
-      <div className="mt-3 text-xs text-neutral-500">
-        Filters apply when you click <span className="font-medium">Apply</span> (or{" "}
-        <span className="font-medium">Clear</span>).
       </div>
     </div>
   );

@@ -34,6 +34,9 @@ export default function SiteHeader({ city, theme }: Props) {
             <Link href="/map" className={navLinkClass}>
               Map
             </Link>
+            <Link href="/favorites" className={navLinkClass}>
+              Favorites
+            </Link>
             <Link href="/categories" className={navLinkClass}>
               Categories
             </Link>

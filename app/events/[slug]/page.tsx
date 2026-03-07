@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import dayjs from "dayjs";
+import FavoriteButton from "../../../components/FavoriteButton";
 
 type EventItem = {
   id: string;
@@ -18,24 +18,35 @@ type EventItem = {
   city?: string | null;
   price?: string | null;
   ticket_url?: string | null;
-
-  // NEW preferred field
   audience?: string[] | null;
-
-  // Legacy / optional restriction notes
   age?: string | null;
-
   category?: string | null;
   image_url?: string | null;
   source_folder?: string | null;
   youtube_url?: string | null;
   spotify_url?: string | null;
   is_free?: boolean | null;
-
   latitude?: number | null;
   longitude?: number | null;
   normalized_address?: string | null;
 };
+
+const LISBON_DATE_TIME = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  hour12: true,
+  timeZone: "Europe/Lisbon",
+});
+
+function formatLisbonDateTime(value?: string | null) {
+  if (!value) return "";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? String(value) : LISBON_DATE_TIME.format(d);
+}
 
 function categoryKey(input: string) {
   return (input || "")
@@ -84,10 +95,7 @@ function getDisplayAudience(e: EventItem): string[] {
 
 function getImage(e: EventItem) {
   if (e.image_url && e.source_folder) {
-    return `/${e.source_folder.replace(/^\/+/, "")}/${e.image_url.replace(
-      /^\/+/,
-      ""
-    )}`;
+    return `/${e.source_folder.replace(/^\/+/, "")}/${e.image_url.replace(/^\/+/, "")}`;
   }
   if (e.image_url?.startsWith("http")) return e.image_url;
   if (e.youtube_url) {
@@ -119,13 +127,13 @@ export default function EventDetailPage() {
       setError(null);
 
       try {
-        // Use the existing list endpoint and find the matching slug.
         const res = await fetch("/api/events/list/?limit=2000", {
           cache: "no-store",
         });
         const json = await res.json().catch(() => ({}));
-        if (!res.ok)
+        if (!res.ok) {
           throw new Error(json?.error || `Failed to load events (${res.status})`);
+        }
 
         const items = Array.isArray(json?.items) ? (json.items as EventItem[]) : [];
         const found = items.find((x) => String(x.slug) === String(slug)) ?? null;
@@ -170,10 +178,8 @@ export default function EventDetailPage() {
   }
 
   const audience = getDisplayAudience(event);
-  const when = event.starts_at
-    ? dayjs(event.starts_at).format("ddd, MMM D, YYYY h:mm A")
-    : "";
-  const ends = event.ends_at ? dayjs(event.ends_at).format("h:mm A") : "";
+  const when = formatLisbonDateTime(event.starts_at);
+  const ends = formatLisbonDateTime(event.ends_at);
 
   return (
     <section className="max-w-4xl mx-auto">
@@ -194,9 +200,15 @@ export default function EventDetailPage() {
         </div>
 
         <div className="p-5 sm:p-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#c94917]">
-            {event.title}
-          </h1>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#c94917]">
+              {event.title}
+            </h1>
+
+            <FavoriteButton slug={event.slug} />
+          </div>
+
+          <div className="mt-2 text-xs text-gray-500">Saved on this device</div>
 
           <div className="mt-3 space-y-1 text-sm text-gray-800">
             {event.location_name && <p>📍 {event.location_name}</p>}
@@ -215,7 +227,6 @@ export default function EventDetailPage() {
             ) : null}
           </div>
 
-          {/* Audience chips */}
           <div className="mt-4">
             <div className="text-xs font-semibold text-gray-600 mb-2">
               Audience
@@ -230,7 +241,6 @@ export default function EventDetailPage() {
                 </span>
               ))}
 
-              {/* If age contains non-audience restriction notes, show it as a grey tag */}
               {event.age &&
                 !/all ages|all-ages|family|kids|children|teen|adult/i.test(
                   event.age
@@ -242,7 +252,6 @@ export default function EventDetailPage() {
             </div>
           </div>
 
-          {/* Description */}
           {event.description && (
             <div className="mt-5">
               <div className="text-xs font-semibold text-gray-600 mb-2">
@@ -254,7 +263,6 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          {/* Links */}
           <div className="mt-6 flex flex-wrap gap-3">
             {event.ticket_url && (
               <a

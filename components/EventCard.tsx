@@ -1,10 +1,13 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import FavoriteButton from "./FavoriteButton";
 
 export type EventItem = {
   id?: string | number;
+  slug?: string;
   title: string;
   description?: string;
   starts_at?: string;
@@ -41,6 +44,7 @@ function parsePgArrayString(v: string): string[] {
 function normalizeAudience(aud?: string[] | string): string[] {
   if (!aud) return [];
   if (Array.isArray(aud)) return aud.map((x) => String(x).trim()).filter(Boolean);
+
   if (typeof aud === "string") {
     const s = aud.trim();
     if (!s) return [];
@@ -48,6 +52,7 @@ function normalizeAudience(aud?: string[] | string): string[] {
     if (s.includes(",")) return s.split(",").map((x) => x.trim()).filter(Boolean);
     return [s];
   }
+
   return [];
 }
 
@@ -56,6 +61,7 @@ function getAudienceForDisplay(aud?: string[] | string): string[] {
   if (raw.length === 0) return [];
 
   const set = new Set<string>();
+
   for (const v of raw) {
     const match = AUDIENCE_ORDER.find((x) => x.toLowerCase() === v.toLowerCase());
     set.add(match ?? v);
@@ -65,6 +71,7 @@ function getAudienceForDisplay(aud?: string[] | string): string[] {
 
   const known: string[] = [];
   const unknown: string[] = [];
+
   for (const v of set) {
     if ((AUDIENCE_ORDER as readonly string[]).includes(v)) known.push(v);
     else unknown.push(v);
@@ -99,7 +106,7 @@ function formatLisbonDateTime(d?: string) {
 
 export default function EventCard({ e }: { e: EventItem }) {
   const [expanded, setExpanded] = useState(false);
-  const [previewImage, setPreviewImage] = useState<string>("/images/default.jpeg");
+  const [previewImage, setPreviewImage] = useState("/images/default.jpeg");
 
   useEffect(() => {
     function getImage(): string {
@@ -119,6 +126,7 @@ export default function EventCard({ e }: { e: EventItem }) {
       if (e.spotify_url) return "/images/spotify-cover.jpeg";
 
       let catName: string | undefined;
+
       if (e.category && typeof e.category === "string" && e.category.trim() !== "") {
         catName = e.category;
       } else if (Array.isArray(e.categories) && e.categories.length > 0) {
@@ -152,7 +160,7 @@ export default function EventCard({ e }: { e: EventItem }) {
 
   return (
     <div
-      onClick={() => setExpanded(!expanded)}
+      onClick={() => setExpanded((v) => !v)}
       className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
         expanded ? "scale-[1.02] bg-orange-50" : ""
       }`}
@@ -168,15 +176,22 @@ export default function EventCard({ e }: { e: EventItem }) {
       </div>
 
       <div className="flex-1 p-5">
-        <div className="flex justify-between items-center mb-1">
+        <div className="flex justify-between items-start gap-3 mb-1">
           <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
-          <span
-            className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
-              expanded ? "rotate-180" : ""
-            }`}
+
+          <div
+            className="flex items-center gap-2 shrink-0"
+            onClick={(ev) => ev.stopPropagation()}
           >
-            ▼
-          </span>
+            <FavoriteButton slug={e.slug} showLabel={false} />
+            <span
+              className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
+                expanded ? "rotate-180" : ""
+              }`}
+            >
+              ▼
+            </span>
+          </div>
         </div>
 
         <p className="text-sm text-gray-700 mb-1">📍 {loc || "Location TBA"}</p>
@@ -218,7 +233,7 @@ export default function EventCard({ e }: { e: EventItem }) {
 
         {Array.isArray(e.categories) && e.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2">
-            {e.categories.map((cat: string) => (
+            {e.categories.map((cat) => (
               <Link
                 key={cat}
                 href={`/categories/${cat.toLowerCase().replace(/\s+/g, "-")}`}
