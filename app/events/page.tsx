@@ -4,13 +4,10 @@ import React, { useEffect, useMemo, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import dayjs from "dayjs";
-import FilterBar from "@/components/FilterBar";
+import FilterBar, { type EventFilters } from "@/components/FilterBar";
 import EmptyState from "@/components/EmptyState";
+import FavoriteButton from "../../components/FavoriteButton";
 
-/**
- * Sponsored placement control
- * Put sponsored event slugs here to force top placement.
- */
 const SPONSORED_EVENT_SLUGS = new Set<string>([
   // "my-sponsor-event-slug",
 ]);
@@ -26,10 +23,8 @@ type EventItem = {
   address?: string | null;
   city?: string | null;
   price?: string | null;
-
   audience?: string[] | null;
   age?: string | null;
-
   category?: string | null;
   image_url?: string | null;
   source_folder?: string | null;
@@ -127,10 +122,6 @@ function toTime(s?: string | null) {
   return Number.isFinite(t) ? t : Number.POSITIVE_INFINITY;
 }
 
-/**
- * Metrics tracking (explicit)
- * Uses sendBeacon when possible so clicks still log during navigation.
- */
 function trackMetric(payload: { metric: "impression" | "click"; event_slug: string; page_path: string }) {
   try {
     const body = JSON.stringify({
@@ -141,32 +132,41 @@ function trackMetric(payload: { metric: "impression" | "click"; event_slug: stri
 
     const url = "/api/metrics/track";
 
-    // Best-effort: beacon survives navigation better
     if (navigator.sendBeacon) {
       const blob = new Blob([body], { type: "application/json" });
       navigator.sendBeacon(url, blob);
       return;
     }
 
-    // Fallback
     fetch(url, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body,
       keepalive: true,
     }).catch(() => {});
-  } catch {
-    // swallow — metrics should never break UX
-  }
+  } catch {}
+}
+
+function hasActiveFilters(filters: EventFilters) {
+  return (
+    filters.search.trim() !== "" ||
+    filters.categories.length > 0 ||
+    filters.audience.length > 0 ||
+    filters.is_free
+  );
 }
 
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<EventFilters>({
+    search: "",
+    categories: [],
+    audience: [],
+    is_free: false,
+  });
 
-  // Prevent duplicate impression logs per page view
   const impressedSlugsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
@@ -181,10 +181,8 @@ export default function EventsPage() {
 
         const rows = pickEvents(json);
         setEvents(rows);
-        setFilteredEvents(rows);
       } catch (e: any) {
         setEvents([]);
-        setFilteredEvents([]);
         setError(e?.message ?? "Failed to load events");
         console.error("Events load error:", e);
       } finally {
@@ -195,7 +193,17 @@ export default function EventsPage() {
     loadEvents();
   }, []);
 
-  const handleFilter = (filters: any) => {
+  const availableCategories = useMemo(() => {
+    return Array.from(
+      new Set(
+        events
+          .map((e) => String(e.category || "").trim())
+          .filter(Boolean)
+      )
+    ).sort((a, b) => a.localeCompare(b));
+  }, [events]);
+
+  const filteredEvents = useMemo(() => {
     let filtered = [...events];
 
     if (filters.search) {
@@ -208,17 +216,14 @@ export default function EventsPage() {
       );
     }
 
-    const selectedKeys =
-      filters.category_keys?.length > 0
-        ? filters.category_keys
-        : (filters.categories || []).map(categoryKey);
+    const selectedKeys = filters.categories.map(categoryKey);
 
     if (selectedKeys.length > 0) {
       filtered = filtered.filter((e) => selectedKeys.includes(categoryKey(e.category || "")));
     }
 
-    if (filters.audience && filters.audience.length > 0) {
-      const selected = (filters.audience as string[]).map(normalizeAudienceValue).filter(Boolean);
+    if (filters.audience.length > 0) {
+      const selected = filters.audience.map(normalizeAudienceValue).filter(Boolean);
 
       if (!selected.includes("all ages")) {
         filtered = filtered.filter((e) => {
@@ -229,12 +234,16 @@ export default function EventsPage() {
       }
     }
 
-    if (filters.is_free || filters.isFree) {
-      filtered = filtered.filter((e) => e.is_free === true || (e.price || "").toLowerCase() === "free");
+    if (filters.is_free) {
+      filtered = filtered.filter(
+        (e) => e.is_free === true || (e.price || "").toLowerCase() === "free"
+      );
     }
 
-    setFilteredEvents(filtered);
-  };
+    return filtered;
+  }, [events, filters]);
+
+  const showPromoRows = !hasActiveFilters(filters);
 
   const formatDate = (dateStr?: string | null) =>
     dateStr ? dayjs(dateStr).format("ddd, MMM D, YYYY h:mm A") : "";
@@ -269,9 +278,8 @@ export default function EventsPage() {
       .slice(0, 6);
   }, [events]);
 
-  // IntersectionObserver for sponsored impressions
   useEffect(() => {
-    if (sponsoredEvents.length === 0) return;
+    if (!showPromoRows || sponsoredEvents.length === 0) return;
 
     const els = Array.from(document.querySelectorAll<HTMLElement>("[data-sponsored-slug]"));
     if (els.length === 0) return;
@@ -295,48 +303,53 @@ export default function EventsPage() {
     els.forEach((el) => obs.observe(el));
 
     return () => obs.disconnect();
-  }, [sponsoredEvents]);
+  }, [sponsoredEvents, showPromoRows]);
 
   const renderEventRowCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
 
     return (
-      <Link
-        key={e.id}
-        href={`/events/${encodeURIComponent(e.slug)}`}
-        className="flex bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md"
-      >
-        <div className="relative w-56 h-40">
-          <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
-        </div>
-
-        <div className="flex-1 p-4">
-          <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
-          <p>📍 {e.location_name || "Location TBA"}</p>
-          <p>🕒 {formatDate(e.starts_at)}</p>
-
-          <div className="mt-2 flex flex-wrap gap-2">
-            {audKeys.map((k) => (
-              <span
-                key={k}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
-                title="Audience"
-              >
-                {titleCaseAudienceKey(k)}
-              </span>
-            ))}
-
-            {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
-              <span
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
-                title="Age restriction / notes"
-              >
-                {e.age}
-              </span>
-            )}
+      <div key={e.id} className="relative">
+        <Link
+          href={`/events/${encodeURIComponent(e.slug)}`}
+          className="flex bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md"
+        >
+          <div className="relative w-56 h-40">
+            <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
           </div>
+
+          <div className="flex-1 p-4 pr-20">
+            <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
+            <p>📍 {e.location_name || "Location TBA"}</p>
+            <p>🕒 {formatDate(e.starts_at)}</p>
+
+            <div className="mt-2 flex flex-wrap gap-2">
+              {audKeys.map((k) => (
+                <span
+                  key={k}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                  title="Audience"
+                >
+                  {titleCaseAudienceKey(k)}
+                </span>
+              ))}
+
+              {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
+                <span
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
+                  title="Age restriction / notes"
+                >
+                  {e.age}
+                </span>
+              )}
+            </div>
+          </div>
+        </Link>
+
+        <div className="absolute right-4 top-4 z-10">
+          <FavoriteButton slug={e.slug} showLabel={false} />
         </div>
-      </Link>
+      </div>
     );
   };
 
@@ -345,54 +358,63 @@ export default function EventsPage() {
     const isSponsored = label === "Sponsored";
 
     return (
-      <Link
-        key={e.id}
-        href={`/events/${encodeURIComponent(e.slug)}`}
-        className="group block min-w-[260px] max-w-[260px] rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
-        data-sponsored-slug={isSponsored ? e.slug : undefined}
-        onClick={() => {
-          if (isSponsored) {
-            trackMetric({ metric: "click", event_slug: e.slug, page_path: window.location.pathname });
-          }
-        }}
-      >
-        <div className="relative h-36 w-full">
-          <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
+      <div key={e.id} className="relative min-w-[260px] max-w-[260px]">
+        <Link
+          href={`/events/${encodeURIComponent(e.slug)}`}
+          className="group block rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
+          data-sponsored-slug={isSponsored ? e.slug : undefined}
+          onClick={() => {
+            if (isSponsored) {
+              trackMetric({ metric: "click", event_slug: e.slug, page_path: window.location.pathname });
+            }
+          }}
+        >
+          <div className="relative h-36 w-full">
+            <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
 
-          <div className="absolute left-3 top-3">
-            <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm border border-orange-200">
-              {label}
-            </span>
-          </div>
-        </div>
-
-        <div className="p-3">
-          <div className="text-sm text-neutral-600">{formatDate(e.starts_at) || "Date TBA"}</div>
-          <div className="mt-1 line-clamp-2 font-semibold text-[#c94917] group-hover:underline">
-            {e.title}
-          </div>
-          <div className="mt-1 text-sm text-neutral-700">📍 {e.location_name || "Location TBA"}</div>
-
-          <div className="mt-2 flex flex-wrap gap-2">
-            {audKeys.slice(0, 2).map((k) => (
-              <span
-                key={k}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
-                title="Audience"
-              >
-                {titleCaseAudienceKey(k)}
+            <div className="absolute left-3 top-3">
+              <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm border border-orange-200">
+                {label}
               </span>
-            ))}
+            </div>
           </div>
+
+          <div className="p-3">
+            <div className="text-sm text-neutral-600">{formatDate(e.starts_at) || "Date TBA"}</div>
+            <div className="mt-1 line-clamp-2 font-semibold text-[#c94917] group-hover:underline">
+              {e.title}
+            </div>
+            <div className="mt-1 text-sm text-neutral-700">📍 {e.location_name || "Location TBA"}</div>
+
+            <div className="mt-2 flex flex-wrap gap-2">
+              {audKeys.slice(0, 2).map((k) => (
+                <span
+                  key={k}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                  title="Audience"
+                >
+                  {titleCaseAudienceKey(k)}
+                </span>
+              ))}
+            </div>
+          </div>
+        </Link>
+
+        <div className="absolute right-3 top-3 z-10">
+          <FavoriteButton slug={e.slug} showLabel={false} />
         </div>
-      </Link>
+      </div>
     );
   };
 
   return (
     <section className="max-w-5xl mx-auto">
       <Suspense fallback={<p className="text-center italic">Loading filters…</p>}>
-        <FilterBar onFilter={handleFilter} />
+        <FilterBar
+          value={filters}
+          onChange={setFilters}
+          availableCategories={availableCategories}
+        />
       </Suspense>
 
       {error ? (
@@ -406,7 +428,7 @@ export default function EventsPage() {
         />
       ) : (
         <div className="mt-6">
-          {sponsoredEvents.length > 0 ? (
+          {showPromoRows && sponsoredEvents.length > 0 ? (
             <div className="mb-8">
               <div className="mb-3">
                 <h2 className="text-lg font-semibold text-neutral-900">Sponsored Events</h2>
@@ -419,7 +441,7 @@ export default function EventsPage() {
             </div>
           ) : null}
 
-          {featuredEvents.length > 0 ? (
+          {showPromoRows && featuredEvents.length > 0 ? (
             <div className="mb-8">
               <div className="mb-3">
                 <h2 className="text-lg font-semibold text-neutral-900">Editor’s Picks</h2>
@@ -431,6 +453,10 @@ export default function EventsPage() {
               </div>
             </div>
           ) : null}
+
+          <div className="mb-4 rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-gray-700">
+            Hearts are saved on this device only.
+          </div>
 
           <div className="flex flex-col gap-6">{filteredEvents.map(renderEventRowCard)}</div>
         </div>

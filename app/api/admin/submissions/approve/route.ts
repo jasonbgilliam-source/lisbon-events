@@ -211,8 +211,12 @@ export async function POST(req: Request) {
       inputText: geocodeQuery,
     });
 
+    let geocoded = false;
+    let geocodeWarning: string | null = null;
+    let geocodeError: string | null = null;
+
     if (geo.ok) {
-      await supabase
+      const { error: geoUpdateErr } = await supabase
         .from("events")
         .update({
           latitude: geo.latitude,
@@ -225,17 +229,34 @@ export async function POST(req: Request) {
           geocoded_at: new Date().toISOString(),
         })
         .eq("id", eventId);
+
+      if (geoUpdateErr) {
+        geocodeWarning = `Event published, but geocode update failed: ${geoUpdateErr.message}`;
+      } else {
+        geocoded = true;
+      }
     } else {
-      await supabase
+      const failMessage =
+        "error" in geo && typeof (geo as any).error === "string"
+          ? (geo as any).error
+          : "Geocoding failed";
+
+      const { error: geoFailUpdateErr } = await supabase
         .from("events")
         .update({
           geocode_provider: "google",
           geocode_confidence: 0,
           geocode_status: "failed",
-          geocode_error: (geo as any).error ?? "unknown",
+          geocode_error: failMessage,
           geocoded_at: new Date().toISOString(),
         })
         .eq("id", eventId);
+
+      geocodeError = failMessage;
+
+      if (geoFailUpdateErr) {
+        geocodeWarning = `Event published, geocoding failed, and failure status update also failed: ${geoFailUpdateErr.message}`;
+      }
     }
 
     const { error: upErr } = await supabase
@@ -270,7 +291,9 @@ export async function POST(req: Request) {
       ok: true,
       eventId,
       slug,
-      geocoded: geo.ok,
+      geocoded,
+      geocodeWarning,
+      geocodeError,
       audience_submission_raw: reviewedSub.audience ?? null,
       audience_sent: audienceSent,
       audience_stored: audienceStored,

@@ -1,130 +1,174 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
+
+export type EventFilters = {
+  search: string;
+  categories: string[];
+  audience: string[];
+  is_free: boolean;
+};
 
 type FilterBarProps = {
-  onFilter: (filters: any) => void;
+  value: EventFilters;
+  onChange: (next: EventFilters) => void;
 };
 
 const ALL_AUDIENCES = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
-export default function FilterBar({ onFilter }: FilterBarProps) {
-  const [search, setSearch] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
-  const [audience, setAudience] = useState<string[]>([]);
-  const [isFree, setIsFree] = useState(false);
+const ALL_CATEGORIES = [
+  "Music",
+  "Theatre",
+  "Cinema",
+  "Festival",
+  "Market",
+  "Exhibition",
+  "Workshop",
+  "Dance",
+  "Comedy",
+  "Lecture",
+  "Outdoor",
+  "Food & Drink",
+];
 
-  const allCategories = [
-    "Music",
-    "Theatre",
-    "Cinema",
-    "Festival",
-    "Market",
-    "Exhibition",
-    "Workshop",
-    "Dance",
-    "Comedy",
-    "Lecture",
-    "Outdoor",
-    "Food & Drink",
-  ];
+function isDefaultFilters(value: EventFilters) {
+  return (
+    value.search === "" &&
+    value.categories.length === 0 &&
+    value.audience.length === 0 &&
+    value.is_free === false
+  );
+}
 
-  function toggleCategory(value: string) {
-    setCategories((prev) =>
-      prev.includes(value) ? prev.filter((x) => x !== value) : [...prev, value]
-    );
-  }
+export default function FilterBar({ value, onChange }: FilterBarProps) {
+  function toggleCategory(category: string) {
+    const nextCategories = value.categories.includes(category)
+      ? value.categories.filter((x) => x !== category)
+      : [...value.categories, category];
 
-  function toggleAudience(value: string) {
-    setAudience((prev) => {
-      const has = prev.includes(value);
-
-      // All Ages is a wildcard toggle
-      if (value === "All Ages") {
-        return has ? [] : ["All Ages"];
-      }
-
-      let next = has ? prev.filter((x) => x !== value) : [...prev, value];
-
-      // Remove All Ages if specific audiences are chosen
-      next = next.filter((x) => x !== "All Ages");
-
-      return next;
+    onChange({
+      ...value,
+      categories: nextCategories,
     });
   }
 
-  // Auto-apply filters
-  useEffect(() => {
-    onFilter({
-      search,
-      categories,
-      audience,
-      is_free: isFree,
+  function toggleAudience(aud: string) {
+    const has = value.audience.includes(aud);
+
+    if (aud === "All Ages") {
+      onChange({
+        ...value,
+        audience: has ? [] : ["All Ages"],
+      });
+      return;
+    }
+
+    let nextAudience = has
+      ? value.audience.filter((x) => x !== aud)
+      : [...value.audience, aud];
+
+    nextAudience = nextAudience.filter((x) => x !== "All Ages");
+
+    onChange({
+      ...value,
+      audience: nextAudience,
     });
-  }, [search, categories, audience, isFree, onFilter]);
+  }
+
+  function clearFilters() {
+    onChange({
+      search: "",
+      categories: [],
+      audience: [],
+      is_free: false,
+    });
+  }
+
+  const chipClass = (active: boolean) =>
+    [
+      "px-2.5 py-1 rounded-full text-xs border transition",
+      active
+        ? "bg-[#c94917] text-white border-[#c94917]"
+        : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50",
+    ].join(" ");
 
   return (
-    <div className="bg-white border border-orange-200 rounded-2xl p-4 mb-8 shadow-sm">
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search events..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full mb-4 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
-      />
+    <div className="mb-6 rounded-xl border border-orange-200 bg-white p-3 shadow-sm">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          <input
+            type="text"
+            placeholder="Search events..."
+            value={value.search}
+            onChange={(e) =>
+              onChange({
+                ...value,
+                search: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+          />
 
-      {/* Categories */}
-      <div className="mb-4">
-        <h3 className="font-semibold text-[#c94917] mb-2">Categories</h3>
-        <div className="flex flex-wrap gap-2">
-          {allCategories.map((c) => (
-            <button
-              key={c}
-              onClick={() => toggleCategory(c)}
-              className={`px-3 py-1 border rounded-full text-sm ${
-                categories.includes(c)
-                  ? "bg-[#c94917] text-white border-[#c94917]"
-                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
+          <label className="flex items-center gap-2 whitespace-nowrap text-sm text-gray-700">
+            <input
+              id="free"
+              type="checkbox"
+              checked={value.is_free}
+              onChange={(e) =>
+                onChange({
+                  ...value,
+                  is_free: e.target.checked,
+                })
+              }
+            />
+            <span>Free only</span>
+          </label>
+
+          <button
+            type="button"
+            onClick={clearFilters}
+            disabled={isDefaultFilters(value)}
+            className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Clear
+          </button>
         </div>
-      </div>
 
-      {/* Audience */}
-      <div className="mb-4">
-        <h3 className="font-semibold text-[#c94917] mb-2">Audience</h3>
-        <div className="flex flex-wrap gap-2">
-          {ALL_AUDIENCES.map((a) => (
-            <button
-              key={a}
-              onClick={() => toggleAudience(a)}
-              className={`px-3 py-1 border rounded-full text-sm ${
-                audience.includes(a)
-                  ? "bg-[#c94917] text-white border-[#c94917]"
-                  : "bg-white text-[#c94917] border-[#c94917] hover:bg-orange-50"
-              }`}
-            >
-              {a}
-            </button>
-          ))}
+        <div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Categories
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ALL_CATEGORIES.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => toggleCategory(c)}
+                className={chipClass(value.categories.includes(c))}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Free */}
-      <div className="flex items-center gap-2">
-        <input
-          id="free"
-          type="checkbox"
-          checked={isFree}
-          onChange={(e) => setIsFree(e.target.checked)}
-        />
-        <label htmlFor="free" className="text-sm text-gray-700">
-          Show only free events
-        </label>
+        <div>
+          <div className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+            Audience
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {ALL_AUDIENCES.map((a) => (
+              <button
+                key={a}
+                type="button"
+                onClick={() => toggleAudience(a)}
+                className={chipClass(value.audience.includes(a))}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
