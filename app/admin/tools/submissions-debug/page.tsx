@@ -27,6 +27,7 @@ type Submission = {
 
   source_url?: string;
   ticket_url?: string;
+  image_url?: string;
 
   tags?: string;
   recurrence_note?: string;
@@ -65,9 +66,7 @@ function mapSearchLink(s: Submission) {
   ].filter(Boolean);
 
   if (parts.length === 0) return "";
-
-  const query = encodeURIComponent(parts.join(" "));
-  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts.join(" "))}`;
 }
 
 export default function SubmissionsAdminPage() {
@@ -125,7 +124,7 @@ export default function SubmissionsAdminPage() {
 
   if (loading) return <main className="p-6">Loading…</main>;
 
-  if (error)
+  if (error) {
     return (
       <main className="p-6">
         <p className="text-red-700 font-medium">Error: {error}</p>
@@ -135,47 +134,175 @@ export default function SubmissionsAdminPage() {
         </p>
       </main>
     );
+  }
 
   return (
-    <main className="p-6 max-w-5xl mx-auto">
+    <main className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-semibold mb-4">
         Pending Event Submissions
       </h1>
 
       {subs.length === 0 ? <p>No pending submissions 🎉</p> : null}
 
-      <ul className="space-y-4">
+      <ul className="space-y-5">
         {subs.map((s) => {
           const src = sourceLink(s);
           const domain = domainFromUrl(src);
           const mapLink = mapSearchLink(s);
 
           return (
-            <li key={s.id} className="border rounded p-4">
-              <div className="flex justify-between items-start gap-4">
-                <div className="min-w-0">
+            <li key={s.id} className="rounded-xl border bg-white p-4 shadow-sm">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                {s.image_url ? (
+                  <a
+                    href={s.image_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0"
+                  >
+                    <img
+                      src={s.image_url}
+                      alt={s.title || "submission image"}
+                      className="h-32 w-32 rounded-lg border object-cover bg-gray-100"
+                    />
+                  </a>
+                ) : (
+                  <div className="h-32 w-32 shrink-0 rounded-lg border bg-gray-50 flex items-center justify-center text-xs text-gray-400">
+                    No image
+                  </div>
+                )}
 
-                  <div className="font-medium">
-                    {s.title || "(no title)"}{" "}
-                    <span className="text-xs text-gray-500">#{s.id}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {s.title || "(no title)"}{" "}
+                        <span className="text-xs font-normal text-gray-500">
+                          #{s.id}
+                        </span>
+                      </div>
+
+                      {s.category ? (
+                        <div className="mt-1 inline-flex rounded-full border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-medium text-[#c94917]">
+                          {s.category}
+                        </div>
+                      ) : (
+                        <div className="mt-1 inline-flex rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700">
+                          No category
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        className="rounded border px-3 py-1.5 hover:bg-green-50"
+                        onClick={() => approve(s.id)}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="rounded border px-3 py-1.5 hover:bg-red-50"
+                        onClick={() => reject(s.id)}
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="text-sm text-gray-600">
-                    {whenText(s)} {whereText(s) ? `@ ${whereText(s)}` : ""}
+                  <div className="mt-3 grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Date / Time
+                      </div>
+                      <div className="mt-1 text-gray-800">
+                        {whenText(s) || <span className="text-red-700">Missing date</span>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Venue
+                      </div>
+                      <div className="mt-1 text-gray-800">
+                        {whereText(s) || <span className="text-red-700">Missing venue</span>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Address
+                      </div>
+                      <div className="mt-1 text-gray-800">
+                        {s.address || <span className="text-red-700">Missing address</span>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        City
+                      </div>
+                      <div className="mt-1 text-gray-800">
+                        {s.city || <span className="text-red-700">Missing city</span>}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Ticket URL
+                      </div>
+                      <div className="mt-1 text-gray-800 break-all">
+                        {s.ticket_url ? (
+                          <a
+                            href={s.ticket_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                          >
+                            {s.ticket_url}
+                          </a>
+                        ) : (
+                          <span className="text-gray-500">None</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Source URL
+                      </div>
+                      <div className="mt-1 text-gray-800 break-all">
+                        {src ? (
+                          <a
+                            href={src}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                          >
+                            {src}
+                          </a>
+                        ) : (
+                          <span className="text-red-700">Missing source</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  {s.description ? (
-                    <p className="mt-2 text-sm">{s.description}</p>
-                  ) : null}
+                  <div className="mt-4">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                      Description
+                    </div>
+                    <div className="mt-1 text-sm text-gray-800 whitespace-pre-wrap">
+                      {s.description || <span className="text-gray-500 italic">No description</span>}
+                    </div>
+                  </div>
 
-                  <div className="flex gap-2 mt-2 flex-wrap">
-
+                  <div className="mt-4 flex flex-wrap gap-2">
                     {src ? (
                       <a
                         href={src}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm px-2 py-1 border rounded bg-gray-50 hover:bg-gray-100"
+                        className="inline-flex items-center gap-1 rounded border bg-gray-50 px-3 py-1.5 text-sm hover:bg-gray-100"
                       >
                         🔗 View source {domain ? `(${domain})` : ""}
                       </a>
@@ -186,31 +313,24 @@ export default function SubmissionsAdminPage() {
                         href={mapLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm px-2 py-1 border rounded bg-gray-50 hover:bg-gray-100"
+                        className="inline-flex items-center gap-1 rounded border bg-gray-50 px-3 py-1.5 text-sm hover:bg-gray-100"
                       >
                         📍 Open in Google Maps
                       </a>
                     ) : null}
 
+                    {s.image_url ? (
+                      <a
+                        href={s.image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded border bg-gray-50 px-3 py-1.5 text-sm hover:bg-gray-100"
+                      >
+                        🖼 Open image
+                      </a>
+                    ) : null}
                   </div>
-
                 </div>
-
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    className="border px-3 py-1 rounded hover:bg-green-50"
-                    onClick={() => approve(s.id)}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="border px-3 py-1 rounded hover:bg-red-50"
-                    onClick={() => reject(s.id)}
-                  >
-                    Reject
-                  </button>
-                </div>
-
               </div>
             </li>
           );
