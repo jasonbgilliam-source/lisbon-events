@@ -10,12 +10,10 @@ type Submission = {
   title?: string;
   description?: string;
 
-  // older UI fields (if your API returns them)
   start?: string;
   end?: string;
   venue?: string;
 
-  // likely DB fields for submissions (if you return raw rows)
   starts_at?: string;
   ends_at?: string;
   location_name?: string;
@@ -47,6 +45,16 @@ function whereText(s: Submission) {
 
 function sourceLink(s: Submission) {
   return s.source_url || s.ticket_url || "";
+}
+
+function domainFromUrl(url?: string) {
+  if (!url) return "";
+  try {
+    const u = new URL(url);
+    return u.hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
 }
 
 export default function SubmissionsAdminPage() {
@@ -124,52 +132,64 @@ export default function SubmissionsAdminPage() {
       {subs.length === 0 ? <p>No pending submissions 🎉</p> : null}
 
       <ul className="space-y-4">
-        {subs.map((s) => (
-          <li key={s.id} className="border rounded p-4">
-            <div className="flex justify-between items-start gap-4">
-              <div className="min-w-0">
-                <div className="font-medium">
-                  {s.title || "(no title)"}{" "}
-                  <span className="text-xs text-gray-500">#{s.id}</span>
+        {subs.map((s) => {
+          const src = sourceLink(s);
+          const domain = domainFromUrl(src);
+
+          return (
+            <li key={s.id} className="border rounded p-4">
+              <div className="flex justify-between items-start gap-4">
+                <div className="min-w-0">
+
+                  <div className="font-medium">
+                    {s.title || "(no title)"}{" "}
+                    <span className="text-xs text-gray-500">#{s.id}</span>
+                  </div>
+
+                  <div className="text-sm text-gray-600">
+                    {whenText(s)} {whereText(s) ? `@ ${whereText(s)}` : ""}
+                  </div>
+
+                  {s.description ? (
+                    <p className="mt-2 text-sm">{s.description}</p>
+                  ) : null}
+
+                  <div className="flex gap-2 mt-2 flex-wrap">
+
+                    {src ? (
+                      <a
+                        href={src}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm px-2 py-1 border rounded bg-gray-50 hover:bg-gray-100"
+                      >
+                        🔗 View source {domain ? `(${domain})` : ""}
+                      </a>
+                    ) : null}
+
+                  </div>
+
                 </div>
 
-                <div className="text-sm text-gray-600">
-                  {whenText(s)} {whereText(s) ? `@ ${whereText(s)}` : ""}
-                </div>
-
-                {s.description ? (
-                  <p className="mt-2 text-sm">{s.description}</p>
-                ) : null}
-
-                {sourceLink(s) ? (
-                  <a
-                    className="text-sm underline"
-                    href={sourceLink(s)}
-                    target="_blank"
-                    rel="noreferrer"
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    className="border px-3 py-1 rounded hover:bg-green-50"
+                    onClick={() => approve(s.id)}
                   >
-                    Source
-                  </a>
-                ) : null}
-              </div>
+                    Approve
+                  </button>
+                  <button
+                    className="border px-3 py-1 rounded hover:bg-red-50"
+                    onClick={() => reject(s.id)}
+                  >
+                    Reject
+                  </button>
+                </div>
 
-              <div className="flex gap-2 shrink-0">
-                <button
-                  className="border px-3 py-1 rounded"
-                  onClick={() => approve(s.id)}
-                >
-                  Approve
-                </button>
-                <button
-                  className="border px-3 py-1 rounded"
-                  onClick={() => reject(s.id)}
-                >
-                  Reject
-                </button>
               </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </main>
   );
