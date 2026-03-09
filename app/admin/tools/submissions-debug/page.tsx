@@ -57,6 +57,19 @@ function domainFromUrl(url?: string) {
   }
 }
 
+function mapSearchLink(s: Submission) {
+  const parts = [
+    s.location_name || s.venue || "",
+    s.address || "",
+    s.city || "",
+  ].filter(Boolean);
+
+  if (parts.length === 0) return "";
+
+  const query = encodeURIComponent(parts.join(" "));
+  return `https://www.google.com/maps/search/?api=1&query=${query}`;
+}
+
 export default function SubmissionsAdminPage() {
   const [subs, setSubs] = React.useState<Submission[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -135,6 +148,7 @@ export default function SubmissionsAdminPage() {
         {subs.map((s) => {
           const src = sourceLink(s);
           const domain = domainFromUrl(src);
+          const mapLink = mapSearchLink(s);
 
           return (
             <li key={s.id} className="border rounded p-4">
@@ -164,6 +178,17 @@ export default function SubmissionsAdminPage() {
                         className="inline-flex items-center gap-1 text-sm px-2 py-1 border rounded bg-gray-50 hover:bg-gray-100"
                       >
                         🔗 View source {domain ? `(${domain})` : ""}
+                      </a>
+                    ) : null}
+
+                    {mapLink ? (
+                      <a
+                        href={mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-sm px-2 py-1 border rounded bg-gray-50 hover:bg-gray-100"
+                      >
+                        📍 Open in Google Maps
                       </a>
                     ) : null}
 
