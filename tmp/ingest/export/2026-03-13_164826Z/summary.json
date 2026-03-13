@@ -1,0 +1,62 @@
+{
+  "stamp": "2026-03-13_164826Z",
+  "total_sources": 2,
+  "total_events": 225,
+  "total_rows": 225,
+  "by_source": [
+    {
+      "key": "lisboa_secreta",
+      "ok": true,
+      "events": 21
+    },
+    {
+      "key": "visitlisboa",
+      "ok": true,
+      "events": 204
+    }
+  ],
+  "debug": {
+    "lisboa_secreta": {
+      "list_pages": [
+        "https://lisboasecreta.co/en/"
+      ],
+      "event_pages": [
+        "https://lisboasecreta.co/en/secret-guides/",
+        "https://lisboasecreta.co/en/visit-lisbon/",
+        "https://lisboasecreta.co/en/what-to-do-in-lisbon-weekend/",
+        "https://lisboasecreta.co/en/e-leclerc-supermarket-is-closing-and-is-selling-everything-at-a-30-discount-storewide-until-march-13/",
+        "https://lisboasecreta.co/en/change-to-daylight-saving-time/",
+        "https://lisboasecreta.co/en/parade-bagpipes-st-patricks-day-lisbon/",
+        "https://lisboasecreta.co/en/michelin-guide-portugal-2026-list/",
+        "https://lisboasecreta.co/en/inigo-quintero-concert-in-lisbon/",
+        "https://lisboasecreta.co/en/monstra-lisbon-animation-festival/",
+        "https://lisboasecreta.co/en/party-program-first-anniversary-macam-lisbon/",
+        "https://lisboasecreta.co/en/nos-alive-2026-music-festival/",
+        "https://lisboasecreta.co/en/chic-nic-parque-eduardo-vii-lisbon-dishes-chef-concert/",
+        "https://lisboasecreta.co/en/galerias-romanas-lisbon-september-2025/",
+        "https://lisboasecreta.co/en/world-record-lisbon-half-marathon/",
+        "https://lisboasecreta.co/en/tired-panda-artwork-bordalo-ii/",
+        "https://lisboasecreta.co/en/official-portrait-president-republic-marcelo-rebelo-de-sousa-artist-vhils/",
+        "https://lisboasecreta.co/en/top-100-cities-in-europe-2026-resonance/",
+        "https://lisboasecreta.co/en/national-pantheon-curiosities-madicao-santa-engracia/",
+        "https://lisboasecreta.co/en/the-best-lisbon-monuments/",
+        "https://lisboasecreta.co/en/tropical-botanical-garden-belem/",
+        "https://lisboasecreta.co/en/history-basilica-da-estrela-monument/"
+      ],
+      "warnings": [],
+      "picked_links": 21,
+      "skipped_non_article_links": 74,
+      "extracted_ldjson_events": 0
+    },
+    "visitlisboa": {
+      "source": "visitlisboa",
+      "pages_fetched": 10,
+      "cards_seen": 205,
+      "events_parsed": 204,
+      "detail_pages_fetched": 60,
+      "detail_pages_saved": 60,
+      "errors": []
+    }
+  },
+  "output_csv": "tmp/ingest/export/2026-03-13_164826Z/events.csv"
+}

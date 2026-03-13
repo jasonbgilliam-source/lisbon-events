@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import FavoriteButton from "./FavoriteButton";
+import EventStaticMap from "./EventStaticMap";
 
 export type EventItem = {
   id?: string | number;
@@ -29,6 +30,8 @@ export type EventItem = {
   youtube_url?: string;
   spotify_url?: string;
   is_free?: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 const AUDIENCE_ORDER = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
@@ -104,9 +107,26 @@ function formatLisbonDateTime(d?: string) {
   return Number.isNaN(x.getTime()) ? d : LISBON_DATE_TIME.format(x);
 }
 
-export default function EventCard({ e }: { e: EventItem }) {
-  const [expanded, setExpanded] = useState(false);
+function hasMapData(e: EventItem) {
+  return (
+    (typeof e.latitude === "number" && typeof e.longitude === "number") ||
+    Boolean(e.location_name || e.city)
+  );
+}
+
+export default function EventCard({
+  e,
+  defaultExpanded = false,
+}: {
+  e: EventItem;
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const [previewImage, setPreviewImage] = useState("/images/default.jpeg");
+
+  useEffect(() => {
+    setExpanded(defaultExpanded);
+  }, [defaultExpanded]);
 
   useEffect(() => {
     function getImage(): string {
@@ -157,135 +177,152 @@ export default function EventCard({ e }: { e: EventItem }) {
   const end = e.ends_at || e.end;
   const loc = e.location_name || e.venue;
   const audience = getAudienceForDisplay(e.audience);
+  const showMap = expanded && hasMapData(e);
 
   return (
     <div
       onClick={() => setExpanded((v) => !v)}
-      className={`flex flex-col sm:flex-row bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
+      className={`flex flex-col bg-white border border-orange-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer ${
         expanded ? "scale-[1.02] bg-orange-50" : ""
       }`}
     >
-      <div className="relative w-full sm:w-56 h-40 sm:h-auto">
-        <Image
-          src={previewImage}
-          alt={e.title}
-          fill
-          className="object-cover"
-          onError={() => setPreviewImage("/images/default.jpeg")}
-        />
-      </div>
-
-      <div className="flex-1 p-5">
-        <div className="flex justify-between items-start gap-3 mb-1">
-          <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
-
-          <div
-            className="flex items-center gap-2 shrink-0"
-            onClick={(ev) => ev.stopPropagation()}
-          >
-            <FavoriteButton slug={e.slug} showLabel={false} />
-            <span
-              className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
-                expanded ? "rotate-180" : ""
-              }`}
-            >
-              ▼
-            </span>
-          </div>
+      <div className="flex flex-col sm:flex-row">
+        <div className="relative w-full sm:w-56 h-40 sm:h-auto">
+          <Image
+            src={previewImage}
+            alt={e.title}
+            fill
+            className="object-cover"
+            onError={() => setPreviewImage("/images/default.jpeg")}
+          />
         </div>
 
-        <p className="text-sm text-gray-700 mb-1">📍 {loc || "Location TBA"}</p>
-        <p className="text-sm text-gray-700 mb-1">
-          🕒 {formatLisbonDateTime(start)}
-          {end ? ` – ${formatLisbonDateTime(end)}` : ""}
-        </p>
+        <div className="flex-1 p-5">
+          <div className="flex justify-between items-start gap-3 mb-1">
+            <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
 
-        {e.price ? (
-          <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
-        ) : (
-          <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
-        )}
-
-        {audience.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {audience.map((a) => (
+            <div
+              className="flex items-center gap-2 shrink-0"
+              onClick={(ev) => ev.stopPropagation()}
+            >
+              <FavoriteButton slug={e.slug} showLabel={false} />
               <span
-                key={a}
-                className="bg-orange-50 text-[#c94917] text-xs font-semibold px-2 py-1 rounded-full border border-orange-200"
+                className={`text-[#c94917] text-lg transform transition-transform duration-300 ${
+                  expanded ? "rotate-180" : ""
+                }`}
               >
-                {a}
+                ▼
               </span>
-            ))}
+            </div>
           </div>
-        )}
 
-        {e.age && <p className="text-sm text-gray-700 mt-2">🔞 {e.age}</p>}
-
-        {e.description && (
-          <p
-            className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
-              expanded ? "line-clamp-none" : "line-clamp-2"
-            }`}
-          >
-            {e.description}
+          <p className="text-sm text-gray-700 mb-1">📍 {loc || "Location TBA"}</p>
+          <p className="text-sm text-gray-700 mb-1">
+            🕒 {formatLisbonDateTime(start)}
+            {end ? ` – ${formatLisbonDateTime(end)}` : ""}
           </p>
-        )}
 
-        {Array.isArray(e.categories) && e.categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {e.categories.map((cat) => (
-              <Link
-                key={cat}
-                href={`/categories/${cat.toLowerCase().replace(/\s+/g, "-")}`}
-                className="bg-orange-100 text-[#c94917] text-xs font-medium px-2 py-1 rounded-full hover:bg-orange-200 transition"
-                onClick={(ev) => ev.stopPropagation()}
-              >
-                {cat}
-              </Link>
-            ))}
-          </div>
-        )}
+          {e.price ? (
+            <p className="text-sm text-gray-700 mb-1">💶 {e.price}</p>
+          ) : (
+            <p className="text-sm text-green-700 font-medium mb-1">🆓 Free</p>
+          )}
 
-        {expanded && (
-          <div className="mt-3 flex flex-wrap gap-3">
-            {e.youtube_url && (
-              <a
-                href={e.youtube_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-[#c94917] underline"
-                onClick={(ev) => ev.stopPropagation()}
-              >
-                🎥 YouTube
-              </a>
-            )}
+          {audience.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {audience.map((a) => (
+                <span
+                  key={a}
+                  className="bg-orange-50 text-[#c94917] text-xs font-semibold px-2 py-1 rounded-full border border-orange-200"
+                >
+                  {a}
+                </span>
+              ))}
+            </div>
+          )}
 
-            {e.spotify_url && (
-              <a
-                href={e.spotify_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-[#c94917] underline"
-                onClick={(ev) => ev.stopPropagation()}
-              >
-                🎵 Spotify
-              </a>
-            )}
+          {e.age && <p className="text-sm text-gray-700 mt-2">🔞 {e.age}</p>}
 
-            {e.source_url && (
-              <a
-                href={e.source_url}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-[#c94917] underline"
-                onClick={(ev) => ev.stopPropagation()}
-              >
-                🔗 Source
-              </a>
-            )}
-          </div>
-        )}
+          {e.description && (
+            <p
+              className={`text-sm text-gray-700 mt-2 transition-all duration-300 ${
+                expanded ? "line-clamp-none" : "line-clamp-2"
+              }`}
+            >
+              {e.description}
+            </p>
+          )}
+
+          {Array.isArray(e.categories) && e.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {e.categories.map((cat) => (
+                <Link
+                  key={cat}
+                  href={`/categories/${cat.toLowerCase().replace(/\s+/g, "-")}`}
+                  className="bg-orange-100 text-[#c94917] text-xs font-medium px-2 py-1 rounded-full hover:bg-orange-200 transition"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
+                  {cat}
+                </Link>
+              ))}
+            </div>
+          )}
+
+          {expanded && (
+            <div className="mt-3 flex flex-wrap gap-3">
+              {e.youtube_url && (
+                <a
+                  href={e.youtube_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-[#c94917] underline"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
+                  🎥 YouTube
+                </a>
+              )}
+
+              {e.spotify_url && (
+                <a
+                  href={e.spotify_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-[#c94917] underline"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
+                  🎵 Spotify
+                </a>
+              )}
+
+              {e.source_url && (
+                <a
+                  href={e.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-[#c94917] underline"
+                  onClick={(ev) => ev.stopPropagation()}
+                >
+                  🔗 Source
+                </a>
+              )}
+            </div>
+          )}
+        </div>
       </div>
+
+      {showMap ? (
+        <div
+          className="border-t bg-gray-50 px-5 py-4"
+          onClick={(ev) => ev.stopPropagation()}
+        >
+          <EventStaticMap
+            latitude={e.latitude}
+            longitude={e.longitude}
+            location_name={e.location_name || e.venue || null}
+            city={e.city || null}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

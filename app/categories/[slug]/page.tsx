@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
+import EventStaticMap from "@/components/EventStaticMap";
 
 export const dynamic = "force-dynamic";
 
@@ -19,12 +20,21 @@ type EventRow = {
   location_name: string | null;
   address: string | null;
   city: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 function fmt(dt: string | null) {
   if (!dt) return "";
   const d = new Date(dt);
   return isNaN(d.getTime()) ? dt : d.toLocaleString();
+}
+
+function hasMapData(e: EventRow) {
+  return (
+    (typeof e.latitude === "number" && typeof e.longitude === "number") ||
+    Boolean(e.location_name || e.city)
+  );
 }
 
 export default async function CategoryDetailPage({ params }: Props) {
@@ -34,7 +44,6 @@ export default async function CategoryDetailPage({ params }: Props) {
   const supabase = supabaseServer();
   const nowIso = new Date().toISOString();
 
-  // ✅ Canonical category resolution: slug → category_catalog.name
   const { data: categoryData, error: categoryError } = await supabase
     .from("category_catalog")
     .select("name, slug")
@@ -47,7 +56,6 @@ export default async function CategoryDetailPage({ params }: Props) {
 
   const canonicalName = categoryData.name;
 
-  // ✅ Exact match category filtering (parity with canonical endpoints)
   const { data: eventsData, error: eventsError } = await supabase
     .from("events")
     .select(
@@ -61,6 +69,8 @@ export default async function CategoryDetailPage({ params }: Props) {
         "location_name",
         "address",
         "city",
+        "latitude",
+        "longitude",
       ].join(",")
     )
     .gte("starts_at", nowIso)
@@ -104,28 +114,46 @@ export default async function CategoryDetailPage({ params }: Props) {
           <div className="text-gray-600 italic">No upcoming events found for this category.</div>
         ) : (
           <div className="flex flex-col gap-4">
-            {events.map((e) => (
-              <Link
-                key={e.id}
-                href={`/events/${encodeURIComponent(e.slug)}`}
-                className="bg-white border border-orange-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <div className="text-xl font-semibold text-[#c94917]">{e.title}</div>
-                    <div className="text-sm text-gray-700 mt-1">
-                      {e.starts_at ? `🕒 ${fmt(e.starts_at)}` : ""}
-                      {e.ends_at ? ` – ${fmt(e.ends_at)}` : ""}
+            {events.map((e) => {
+              const showMap = hasMapData(e);
+
+              return (
+                <div
+                  key={e.id}
+                  className="bg-white border border-orange-200 rounded-2xl shadow-sm hover:shadow-lg transition overflow-hidden"
+                >
+                  <Link
+                    href={`/events/${encodeURIComponent(e.slug)}`}
+                    className="block p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div className="text-xl font-semibold text-[#c94917]">{e.title}</div>
+                        <div className="text-sm text-gray-700 mt-1">
+                          {e.starts_at ? `🕒 ${fmt(e.starts_at)}` : ""}
+                          {e.ends_at ? ` – ${fmt(e.ends_at)}` : ""}
+                        </div>
+                        <div className="text-sm text-gray-700 mt-1">
+                          📍 {[e.location_name, e.address, e.city].filter(Boolean).join(" • ") || "Location TBA"}
+                        </div>
+                      </div>
+                      <div className="text-sm underline shrink-0">View</div>
                     </div>
-                    <div className="text-sm text-gray-700 mt-1">
-                      📍{" "}
-                      {[e.location_name, e.address, e.city].filter(Boolean).join(" • ") || "Location TBA"}
+                  </Link>
+
+                  {showMap ? (
+                    <div className="border-t bg-gray-50 px-5 py-4">
+                      <EventStaticMap
+                        latitude={e.latitude}
+                        longitude={e.longitude}
+                        location_name={e.location_name}
+                        city={e.city}
+                      />
                     </div>
-                  </div>
-                  <div className="text-sm underline">View</div>
+                  ) : null}
                 </div>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>

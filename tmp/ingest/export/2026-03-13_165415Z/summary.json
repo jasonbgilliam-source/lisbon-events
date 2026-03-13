@@ -1,0 +1,173 @@
+{
+  "stamp": "2026-03-13_165415Z",
+  "total_sources": 2,
+  "total_events": 212,
+  "total_rows": 212,
+  "ai_approved_rescues": 0,
+  "ai_rescue_file_found": true,
+  "by_source": [
+    {
+      "key": "lisboa_secreta",
+      "ok": true,
+      "events": 8
+    },
+    {
+      "key": "visitlisboa",
+      "ok": true,
+      "events": 204
+    }
+  ],
+  "debug": {
+    "lisboa_secreta": {
+      "list_pages": [
+        "https://lisboasecreta.co/en/"
+      ],
+      "event_pages": [
+        "https://lisboasecreta.co/en/secret-guides/",
+        "https://lisboasecreta.co/en/visit-lisbon/",
+        "https://lisboasecreta.co/en/what-to-do-in-lisbon-weekend/",
+        "https://lisboasecreta.co/en/e-leclerc-supermarket-is-closing-and-is-selling-everything-at-a-30-discount-storewide-until-march-13/",
+        "https://lisboasecreta.co/en/change-to-daylight-saving-time/",
+        "https://lisboasecreta.co/en/parade-bagpipes-st-patricks-day-lisbon/",
+        "https://lisboasecreta.co/en/michelin-guide-portugal-2026-list/",
+        "https://lisboasecreta.co/en/inigo-quintero-concert-in-lisbon/",
+        "https://lisboasecreta.co/en/monstra-lisbon-animation-festival/",
+        "https://lisboasecreta.co/en/party-program-first-anniversary-macam-lisbon/",
+        "https://lisboasecreta.co/en/nos-alive-2026-music-festival/",
+        "https://lisboasecreta.co/en/chic-nic-parque-eduardo-vii-lisbon-dishes-chef-concert/",
+        "https://lisboasecreta.co/en/galerias-romanas-lisbon-september-2025/",
+        "https://lisboasecreta.co/en/world-record-lisbon-half-marathon/",
+        "https://lisboasecreta.co/en/tired-panda-artwork-bordalo-ii/",
+        "https://lisboasecreta.co/en/official-portrait-president-republic-marcelo-rebelo-de-sousa-artist-vhils/",
+        "https://lisboasecreta.co/en/top-100-cities-in-europe-2026-resonance/",
+        "https://lisboasecreta.co/en/national-pantheon-curiosities-madicao-santa-engracia/",
+        "https://lisboasecreta.co/en/the-best-lisbon-monuments/",
+        "https://lisboasecreta.co/en/tropical-botanical-garden-belem/",
+        "https://lisboasecreta.co/en/history-basilica-da-estrela-monument/"
+      ],
+      "warnings": [],
+      "picked_links": 21,
+      "skipped_non_article_links": 52,
+      "extracted_ldjson_events": 0,
+      "rejected_non_events": [
+        {
+          "url": "https://lisboasecreta.co/en/secret-guides/",
+          "title": "Secret Guide to Lisbon: Discover the hidden corners of the city",
+          "score": -5
+        },
+        {
+          "url": "https://lisboasecreta.co/en/visit-lisbon/",
+          "title": "Visit Lisbon: Guide to Lisbon's Best Landmarks, Attractions, and Activities",
+          "score": -7
+        },
+        {
+          "url": "https://lisboasecreta.co/en/e-leclerc-supermarket-is-closing-and-is-selling-everything-at-a-30-discount-storewide-until-march-13/",
+          "title": "E.Leclerc supermarket is closing and until March 13, it is selling everything at a 30% discount (storewide).",
+          "score": 2
+        },
+        {
+          "url": "https://lisboasecreta.co/en/change-to-daylight-saving-time/",
+          "title": "Goodbye, winter: from this date onwards, you will sleep one hour less, but spend more time in the sun in Lisbon.",
+          "score": 2
+        },
+        {
+          "url": "https://lisboasecreta.co/en/michelin-guide-portugal-2026-list/",
+          "title": "Michelin Guide Portugal 2026: Lisbon gains a new two-star restaurant and there are 11 new additions from north to south",
+          "score": -6
+        },
+        {
+          "url": "https://lisboasecreta.co/en/galerias-romanas-lisbon-september-2025/",
+          "title": "The Roman Galleries of Lisbon will not reopen, as usual, in April: find out why",
+          "score": 1
+        },
+        {
+          "url": "https://lisboasecreta.co/en/world-record-lisbon-half-marathon/",
+          "title": "Neither gastronomy nor tourism: the new world record set in Lisbon is related to one of the athletics events with the most privileged views.",
+          "score": -3
+        },
+        {
+          "url": "https://lisboasecreta.co/en/tired-panda-artwork-bordalo-ii/",
+          "title": "It is ten meters tall and made from a hundred used tires: the new giant ‘resident’ that has invaded a roundabout in Lisbon.",
+          "score": 0
+        },
+        {
+          "url": "https://lisboasecreta.co/en/official-portrait-president-republic-marcelo-rebelo-de-sousa-artist-vhils/",
+          "title": "The official portrait of President Marcelo Rebelo de Sousa, created by artist Vhils, has been unveiled.",
+          "score": 1
+        },
+        {
+          "url": "https://lisboasecreta.co/en/top-100-cities-in-europe-2026-resonance/",
+          "title": "This is Portugal’s “It City”: Lisbon shines among the top 15 in Europe in a report that evaluated more than 100 metropolitan areas.",
+          "score": -11
+        },
+        {
+          "url": "https://lisboasecreta.co/en/national-pantheon-curiosities-madicao-santa-engracia/",
+          "title": "Did you know that the expression “works of Santa Engrácia” originated in Lisbon? The history of the National Monument that survived a ‘curse’ and centuries of waiting",
+          "score": 1
+        },
+        {
+          "url": "https://lisboasecreta.co/en/the-best-lisbon-monuments/",
+          "title": "Time travel in Lisbon: 13 essential stops among medieval ruins and masterpieces of national engineering",
+          "score": 2
+        },
+        {
+          "url": "https://lisboasecreta.co/en/tropical-botanical-garden-belem/",
+          "title": "Lisbon’s ‘green lung’ is a National Monument and an exotic refuge with more than 600 plants from (almost) all over the world.",
+          "score": 1
+        }
+      ],
+      "kept_without_ldjson": [
+        {
+          "url": "https://lisboasecreta.co/en/what-to-do-in-lisbon-weekend/",
+          "title": "Lisbon is buzzing this weekend: must-see events (some free) from March 13 to 15",
+          "score": 4
+        },
+        {
+          "url": "https://lisboasecreta.co/en/parade-bagpipes-st-patricks-day-lisbon/",
+          "title": "More than 500 bagpipers will invade Avenida da Liberdade: the biggest St. Patrick’s Day ever comes to Lisbon",
+          "score": 10
+        },
+        {
+          "url": "https://lisboasecreta.co/en/inigo-quintero-concert-in-lisbon/",
+          "title": "Iñigo Quintero, the global phenomenon behind “Si No Estás,” comes to Lisbon: the Galician star will perform in the capital later this month.",
+          "score": 6
+        },
+        {
+          "url": "https://lisboasecreta.co/en/monstra-lisbon-animation-festival/",
+          "title": "Lisbon’s most famous animation festival is back: the 25th edition of MONSTRA brings around 500 films and more than 120 screenings to the capital.",
+          "score": 3
+        },
+        {
+          "url": "https://lisboasecreta.co/en/party-program-first-anniversary-macam-lisbon/",
+          "title": "This art museum in Lisbon is celebrating its first anniversary with free admission, music, and a rare work by Almada Negreiros.",
+          "score": 10
+        },
+        {
+          "url": "https://lisboasecreta.co/en/nos-alive-2026-music-festival/",
+          "title": "All confirmations for NOS Alive 2026 (so far)",
+          "score": 11
+        },
+        {
+          "url": "https://lisboasecreta.co/en/chic-nic-parque-eduardo-vii-lisbon-dishes-chef-concert/",
+          "title": "The most chic picnic on Avenida da Liberdade is finally going to happen",
+          "score": 5
+        },
+        {
+          "url": "https://lisboasecreta.co/en/history-basilica-da-estrela-monument/",
+          "title": "The jewel of Lisbon where princesses get married: this Basilica has a hidden viewpoint with incredible views and is a National Monument.",
+          "score": 3
+        }
+      ]
+    },
+    "visitlisboa": {
+      "source": "visitlisboa",
+      "pages_fetched": 10,
+      "cards_seen": 205,
+      "events_parsed": 204,
+      "detail_pages_fetched": 60,
+      "detail_pages_saved": 60,
+      "errors": []
+    }
+  },
+  "output_csv": "tmp/ingest/export/2026-03-13_165415Z/events.csv"
+}

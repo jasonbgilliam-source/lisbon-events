@@ -30,18 +30,14 @@ function safeFileName(s) {
 }
 
 function isLikelyArticleUrl(url) {
-  // Only accept single-slug pages like:
-  // https://lisboasecreta.co/en/something-like-this/
-  // Avoid: /category/, /tag/, /profile/, /about-us/, /food-drink/, etc.
   try {
     const u = new URL(url);
     if (u.hostname !== "lisboasecreta.co") return false;
     if (!u.pathname.startsWith("/en/")) return false;
 
-    const p = u.pathname.replace(/\/+$/, ""); // trim trailing /
+    const p = u.pathname.replace(/\/+$/, "");
     if (p === "/en") return false;
 
-    // Exclusions
     const badPrefixes = [
       "/en/category/",
       "/en/tag/",
@@ -60,16 +56,11 @@ function isLikelyArticleUrl(url) {
     ];
     if (badPrefixes.some((bp) => p.startsWith(bp))) return false;
 
-    // Must be exactly /en/<slug>
     const parts = p.split("/").filter(Boolean);
     if (parts.length !== 2) return false;
 
     const slug = parts[1];
-
-    // Heuristic: real articles almost always have hyphens
     if (!slug.includes("-")) return false;
-
-    // Avoid weird asset URLs
     if (slug.includes(".")) return false;
 
     return true;
@@ -160,6 +151,195 @@ function parseEventFromLd(node) {
   return { title, description, image_url, starts_at, ends_at, location_name, address };
 }
 
+function cleanText(s) {
+  return String(s || "").replace(/\s+/g, " ").trim();
+}
+
+function bodyText($) {
+  return cleanText($("article").text() || $("main").text() || $("body").text());
+}
+
+function slugFromUrl(url) {
+  return url.replace("https://lisboasecreta.co/en/", "").replace(/\/$/, "");
+}
+
+function looksLikeEventSlug(slug) {
+  const s = String(slug || "").toLowerCase();
+
+  const positive = [
+    "concert",
+    "festival",
+    "party",
+    "market",
+    "fair",
+    "show",
+    "musical",
+    "opera",
+    "theatre",
+    "theater",
+    "cinema",
+    "movie",
+    "film",
+    "exhibition",
+    "exhibit",
+    "museum",
+    "event",
+    "events",
+    "live",
+    "performance",
+    "parade",
+    "tour",
+    "talk",
+    "talks",
+    "conference",
+    "workshop",
+    "week",
+    "weekend",
+    "anniversary",
+  ];
+
+  const negative = [
+    "guide",
+    "best-of",
+    "best-",
+    "top-",
+    "what-to-do",
+    "visit-lisbon",
+    "secret-guides",
+    "change-to-daylight-saving-time",
+    "official-portrait",
+    "report",
+    "city",
+    "restaurant",
+    "restaurants",
+    "metro",
+    "subway",
+    "bridge",
+    "monument",
+    "history-",
+    "historic-",
+    "funicular",
+    "traffic",
+    "transport",
+    "airport",
+    "booked-restaurant",
+    "destinations",
+    "ranking",
+    "news",
+    "supermarket",
+  ];
+
+  let score = 0;
+  for (const token of positive) {
+    if (s.includes(token)) score += 2;
+  }
+  for (const token of negative) {
+    if (s.includes(token)) score -= 3;
+  }
+
+  return score > 0;
+}
+
+function scoreEventLikelihood({ url, title, description, text, hasLdEvent }) {
+  const slug = slugFromUrl(url).toLowerCase();
+  const haystack = [title, description, text].map((x) => String(x || "").toLowerCase()).join(" ");
+
+  let score = 0;
+  const reasons = [];
+
+  if (hasLdEvent) {
+    score += 8;
+    reasons.push("jsonld-event");
+  }
+
+  if (looksLikeEventSlug(slug)) {
+    score += 3;
+    reasons.push("event-like-slug");
+  }
+
+  const positivePatterns = [
+    /\bconcert\b/,
+    /\bfestival\b/,
+    /\bmarket\b/,
+    /\bfair\b/,
+    /\bexhibition\b/,
+    /\bmusical\b/,
+    /\bparty\b/,
+    /\bshow\b/,
+    /\blive music\b/,
+    /\bperformance\b/,
+    /\bparade\b/,
+    /\bworkshop\b/,
+    /\btalks?\b/,
+    /\btickets?\b/,
+    /\brsvp\b/,
+    /\bfree entry\b/,
+    /\bvenue\b/,
+    /\bopening hours\b/,
+    /\bbook now\b/,
+    /\bstarts?\b/,
+    /\bfrom \d{1,2}(am|pm)\b/,
+    /\bon [a-z]+, [a-z]+ \d{1,2}\b/,
+    /\bthis weekend\b/,
+  ];
+
+  const negativePatterns = [
+    /\bguide to\b/,
+    /\bbest of\b/,
+    /\bbest places\b/,
+    /\bwhat to do in lisbon\b/,
+    /\bmost booked\b/,
+    /\breport\b/,
+    /\branking\b/,
+    /\baccording to\b/,
+    /\bwill change\b/,
+    /\bhas been unveiled\b/,
+    /\bnews\b/,
+    /\brestaurant\b/,
+    /\brestaurants\b/,
+    /\bmetro\b/,
+    /\bsubway\b/,
+    /\bfunicular\b/,
+    /\bbridge\b/,
+    /\bcity\b/,
+    /\bdestination\b/,
+    /\btop 15\b/,
+    /\btop 50\b/,
+    /\btop 100\b/,
+  ];
+
+  for (const rx of positivePatterns) {
+    if (rx.test(haystack)) score += 1;
+  }
+
+  for (const rx of negativePatterns) {
+    if (rx.test(haystack)) score -= 2;
+  }
+
+  if (/€|\beuros?\b|\bfree\b/i.test(haystack)) {
+    score += 1;
+    reasons.push("price-like-language");
+  }
+
+  if (/\b(lisbon|marvila|belem|alfama|chiado|bairro alto|cais do sodre)\b/i.test(haystack)) {
+    score += 1;
+    reasons.push("place-language");
+  }
+
+  return { score, reasons };
+}
+
+function shouldKeepCandidate(candidate) {
+  const { score } = scoreEventLikelihood(candidate);
+
+  if (candidate.hasLdEvent) return true;
+  if (candidate.parsed?.starts_at || candidate.parsed?.location_name || candidate.parsed?.address) {
+    return score >= 1;
+  }
+
+  return score >= 3;
+}
+
 export async function scrapeLisboaSecreta({ fetch, rawBase }) {
   const source = "lisboa_secreta";
   const debug = {
@@ -169,6 +349,8 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
     picked_links: 0,
     skipped_non_article_links: 0,
     extracted_ldjson_events: 0,
+    rejected_non_events: [],
+    kept_without_ldjson: [],
   };
 
   const startUrl = "https://lisboasecreta.co/en/";
@@ -182,7 +364,6 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
   writeRaw(rawBase, source, "start.html", html);
 
   const $ = cheerio.load(html);
-
   const links = new Set();
 
   $("a[href]").each((_, a) => {
@@ -194,6 +375,7 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
       debug.skipped_non_article_links += 1;
       return;
     }
+
     links.add(href.split("#")[0]);
   });
 
@@ -211,7 +393,7 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
       const pageHtml = await r.text();
       debug.event_pages.push(url);
 
-      const slug = url.replace("https://lisboasecreta.co/en/", "").replace(/\/$/, "");
+      const slug = slugFromUrl(url);
       const rawPath = writeRaw(rawBase, source, `${safeFileName(slug) || "page"}.html`, pageHtml);
 
       const $$ = cheerio.load(pageHtml);
@@ -220,6 +402,7 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
         $$("meta[property='og:title']").attr("content"),
         $$("h1").first().text()
       );
+
       if (!metaTitle) continue;
 
       const metaImage = pickFirstNonEmpty(
@@ -232,16 +415,46 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
         $$("meta[name='description']").attr("content")
       );
 
-      // Optional JSON-LD Event (rare here, but safe)
       let parsed = null;
+      let hasLdEvent = false;
+
       const ldBlocks = extractLdJson($$);
       for (const block of ldBlocks) {
         const eventNode = findEventNode(block);
         if (eventNode) {
           parsed = parseEventFromLd(eventNode);
+          hasLdEvent = true;
           debug.extracted_ldjson_events += 1;
           break;
         }
+      }
+
+      const text = bodyText($$);
+
+      const candidate = {
+        url,
+        title: parsed?.title || metaTitle,
+        description: parsed?.description || metaDescription || "",
+        text,
+        parsed,
+        hasLdEvent,
+      };
+
+      if (!shouldKeepCandidate(candidate)) {
+        debug.rejected_non_events.push({
+          url,
+          title: candidate.title,
+          score: scoreEventLikelihood(candidate).score,
+        });
+        continue;
+      }
+
+      if (!hasLdEvent) {
+        debug.kept_without_ldjson.push({
+          url,
+          title: candidate.title,
+          score: scoreEventLikelihood(candidate).score,
+        });
       }
 
       events.push({
@@ -249,8 +462,8 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
         source_url: url,
         source_id: slug,
 
-        title: parsed?.title || metaTitle,
-        description: parsed?.description || metaDescription || "",
+        title: candidate.title,
+        description: candidate.description,
         image_url: parsed?.image_url || metaImage || "",
 
         occurrences: [
@@ -263,7 +476,7 @@ export async function scrapeLisboaSecreta({ fetch, rawBase }) {
 
         location_name: parsed?.location_name || "",
         address: parsed?.address || "",
-        city: "",
+        city: "Lisbon",
 
         category: "",
         audience: [],

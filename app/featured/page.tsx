@@ -12,6 +12,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 type EventItem = {
   id: string | number;
+  slug?: string;
   title: string;
   description?: string;
   starts_at: string;
@@ -23,8 +24,13 @@ type EventItem = {
   age?: string;
   category?: string;
   image_url?: string;
+  source_folder?: string;
   youtube_url?: string;
   spotify_url?: string;
+  audience?: string[] | string;
+  is_free?: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
 };
 
 export default function FeaturedPage() {
@@ -88,7 +94,7 @@ export default function FeaturedPage() {
             </h1>
             <div className="flex flex-col gap-6 mt-8">
               {events.map((e) => (
-                <EventCard key={e.id} e={e} />
+                <EventCard key={e.id} e={e} defaultExpanded={true} />
               ))}
             </div>
           </>

@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import FilterBar, { type EventFilters } from "@/components/FilterBar";
 import EmptyState from "@/components/EmptyState";
 import FavoriteButton from "../../components/FavoriteButton";
+import EventStaticMap from "@/components/EventStaticMap";
 
 const SPONSORED_EVENT_SLUGS = new Set<string>([
   // "my-sponsor-event-slug",
@@ -31,6 +32,9 @@ type EventItem = {
   youtube_url?: string | null;
   spotify_url?: string | null;
   is_free?: boolean | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  normalized_address?: string | null;
 };
 
 function pickEvents(json: any): EventItem[] {
@@ -156,6 +160,13 @@ function hasActiveFilters(filters: EventFilters) {
   );
 }
 
+function hasMapData(e: EventItem) {
+  return (
+    (typeof e.latitude === "number" && typeof e.longitude === "number") ||
+    Boolean(e.location_name || e.city)
+  );
+}
+
 export default function EventsPage() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -192,16 +203,6 @@ export default function EventsPage() {
 
     loadEvents();
   }, []);
-
-  const availableCategories = useMemo(() => {
-    return Array.from(
-      new Set(
-        events
-          .map((e) => String(e.category || "").trim())
-          .filter(Boolean)
-      )
-    ).sort((a, b) => a.localeCompare(b));
-  }, [events]);
 
   const filteredEvents = useMemo(() => {
     let filtered = [...events];
@@ -307,27 +308,41 @@ export default function EventsPage() {
 
   const renderEventRowCard = (e: EventItem) => {
     const audKeys = getAudienceForCard(e);
+    const showMap = hasMapData(e);
 
     return (
-      <div key={e.id} className="relative">
-        <Link
-          href={`/events/${encodeURIComponent(e.slug)}`}
-          className="flex bg-white border rounded-2xl overflow-hidden shadow-sm hover:shadow-md"
-        >
-          <div className="relative w-56 h-40">
+      <div
+        key={e.id}
+        className="relative overflow-hidden rounded-2xl border bg-white shadow-sm hover:shadow-md"
+      >
+        <div className="absolute right-4 top-4 z-10">
+          <FavoriteButton slug={e.slug} showLabel={false} />
+        </div>
+
+        <div className="flex flex-col md:flex-row">
+          <Link
+            href={`/events/${encodeURIComponent(e.slug)}`}
+            className="relative h-48 w-full shrink-0 md:h-auto md:w-56"
+          >
             <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
-          </div>
+          </Link>
 
           <div className="flex-1 p-4 pr-20">
-            <h3 className="text-xl font-semibold text-[#c94917]">{e.title}</h3>
-            <p>📍 {e.location_name || "Location TBA"}</p>
-            <p>🕒 {formatDate(e.starts_at)}</p>
+            <Link href={`/events/${encodeURIComponent(e.slug)}`} className="block">
+              <h3 className="text-xl font-semibold text-[#c94917] hover:underline">{e.title}</h3>
+            </Link>
+
+            <div className="mt-1 space-y-1 text-sm text-gray-800">
+              <p>📍 {e.location_name || "Location TBA"}</p>
+              <p>🕒 {formatDate(e.starts_at)}</p>
+              {e.city ? <p>🏙️ {e.city}</p> : null}
+            </div>
 
             <div className="mt-2 flex flex-wrap gap-2">
               {audKeys.map((k) => (
                 <span
                   key={k}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                  className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs text-[#c94917]"
                   title="Audience"
                 >
                   {titleCaseAudienceKey(k)}
@@ -336,19 +351,45 @@ export default function EventsPage() {
 
               {e.age && !/all ages|all-ages|family|kids|children|teen|adult/i.test(e.age) && (
                 <span
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-gray-200 bg-gray-50 text-gray-700"
+                  className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs text-gray-700"
                   title="Age restriction / notes"
                 >
                   {e.age}
                 </span>
               )}
+
+              {e.is_free === true || (e.price || "").toLowerCase() === "free" ? (
+                <span className="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-xs text-green-700">
+                  Free
+                </span>
+              ) : null}
+            </div>
+
+            {e.description ? (
+              <p className="mt-3 line-clamp-3 text-sm text-gray-700">{e.description}</p>
+            ) : null}
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href={`/events/${encodeURIComponent(e.slug)}`}
+                className="inline-flex items-center rounded-lg bg-[#c94917] px-4 py-2 text-sm text-white hover:opacity-90"
+              >
+                View details
+              </Link>
             </div>
           </div>
-        </Link>
-
-        <div className="absolute right-4 top-4 z-10">
-          <FavoriteButton slug={e.slug} showLabel={false} />
         </div>
+
+        {showMap ? (
+          <div className="border-t bg-gray-50 px-4 py-4">
+            <EventStaticMap
+              latitude={e.latitude}
+              longitude={e.longitude}
+              location_name={e.location_name}
+              city={e.city}
+            />
+          </div>
+        ) : null}
       </div>
     );
   };
@@ -361,7 +402,7 @@ export default function EventsPage() {
       <div key={e.id} className="relative min-w-[260px] max-w-[260px]">
         <Link
           href={`/events/${encodeURIComponent(e.slug)}`}
-          className="group block rounded-2xl border bg-white shadow-sm hover:shadow-md overflow-hidden"
+          className="group block overflow-hidden rounded-2xl border bg-white shadow-sm hover:shadow-md"
           data-sponsored-slug={isSponsored ? e.slug : undefined}
           onClick={() => {
             if (isSponsored) {
@@ -373,7 +414,7 @@ export default function EventsPage() {
             <Image src={getImage(e)} alt={e.title} fill className="object-cover" />
 
             <div className="absolute left-3 top-3">
-              <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm border border-orange-200">
+              <span className="inline-flex items-center rounded-full border border-orange-200 bg-white/90 px-2.5 py-1 text-xs font-semibold text-[#c94917] shadow-sm">
                 {label}
               </span>
             </div>
@@ -390,7 +431,7 @@ export default function EventsPage() {
               {audKeys.slice(0, 2).map((k) => (
                 <span
                   key={k}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs border border-orange-200 bg-orange-50 text-[#c94917]"
+                  className="inline-flex items-center rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs text-[#c94917]"
                   title="Audience"
                 >
                   {titleCaseAudienceKey(k)}
@@ -413,7 +454,6 @@ export default function EventsPage() {
         <FilterBar
           value={filters}
           onChange={setFilters}
-          availableCategories={availableCategories}
         />
       </Suspense>
 

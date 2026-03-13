@@ -41,28 +41,63 @@ function isAllAgesRow(row: any): boolean {
   return age === "all ages" || age === "all ages " || age === "all-ages";
 }
 
+function parseEqParam(v?: string | null) {
+  if (!v) return null;
+  if (v.startsWith("eq.")) return v.slice(3);
+  return v;
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url);
 
-  const from = toISODate(url.searchParams.get("from")) ?? new Date().toISOString();
+  const nowISO = new Date().toISOString();
+  const from = toISODate(url.searchParams.get("from"));
   const to = toISODate(url.searchParams.get("to"));
   const category = url.searchParams.get("category");
   const city = url.searchParams.get("city");
   const allAges = url.searchParams.get("all_ages");
   const limit = parseLimit(url.searchParams.get("limit"));
 
+  const titleEq = parseEqParam(url.searchParams.get("title"));
+  const startsAtEq = parseEqParam(url.searchParams.get("starts_at"));
+  const locationNameEq = parseEqParam(url.searchParams.get("location_name"));
+  const slugEq = parseEqParam(url.searchParams.get("slug"));
+
+  const hasExactMatchFilters = !!(titleEq || startsAtEq || locationNameEq || slugEq);
+
   const supabase = supabaseServer();
 
   let query = supabase
     .from("events")
     .select("*")
-    .gte("starts_at", from)
     .order("starts_at", { ascending: true })
     .limit(limit);
 
-  if (to) query = query.lte("starts_at", to);
+  if (titleEq) query = query.eq("title", titleEq);
+  if (startsAtEq) query = query.eq("starts_at", startsAtEq);
+  if (locationNameEq) query = query.eq("location_name", locationNameEq);
+  if (slugEq) query = query.eq("slug", slugEq);
+
   if (category) query = query.eq("category", category);
   if (city) query = query.eq("city", city);
+
+  if (!hasExactMatchFilters) {
+    // Show future events AND ongoing events.
+    // If ends_at exists, use ends_at >= now.
+    // If ends_at is null, fall back to starts_at >= now.
+    query = query.or(`ends_at.gte.${nowISO},and(ends_at.is.null,starts_at.gte.${nowISO})`);
+
+    if (from) {
+      query = query.gte("ends_at", from);
+    }
+
+    if (to) {
+      query = query.lte("starts_at", to);
+    }
+  } else {
+    if (from) query = query.gte("starts_at", from);
+    if (to) query = query.lte("starts_at", to);
+  }
 
   const { data, error } = await query;
 

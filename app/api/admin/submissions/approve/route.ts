@@ -6,6 +6,14 @@ import { buildLisbonGeocodeQuery, geocodeLisbonWithCache } from "@/lib/geocoding
 
 export const dynamic = "force-dynamic";
 
+const AUDIENCE_OPTIONS = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
+const AUDIENCE_DEFAULT_EXPANDED = ["All Ages", "Family", "Kids", "Teens", "Adults"];
+const CITYWIDE_LABEL = "Various locations around Lisbon";
+const LISBON_CENTER = {
+  latitude: 38.7223,
+  longitude: -9.1393,
+};
+
 function slugify(input: string) {
   return input
     .toLowerCase()
@@ -13,9 +21,6 @@ function slugify(input: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 }
-
-const AUDIENCE_OPTIONS = ["All Ages", "Family", "Kids", "Teens", "Adults"] as const;
-const AUDIENCE_DEFAULT_EXPANDED = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
 function stripOuterQuotes(s: string): string {
   const t = s.trim();
@@ -53,7 +58,11 @@ function normalizeAudience(input: any): string[] | null {
     arr = [String(input)];
   }
 
-  arr = arr.map((x) => stripOuterQuotes(String(x))).map((x) => x.trim()).filter(Boolean);
+  arr = arr
+    .map((x) => stripOuterQuotes(String(x)))
+    .map((x) => x.trim())
+    .filter(Boolean);
+
   if (arr.length === 0) return null;
 
   const normalized = arr
@@ -94,18 +103,27 @@ function cleanBool(v: any): boolean {
 function applyOverrides(sub: any, overrides: any) {
   if (!overrides || typeof overrides !== "object") return sub;
 
+  const isCitywide =
+    overrides.is_citywide === undefined ? false : cleanBool(overrides.is_citywide);
+
+  const nextLocationName =
+    cleanString(overrides.location_name) ?? sub.location_name ?? null;
+
   return {
     ...sub,
     title: cleanString(overrides.title) ?? sub.title ?? null,
     description: cleanString(overrides.description) ?? sub.description ?? null,
     starts_at: cleanString(overrides.starts_at) ?? sub.starts_at ?? null,
     ends_at: cleanString(overrides.ends_at) ?? sub.ends_at ?? null,
-    location_name: cleanString(overrides.location_name) ?? sub.location_name ?? null,
+    location_name: isCitywide
+      ? nextLocationName || CITYWIDE_LABEL
+      : nextLocationName,
     city: cleanString(overrides.city) ?? sub.city ?? null,
-    address: cleanString(overrides.address) ?? sub.address ?? null,
+    address: isCitywide ? null : cleanString(overrides.address) ?? sub.address ?? null,
     category: cleanString(overrides.category) ?? sub.category ?? null,
     organizer_email: cleanString(overrides.organizer_email) ?? sub.organizer_email ?? null,
     ticket_url: cleanString(overrides.ticket_url) ?? sub.ticket_url ?? null,
+    source_url: cleanString(overrides.source_url) ?? sub.source_url ?? null,
     image_url: cleanString(overrides.image_url) ?? sub.image_url ?? null,
     age: cleanString(overrides.age) ?? sub.age ?? null,
     youtube_url: cleanString(overrides.youtube_url) ?? sub.youtube_url ?? null,
@@ -113,8 +131,46 @@ function applyOverrides(sub: any, overrides: any) {
     all_day:
       overrides.all_day === undefined ? sub.all_day ?? false : cleanBool(overrides.all_day),
     audience:
-      overrides.audience === undefined ? sub.audience ?? null : normalizeAudience(overrides.audience),
+      overrides.audience === undefined
+        ? sub.audience ?? null
+        : normalizeAudience(overrides.audience),
+    is_citywide: isCitywide,
   };
+}
+
+function normalizeForCompare(v: any): string {
+  return String(v ?? "").trim().toLowerCase();
+}
+
+function isUniqueConstraintError(err: any, constraintName: string) {
+  const message = String(err?.message ?? "");
+  const details = String(err?.details ?? "");
+  const hint = String(err?.hint ?? "");
+  const code = String(err?.code ?? "");
+  return (
+    code === "23505" ||
+    message.includes(constraintName) ||
+    details.includes(constraintName) ||
+    hint.includes(constraintName)
+  );
+}
+
+async function findExactDuplicates(params: {
+  supabase: any;
+  title: string;
+  startsAt: string;
+  locationName: string;
+}) {
+  const { data, error } = await params.supabase
+    .from("events")
+    .select("id,title,starts_at,location_name,slug")
+    .eq("title", params.title)
+    .eq("starts_at", params.startsAt)
+    .eq("location_name", params.locationName)
+    .limit(5);
+
+  if (error) throw error;
+  return data ?? [];
 }
 
 export async function POST(req: Request) {
@@ -136,23 +192,44 @@ export async function POST(req: Request) {
       .eq("id", id)
       .limit(1);
 
-    if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    if (fetchErr) {
+      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    }
 
     const sub = rows?.[0];
-    if (!sub) return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+    if (!sub) {
+      return NextResponse.json({ error: "Submission not found" }, { status: 404 });
+    }
 
     const reviewedSub = applyOverrides(sub, overrides);
+    const isCitywide = !!reviewedSub.is_citywide;
 
     if (
       !cleanString(reviewedSub.title) ||
       !cleanString(reviewedSub.starts_at) ||
-      !cleanString(reviewedSub.location_name) ||
-      !cleanString(reviewedSub.category)
+      !cleanString(reviewedSub.category) ||
+      !cleanString(reviewedSub.city) ||
+      !cleanString(reviewedSub.source_url)
     ) {
       return NextResponse.json(
-        { error: "title, starts_at, location_name, and category are required before approval" },
+        {
+          error:
+            "title, starts_at, category, city, and source_url are required before approval",
+        },
         { status: 400 }
       );
+    }
+
+    if (!isCitywide) {
+      if (!cleanString(reviewedSub.location_name) || !cleanString(reviewedSub.address)) {
+        return NextResponse.json(
+          {
+            error:
+              "location_name and address are required unless the event is marked citywide",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const normalizedAudience = normalizeAudience(reviewedSub.audience);
@@ -160,36 +237,93 @@ export async function POST(req: Request) {
 
     const ev = mapSubmissionToEvent(reviewedSub);
 
-    const { data: inserted, error: insErr } = await supabase
-      .from("events")
-      .insert([
-        {
-          title: ev.title,
-          description: ev.description,
-          starts_at: ev.starts_at,
-          ends_at: ev.ends_at,
-          category: ev.category,
-          location_name: ev.location_name,
-          city: ev.city,
-          address: ev.address,
-          ticket_url: ev.ticket_url,
-          image_url: ev.image_url,
-          all_day: ev.all_day,
-          age: ev.age,
-          audience: audienceSent,
-          organizer_email: ev.organizer_email,
-          youtube_url: ev.youtube_url,
-          spotify_url: ev.spotify_url,
-          geocode_status: "unprocessed",
-        },
-      ])
-      .select("id,audience")
-      .single();
+    const finalLocationName = isCitywide
+      ? cleanString(ev.location_name) || CITYWIDE_LABEL
+      : cleanString(ev.location_name);
 
-    if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
+    if (!finalLocationName) {
+      return NextResponse.json(
+        { error: "A venue/location name is required unless the event is marked citywide." },
+        { status: 400 }
+      );
+    }
+
+    const exactDuplicates = await findExactDuplicates({
+      supabase,
+      title: ev.title,
+      startsAt: ev.starts_at,
+      locationName: finalLocationName,
+    });
+
+    if (exactDuplicates.length > 0) {
+      return NextResponse.json(
+        {
+          error: "This event appears to already exist in the published events list.",
+          code: "duplicate_event",
+          duplicates: exactDuplicates,
+        },
+        { status: 409 }
+      );
+    }
+
+    let inserted: { id: string; audience: any } | null = null;
+
+    try {
+      const insertResult = await supabase
+        .from("events")
+        .insert([
+          {
+            title: ev.title,
+            description: ev.description,
+            starts_at: ev.starts_at,
+            ends_at: ev.ends_at,
+            category: ev.category,
+            location_name: finalLocationName,
+            city: ev.city,
+            address: isCitywide ? null : ev.address,
+            ticket_url: ev.ticket_url,
+            image_url: ev.image_url,
+            all_day: ev.all_day,
+            age: ev.age,
+            audience: audienceSent,
+            organizer_email: ev.organizer_email,
+            youtube_url: ev.youtube_url,
+            spotify_url: ev.spotify_url,
+            source_url: reviewedSub.source_url ?? null,
+            geocode_status: "unprocessed",
+          },
+        ])
+        .select("id,audience")
+        .single();
+
+      if (insertResult.error) throw insertResult.error;
+      inserted = insertResult.data;
+    } catch (err: any) {
+      if (isUniqueConstraintError(err, "events_dedupe")) {
+        const retryDuplicates = await findExactDuplicates({
+          supabase,
+          title: ev.title,
+          startsAt: ev.starts_at,
+          locationName: finalLocationName,
+        });
+
+        return NextResponse.json(
+          {
+            error: "This event appears to already exist in the published events list.",
+            code: "duplicate_event",
+            duplicates: retryDuplicates,
+          },
+          { status: 409 }
+        );
+      }
+
+      return NextResponse.json({ error: err?.message ?? "Event insert failed" }, { status: 500 });
+    }
 
     const eventId = inserted?.id;
-    if (!eventId) return NextResponse.json({ error: "Event insert failed" }, { status: 500 });
+    if (!eventId) {
+      return NextResponse.json({ error: "Event insert failed" }, { status: 500 });
+    }
 
     const audienceStored = inserted?.audience ?? null;
 
@@ -198,24 +332,59 @@ export async function POST(req: Request) {
     const slug = `${eventId}-${slugify(baseTitle)}`;
 
     const { error: slugErr } = await supabase.from("events").update({ slug }).eq("id", eventId);
-    if (slugErr) return NextResponse.json({ error: slugErr.message }, { status: 500 });
+    if (slugErr) {
+      await supabase.from("events").delete().eq("id", eventId);
+      return NextResponse.json({ error: slugErr.message }, { status: 500 });
+    }
 
-    const geocodeQuery = buildLisbonGeocodeQuery({
-      locationName: ev.location_name ?? null,
-      address: ev.address ?? null,
-      city: ev.city ?? null,
-    });
+    if (isCitywide) {
+      const { error: citywideErr } = await supabase
+        .from("events")
+        .update({
+          latitude: LISBON_CENTER.latitude,
+          longitude: LISBON_CENTER.longitude,
+          normalized_address: "Lisbon, Portugal",
+          geocode_provider: "citywide-fallback",
+          geocode_confidence: 0,
+          geocode_status: "citywide",
+          geocode_error: null,
+          geocoded_at: new Date().toISOString(),
+        })
+        .eq("id", eventId);
 
-    const geo = await geocodeLisbonWithCache({
-      supabase,
-      inputText: geocodeQuery,
-    });
+      if (citywideErr) {
+        await supabase.from("events").delete().eq("id", eventId);
+        return NextResponse.json({ error: citywideErr.message }, { status: 500 });
+      }
+    } else {
+      const geocodeQuery = buildLisbonGeocodeQuery({
+        locationName: ev.location_name ?? null,
+        address: ev.address ?? null,
+        city: ev.city ?? null,
+      });
 
-    let geocoded = false;
-    let geocodeWarning: string | null = null;
-    let geocodeError: string | null = null;
+      const geo = await geocodeLisbonWithCache({
+        supabase,
+        inputText: geocodeQuery,
+      });
 
-    if (geo.ok) {
+      if (!geo.ok) {
+        const failMessage =
+          "error" in geo && typeof (geo as any).error === "string"
+            ? (geo as any).error
+            : "Geocoding failed";
+
+        await supabase.from("events").delete().eq("id", eventId);
+
+        return NextResponse.json(
+          {
+            error:
+              `Could not geocode this event. Please refine the venue/address/city before approval. ${failMessage}`,
+          },
+          { status: 400 }
+        );
+      }
+
       const { error: geoUpdateErr } = await supabase
         .from("events")
         .update({
@@ -231,31 +400,8 @@ export async function POST(req: Request) {
         .eq("id", eventId);
 
       if (geoUpdateErr) {
-        geocodeWarning = `Event published, but geocode update failed: ${geoUpdateErr.message}`;
-      } else {
-        geocoded = true;
-      }
-    } else {
-      const failMessage =
-        "error" in geo && typeof (geo as any).error === "string"
-          ? (geo as any).error
-          : "Geocoding failed";
-
-      const { error: geoFailUpdateErr } = await supabase
-        .from("events")
-        .update({
-          geocode_provider: "google",
-          geocode_confidence: 0,
-          geocode_status: "failed",
-          geocode_error: failMessage,
-          geocoded_at: new Date().toISOString(),
-        })
-        .eq("id", eventId);
-
-      geocodeError = failMessage;
-
-      if (geoFailUpdateErr) {
-        geocodeWarning = `Event published, geocoding failed, and failure status update also failed: ${geoFailUpdateErr.message}`;
+        await supabase.from("events").delete().eq("id", eventId);
+        return NextResponse.json({ error: geoUpdateErr.message }, { status: 500 });
       }
     }
 
@@ -273,6 +419,7 @@ export async function POST(req: Request) {
         organizer_email: reviewedSub.organizer_email ?? null,
         image_url: reviewedSub.image_url ?? null,
         ticket_url: reviewedSub.ticket_url ?? null,
+        source_url: reviewedSub.source_url ?? null,
         all_day: reviewedSub.all_day ?? false,
         age: reviewedSub.age ?? null,
         audience: reviewedSub.audience ?? null,
@@ -285,15 +432,16 @@ export async function POST(req: Request) {
       })
       .eq("id", id);
 
-    if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
+    if (upErr) {
+      return NextResponse.json({ error: upErr.message }, { status: 500 });
+    }
 
     return NextResponse.json({
       ok: true,
       eventId,
       slug,
-      geocoded,
-      geocodeWarning,
-      geocodeError,
+      geocoded: !isCitywide,
+      citywide: isCitywide,
       audience_submission_raw: reviewedSub.audience ?? null,
       audience_sent: audienceSent,
       audience_stored: audienceStored,

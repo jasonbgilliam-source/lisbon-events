@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import FavoriteButton from "../../../components/FavoriteButton";
+import EventStaticMap from "@/components/EventStaticMap";
 
 type EventItem = {
   id: string;
@@ -107,6 +108,13 @@ function getImage(e: EventItem) {
   return "/images/default.jpeg";
 }
 
+function hasMapData(e: EventItem) {
+  return (
+    (typeof e.latitude === "number" && typeof e.longitude === "number") ||
+    Boolean(e.location_name || e.city)
+  );
+}
+
 export default function EventDetailPage() {
   const params = useParams();
   const slug =
@@ -127,22 +135,21 @@ export default function EventDetailPage() {
       setError(null);
 
       try {
-        const res = await fetch("/api/events/list/?limit=2000", {
+        const res = await fetch(`/api/events/by-slug?slug=${encodeURIComponent(slug)}`, {
           cache: "no-store",
         });
         const json = await res.json().catch(() => ({}));
+
         if (!res.ok) {
-          throw new Error(json?.error || `Failed to load events (${res.status})`);
+          throw new Error(json?.error || `Failed to load event (${res.status})`);
         }
 
-        const items = Array.isArray(json?.items) ? (json.items as EventItem[]) : [];
-        const found = items.find((x) => String(x.slug) === String(slug)) ?? null;
-
-        if (!found) {
+        const item = json?.item ?? null;
+        if (!item) {
           setEvent(null);
           setError("Event not found.");
         } else {
-          setEvent(found);
+          setEvent(item);
         }
       } catch (e: any) {
         console.error(e);
@@ -180,6 +187,7 @@ export default function EventDetailPage() {
   const audience = getDisplayAudience(event);
   const when = formatLisbonDateTime(event.starts_at);
   const ends = formatLisbonDateTime(event.ends_at);
+  const showMap = hasMapData(event);
 
   return (
     <section className="max-w-4xl mx-auto">
@@ -191,12 +199,7 @@ export default function EventDetailPage() {
 
       <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
         <div className="relative w-full h-72">
-          <Image
-            src={getImage(event)}
-            alt={event.title}
-            fill
-            className="object-cover"
-          />
+          <Image src={getImage(event)} alt={event.title} fill className="object-cover" />
         </div>
 
         <div className="p-5 sm:p-6">
@@ -227,10 +230,19 @@ export default function EventDetailPage() {
             ) : null}
           </div>
 
-          <div className="mt-4">
-            <div className="text-xs font-semibold text-gray-600 mb-2">
-              Audience
+          {showMap ? (
+            <div className="mt-6 border rounded-xl bg-gray-50 px-4 py-4">
+              <EventStaticMap
+                latitude={event.latitude}
+                longitude={event.longitude}
+                location_name={event.location_name}
+                city={event.city}
+              />
             </div>
+          ) : null}
+
+          <div className="mt-4">
+            <div className="text-xs font-semibold text-gray-600 mb-2">Audience</div>
             <div className="flex flex-wrap gap-2">
               {audience.map((a) => (
                 <span
@@ -242,9 +254,7 @@ export default function EventDetailPage() {
               ))}
 
               {event.age &&
-                !/all ages|all-ages|family|kids|children|teen|adult/i.test(
-                  event.age
-                ) && (
+                !/all ages|all-ages|family|kids|children|teen|adult/i.test(event.age) && (
                   <span className="px-2 py-0.5 text-xs rounded-full border border-gray-200 text-gray-700 bg-gray-50">
                     {event.age}
                   </span>
@@ -254,46 +264,22 @@ export default function EventDetailPage() {
 
           {event.description && (
             <div className="mt-5">
-              <div className="text-xs font-semibold text-gray-600 mb-2">
-                Details
-              </div>
-              <p className="text-sm text-gray-800 whitespace-pre-wrap">
-                {event.description}
-              </p>
+              <div className="text-xs font-semibold text-gray-600 mb-2">Details</div>
+              <p className="text-sm text-gray-800 whitespace-pre-wrap">{event.description}</p>
             </div>
           )}
 
           <div className="mt-6 flex flex-wrap gap-3">
-            {event.ticket_url && (
+            {event.ticket_url ? (
               <a
                 href={event.ticket_url}
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-full bg-[#c94917] text-white text-sm font-semibold hover:bg-[#a53f12]"
+                className="inline-flex items-center rounded-lg bg-[#c94917] px-4 py-2 text-white hover:opacity-90"
               >
-                Tickets / Info
+                Tickets / RSVP
               </a>
-            )}
-            {event.youtube_url && (
-              <a
-                href={event.youtube_url}
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 rounded-full border border-orange-300 text-[#c94917] text-sm font-semibold hover:bg-orange-50"
-              >
-                YouTube
-              </a>
-            )}
-            {event.spotify_url && (
-              <a
-                href={event.spotify_url}
-                target="_blank"
-                rel="noreferrer"
-                className="px-4 py-2 rounded-full border border-orange-300 text-[#c94917] text-sm font-semibold hover:bg-orange-50"
-              >
-                Spotify
-              </a>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

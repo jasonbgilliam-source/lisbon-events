@@ -6,6 +6,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
@@ -16,7 +19,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("events")
-    .select("id, slug, title, starts_at, ends_at, location_name, city, image_url, price")
+    .select("*")
     .eq("slug", slug)
     .limit(1)
     .maybeSingle();
