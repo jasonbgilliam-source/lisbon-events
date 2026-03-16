@@ -1,4 +1,4 @@
-import { supabaseServer } from "../../../../lib/supabaseServer";
+import { supabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -6,17 +6,26 @@ export const revalidate = 0;
 const AUDIENCE_ALL = "All Ages";
 const AUDIENCE_EXPANDED = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
-function toISODate(v?: string | null) {
-  if (!v) return null;
-  const d = new Date(v);
-  return isNaN(d.getTime()) ? null : d.toISOString();
+function parseLimit(v?: string | null) {
+  const n = Number(v || 500);
+  if (!Number.isFinite(n) || n <= 0) return 500;
+  return Math.min(n, 2000);
 }
 
-function parseLimit(v?: string | null) {
-  if (!v) return 500;
-  const n = Number(v);
-  if (!Number.isFinite(n) || n <= 0) return 500;
-  return Math.min(Math.floor(n), 2000);
+function toISODate(v?: string | null) {
+  if (!v) return null;
+  const s = String(v).trim();
+  if (!s) return null;
+
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
+function parseEqParam(v?: string | null) {
+  if (!v) return null;
+  if (v.startsWith("eq.")) return v.slice(3);
+  return v;
 }
 
 function normalizeAudienceForResponse(row: any): string[] {
@@ -39,12 +48,6 @@ function isAllAgesRow(row: any): boolean {
   const age = String(row?.age ?? "").trim().toLowerCase();
   if (!age) return true;
   return age === "all ages" || age === "all ages " || age === "all-ages";
-}
-
-function parseEqParam(v?: string | null) {
-  if (!v) return null;
-  if (v.startsWith("eq.")) return v.slice(3);
-  return v;
 }
 
 export async function GET(request: Request) {
@@ -82,9 +85,6 @@ export async function GET(request: Request) {
   if (city) query = query.eq("city", city);
 
   if (!hasExactMatchFilters) {
-    // Show future events AND ongoing events.
-    // If ends_at exists, use ends_at >= now.
-    // If ends_at is null, fall back to starts_at >= now.
     query = query.or(`ends_at.gte.${nowISO},and(ends_at.is.null,starts_at.gte.${nowISO})`);
 
     if (from) {
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
     items = items.filter(isAllAgesRow);
   }
 
-  return new Response(JSON.stringify({ items, limit }), {
+  return new Response(JSON.stringify({ items, limit, source: "events" }), {
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 }

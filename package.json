@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "ingest": "bash scripts/ingest/update_site.sh"
   },
   "dependencies": {
     "@babel/runtime": "^7.25.0",
@@ -31,6 +32,7 @@
     "autoprefixer": "^10.4.20",
     "baseline-browser-mapping": "^2.9.19",
     "dayjs": "^1.11.10",
+    "playwright": "^1.58.2",
     "postcss": "^8.4.41",
     "react-cookie-consent": "^9.0.0",
     "tailwindcss": "^3.4.9",

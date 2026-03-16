@@ -1,4 +1,3 @@
-// app/api/events/combined/route.ts
 import { supabaseServer } from "@/lib/supabaseServer";
 import { readFile } from "fs/promises";
 import path from "path";
@@ -11,12 +10,14 @@ const AUDIENCE_EXPANDED = ["All Ages", "Family", "Kids", "Teens", "Adults"];
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
-  let i = 0,
-    field = "",
-    row: string[] = [],
-    inQuotes = false;
+  let i = 0;
+  let field = "";
+  let row: string[] = [];
+  let inQuotes = false;
+
   while (i < text.length) {
     const c = text[i];
+
     if (inQuotes) {
       if (c === '"') {
         if (text[i + 1] === '"') {
@@ -31,37 +32,42 @@ function parseCsv(text: string): string[][] {
       field += c;
       i++;
       continue;
-    } else {
-      if (c === '"') {
-        inQuotes = true;
-        i++;
-        continue;
-      }
-      if (c === ",") {
-        row.push(field);
-        field = "";
-        i++;
-        continue;
-      }
-      if (c === "\r") {
-        i++;
-        continue;
-      }
-      if (c === "\n") {
-        row.push(field);
-        rows.push(row);
-        row = [];
-        field = "";
-        i++;
-        continue;
-      }
-      field += c;
+    }
+
+    if (c === '"') {
+      inQuotes = true;
       i++;
       continue;
     }
+
+    if (c === ",") {
+      row.push(field);
+      field = "";
+      i++;
+      continue;
+    }
+
+    if (c === "\r") {
+      i++;
+      continue;
+    }
+
+    if (c === "\n") {
+      row.push(field);
+      rows.push(row);
+      row = [];
+      field = "";
+      i++;
+      continue;
+    }
+
+    field += c;
+    i++;
   }
+
   row.push(field);
   rows.push(row);
+
   return rows.filter((r) => r.some((cell) => cell !== ""));
 }
 
@@ -78,12 +84,47 @@ function boolFrom(v: any): boolean {
   return t === "true" || t === "1" || t === "yes";
 }
 
+function dateOnlyFromAny(value?: string | null): string | null {
+  if (!value) return null;
+  const s = String(value).trim();
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (m) return m[1];
+
+  const d = new Date(s);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().slice(0, 10);
+}
+
+function startOfDayIso(dateOnly: string): string {
+  return `${dateOnly}T00:00:00.000Z`;
+}
+
+function endOfDayIso(dateOnly: string): string {
+  return `${dateOnly}T23:59:59.999Z`;
+}
+
+function replaceDateKeepingTime(originalIso: string | null | undefined, newDate: string): string {
+  const safe = safeISO(originalIso);
+  if (!safe) return startOfDayIso(newDate);
+  return `${newDate}${safe.slice(10)}`;
+}
+
 type EventRow = {
   id: string;
+  slug?: string | null;
   title: string;
   description: string | null;
+
+  // These are the placement timestamps for the returned occurrence row.
   starts_at: string;
   ends_at: string | null;
+
+  // These preserve the original event-level range.
+  series_starts_at?: string | null;
+  series_ends_at?: string | null;
+
+  occurrence_date?: string | null;
+
   category: string | null;
   location_name: string | null;
   city: string | null;
@@ -92,8 +133,8 @@ type EventRow = {
   image_url: string | null;
   created_at: string | null;
   all_day: boolean | null;
-  age: string | null; // legacy notes
-  audience: string[]; // always returned for callers
+  age: string | null;
+  audience: string[];
   organizer_email: string | null;
   youtube_url?: string | null;
   spotify_url?: string | null;
@@ -103,22 +144,28 @@ type EventRow = {
 async function loadCatalog(): Promise<{ list: string[]; canon: Map<string, string> }> {
   const { data, error } = await supabaseServer().from("category_catalog").select("name");
   if (error) throw new Error(error.message);
+
   const list = (data || []).map((r: any) => String(r.name));
   const canon = new Map<string, string>();
-  for (const name of list) canon.set(name.trim().toLowerCase(), name);
+
+  for (const name of list) {
+    canon.set(name.trim().toLowerCase(), name);
+  }
+
   return { list, canon };
 }
 
 function normalizeCategory(raw: any, canon: Map<string, string>): string | null {
   const val = (raw ?? "").toString().trim();
   if (!val) return null;
-  const hit = canon.get(val.toLowerCase());
-  return hit ?? null;
+  return canon.get(val.toLowerCase()) ?? null;
 }
 
 function normalizeAudienceForResponse(row: any): string[] {
   const aud = row?.audience;
-  if (Array.isArray(aud) && aud.length > 0) return aud.map((x: any) => String(x));
+  if (Array.isArray(aud) && aud.length > 0) {
+    return aud.map((x: any) => String(x));
+  }
   return AUDIENCE_EXPANDED;
 }
 
@@ -131,7 +178,7 @@ function isAllAgesRow(row: any): boolean {
 
   const age = String(row?.age ?? "").trim().toLowerCase();
   if (!age) return true;
-  return age === "all ages" || age === "all ages " || age === "all-ages";
+  return age === "all ages" || age === "all-ages";
 }
 
 async function loadDbEvents(
@@ -144,51 +191,105 @@ async function loadDbEvents(
 ): Promise<EventRow[]> {
   const supabase = supabaseServer();
 
-  let q = supabase
+  const fromDate = dateOnlyFromAny(fromISO);
+  const toDate = dateOnlyFromAny(toISO);
+
+  if (!fromDate || !toDate) return [];
+
+  const occQuery = supabase
+    .from("event_occurrences")
+    .select("event_slug, occurrence_date, starts_at, ends_at, is_all_day")
+    .gte("occurrence_date", fromDate)
+    .lte("occurrence_date", toDate)
+    .order("occurrence_date", { ascending: true });
+
+  const { data: occs, error: occError } = await occQuery;
+  if (occError) throw new Error(occError.message);
+
+  const occurrenceRows = occs || [];
+  if (occurrenceRows.length === 0) return [];
+
+  const slugs = [...new Set(occurrenceRows.map((r: any) => String(r.event_slug)).filter(Boolean))];
+  if (slugs.length === 0) return [];
+
+  let eventQuery = supabase
     .from("events")
     .select(
-      "id,title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url,created_at,all_day,age,audience,organizer_email,youtube_url,spotify_url"
+      "id,slug,title,description,starts_at,ends_at,category,location_name,city,address,ticket_url,image_url,created_at,all_day,age,audience,organizer_email,youtube_url,spotify_url,status"
     )
-    .gte("starts_at", fromISO)
-    .lte("starts_at", toISO);
+    .in("slug", slugs)
+    .eq("status", "approved");
 
-  if (city) q = q.eq("city", city);
-  if (category) q = q.eq("category", category);
+  if (city) eventQuery = eventQuery.eq("city", city);
+  if (category) eventQuery = eventQuery.eq("category", category);
 
-  const { data, error } = await q;
-  if (error) throw new Error(error.message);
+  const { data: eventData, error: eventError } = await eventQuery;
+  if (eventError) throw new Error(eventError.message);
 
-  let rows = data || [];
-  if (allAges) rows = rows.filter(isAllAgesRow);
+  let events = eventData || [];
+  if (allAges) events = events.filter(isAllAgesRow);
 
-  return rows.map((r: any) => {
-    const normalized = canon ? normalizeCategory(r.category, canon) : r.category ?? null;
-    return {
-      id: String(r.id),
-      title: r.title,
-      description: r.description ?? null,
-      starts_at: safeISO(r.starts_at)!,
-      ends_at: safeISO(r.ends_at),
+  const eventMap = new Map<string, any>();
+  for (const ev of events) {
+    if (ev?.slug) eventMap.set(String(ev.slug), ev);
+  }
+
+  const items: EventRow[] = [];
+
+  for (const occ of occurrenceRows) {
+    const slug = String(occ.event_slug || "");
+    const ev = eventMap.get(slug);
+    if (!ev) continue;
+
+    const occurrenceDate = dateOnlyFromAny(occ.occurrence_date);
+    if (!occurrenceDate) continue;
+
+    const normalized = canon ? normalizeCategory(ev.category, canon) : ev.category ?? null;
+
+    const placementStartsAt =
+      safeISO(occ.starts_at) ||
+      replaceDateKeepingTime(ev.starts_at, occurrenceDate);
+
+    const placementEndsAt =
+      safeISO(occ.ends_at) ||
+      (ev.ends_at ? replaceDateKeepingTime(ev.ends_at, occurrenceDate) : null);
+
+    items.push({
+      id: `${String(ev.id)}::${occurrenceDate}`,
+      slug,
+      title: ev.title,
+      description: ev.description ?? null,
+
+      starts_at: placementStartsAt,
+      ends_at: placementEndsAt,
+
+      series_starts_at: safeISO(ev.starts_at),
+      series_ends_at: safeISO(ev.ends_at),
+      occurrence_date: occurrenceDate,
+
       category: normalized,
-      location_name: r.location_name ?? null,
-      city: r.city ?? null,
-      address: r.address ?? null,
-      ticket_url: r.ticket_url ?? null,
-      image_url: r.image_url ?? null,
-      created_at: safeISO(r.created_at),
-      all_day: r.all_day ?? null,
-      age: r.age ?? null,
-      audience: normalizeAudienceForResponse(r),
-      organizer_email: r.organizer_email ?? null,
-      youtube_url: r.youtube_url ?? null,
-      spotify_url: r.spotify_url ?? null,
+      location_name: ev.location_name ?? null,
+      city: ev.city ?? null,
+      address: ev.address ?? null,
+      ticket_url: ev.ticket_url ?? null,
+      image_url: ev.image_url ?? null,
+      created_at: safeISO(ev.created_at),
+      all_day: occ.is_all_day ?? ev.all_day ?? null,
+      age: ev.age ?? null,
+      audience: normalizeAudienceForResponse(ev),
+      organizer_email: ev.organizer_email ?? null,
+      youtube_url: ev.youtube_url ?? null,
+      spotify_url: ev.spotify_url ?? null,
       source: "db",
-    };
-  });
+    });
+  }
+
+  return items.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 }
 
-async function loadCsvEvents(
-  csvPath: string,
+async function loadCsvEventsWithOccurrences(
+  eventsCsvPath: string,
+  occurrencesCsvPath: string,
   fromISO: string,
   toISO: string,
   category?: string,
@@ -196,83 +297,144 @@ async function loadCsvEvents(
   allAges?: boolean,
   canon?: Map<string, string>
 ): Promise<EventRow[]> {
-  let rows: string[][] = [];
+  let eventRows: string[][] = [];
+  let occurrenceRows: string[][] = [];
+
   try {
-    const raw = await readFile(csvPath, "utf8");
-    rows = parseCsv(raw);
+    const rawEvents = await readFile(eventsCsvPath, "utf8");
+    eventRows = parseCsv(rawEvents);
   } catch {
     return [];
   }
-  if (rows.length < 2) return [];
 
-  const header = rows[0].map((h) => h.trim().toLowerCase());
-  const idx = (name: string) => header.indexOf(name);
+  try {
+    const rawOccurrences = await readFile(occurrencesCsvPath, "utf8");
+    occurrenceRows = parseCsv(rawOccurrences);
+  } catch {
+    return [];
+  }
 
-  const out: EventRow[] = [];
-  for (let i = 1; i < rows.length; i++) {
-    const r = rows[i];
-    const title = r[idx("title")] || r[idx("name")] || r[idx("event_title")] || "";
-    const starts_at = safeISO(
-      r[idx("starts_at")] ||
-        r[idx("start")] ||
-        r[idx("start_time")] ||
-        r[idx("start_datetime")]
-    );
-    if (!title || !starts_at) continue;
+  if (eventRows.length < 2 || occurrenceRows.length < 2) return [];
 
-    const ends_at = safeISO(
-      r[idx("ends_at")] || r[idx("end")] || r[idx("end_time")] || r[idx("end_datetime")]
-    );
+  const eventHeader = eventRows[0].map((h) => h.trim().toLowerCase());
+  const occHeader = occurrenceRows[0].map((h) => h.trim().toLowerCase());
 
-    const rawCat = r[idx("category")] || r[idx("type")] || "";
+  const eidx = (name: string) => eventHeader.indexOf(name);
+  const oidx = (name: string) => occHeader.indexOf(name);
+
+  const slugIndex = eidx("slug");
+  if (slugIndex === -1) {
+    // CSV fallback cannot support occurrence joins unless events.csv includes slug.
+    return [];
+  }
+
+  const eventsBySlug = new Map<string, any>();
+
+  for (let i = 1; i < eventRows.length; i++) {
+    const r = eventRows[i];
+    const slug = (r[slugIndex] || "").trim();
+    if (!slug) continue;
+
+    const rawCat = r[eidx("category")] || "";
     const normalized = canon ? normalizeCategory(rawCat, canon) : rawCat || null;
 
-    const cityVal = (r[idx("city")] || "").trim() || null;
-    if (city && cityVal !== city) continue;
-    if (category && normalized !== category) continue;
+    const audRaw = (r[eidx("audience")] || "").trim();
+    const audience = audRaw
+      ? audRaw.split(",").map((x) => x.trim()).filter(Boolean)
+      : AUDIENCE_EXPANDED;
 
-    const ts = new Date(starts_at).getTime();
-    if (ts < new Date(fromISO).getTime() || ts > new Date(toISO).getTime()) continue;
-
-    const all_day = boolFrom(r[idx("all_day")] || r[idx("is_all_day")]);
-    const age = r[idx("age")] || null;
-
-    // CSV has no structured audience; default to all-ages expanded.
-    const audience = AUDIENCE_EXPANDED;
-
-    if (allAges) {
-      const ok = !age || /^all ages$/i.test(age) || /^all-ages$/i.test(age);
-      if (!ok) continue;
-    }
-
-    out.push({
-      id: `csv-${i}`,
-      title,
-      description: r[idx("description")] || r[idx("details")] || null,
-      starts_at,
-      ends_at,
+    eventsBySlug.set(slug, {
+      id: (r[eidx("id")] || slug).trim(),
+      slug,
+      title: r[eidx("title")] || "",
+      description: r[eidx("description")] || null,
+      series_starts_at: safeISO(r[eidx("starts_at")] || null),
+      series_ends_at: safeISO(r[eidx("ends_at")] || null),
       category: normalized,
-      location_name: r[idx("location_name")] || r[idx("venue")] || r[idx("location")] || null,
-      city: cityVal,
-      address: r[idx("address")] || null,
-      ticket_url: r[idx("ticket_url")] || r[idx("source_url")] || r[idx("url")] || null,
-      image_url: r[idx("image_url")] || null,
+      location_name: r[eidx("location_name")] || null,
+      city: (r[eidx("city")] || "").trim() || null,
+      address: r[eidx("address")] || null,
+      ticket_url: r[eidx("ticket_url")] || r[eidx("source_url")] || r[eidx("url")] || null,
+      image_url: r[eidx("image_url")] || null,
       created_at: null,
-      all_day,
-      age,
+      all_day: boolFrom(r[eidx("all_day")] || r[eidx("is_all_day")]),
+      age: r[eidx("age")] || null,
       audience,
-      organizer_email: r[idx("organizer_email")] || r[idx("organizer")] || null,
-      youtube_url: r[idx("youtube_url")] || null,
-      spotify_url: r[idx("spotify_url")] || null,
+      organizer_email: r[eidx("organizer_email")] || r[eidx("organizer")] || null,
+      youtube_url: r[eidx("youtube_url")] || null,
+      spotify_url: r[eidx("spotify_url")] || null,
+    });
+  }
+
+  const fromDate = dateOnlyFromAny(fromISO);
+  const toDate = dateOnlyFromAny(toISO);
+  if (!fromDate || !toDate) return [];
+
+  const items: EventRow[] = [];
+
+  for (let i = 1; i < occurrenceRows.length; i++) {
+    const r = occurrenceRows[i];
+
+    const eventSlug = (r[oidx("event_slug")] || "").trim();
+    const occurrenceDate = dateOnlyFromAny(r[oidx("occurrence_date")] || null);
+
+    if (!eventSlug || !occurrenceDate) continue;
+    if (occurrenceDate < fromDate || occurrenceDate > toDate) continue;
+
+    const ev = eventsBySlug.get(eventSlug);
+    if (!ev) continue;
+
+    if (city && ev.city !== city) continue;
+    if (category && ev.category !== category) continue;
+
+    const rowForAgeCheck = { age: ev.age, audience: ev.audience };
+    if (allAges && !isAllAgesRow(rowForAgeCheck)) continue;
+
+    const placementStartsAt =
+      safeISO(r[oidx("starts_at")] || null) ||
+      replaceDateKeepingTime(ev.series_starts_at, occurrenceDate);
+
+    const placementEndsAt =
+      safeISO(r[oidx("ends_at")] || null) ||
+      (ev.series_ends_at ? replaceDateKeepingTime(ev.series_ends_at, occurrenceDate) : null);
+
+    items.push({
+      id: `${ev.id}::${occurrenceDate}`,
+      slug: eventSlug,
+      title: ev.title,
+      description: ev.description,
+
+      starts_at: placementStartsAt,
+      ends_at: placementEndsAt,
+
+      series_starts_at: ev.series_starts_at,
+      series_ends_at: ev.series_ends_at,
+      occurrence_date: occurrenceDate,
+
+      category: ev.category,
+      location_name: ev.location_name,
+      city: ev.city,
+      address: ev.address,
+      ticket_url: ev.ticket_url,
+      image_url: ev.image_url,
+      created_at: ev.created_at,
+      all_day: boolFrom(r[oidx("is_all_day")] || ev.all_day),
+      age: ev.age,
+      audience: Array.isArray(ev.audience) && ev.audience.length ? ev.audience : AUDIENCE_EXPANDED,
+      organizer_email: ev.organizer_email,
+      youtube_url: ev.youtube_url,
+      spotify_url: ev.spotify_url,
       source: "csv",
     });
   }
-  return out;
+
+  return items.sort((a, b) => new Date(a.starts_at).getTime() - new Date(b.starts_at).getTime());
 }
 
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
+
     const from = url.searchParams.get("from");
     const to = url.searchParams.get("to");
     const category = (url.searchParams.get("category") || "").trim() || null;
@@ -304,9 +466,12 @@ export async function GET(req: Request) {
       canon
     );
 
-    const csvPath = path.join(process.cwd(), "public", "events.csv");
-    const csvItems = await loadCsvEvents(
-      csvPath,
+    const eventsCsvPath = path.join(process.cwd(), "public", "events.csv");
+    const occurrencesCsvPath = path.join(process.cwd(), "public", "event_occurrences.csv");
+
+    const csvItems = await loadCsvEventsWithOccurrences(
+      eventsCsvPath,
+      occurrencesCsvPath,
       from,
       to,
       normalizedFilter ?? undefined,

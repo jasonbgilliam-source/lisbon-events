@@ -1,0 +1,1115 @@
+[
+  {
+    "id": 223353,
+    "type": "event",
+    "title": {
+      "rendered": "Conan Gray"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/10/conan-gray.jpg",
+    "subtitle": [
+      "Wishbone World Tour"
+    ],
+    "subject": "música",
+    "string_dates": "7 junho 2026",
+    "string_times": "dom: 19h30",
+    "description": [
+      "Conan Gray traz a digressão <em>Wishbone</em> ao MEO Arena no dia 7 de junho de 2026. A aguardada estreia do cantor e compositor americano em Lisboa decorre na companhia da cantora Esha Tewari, que i..."
+    ],
+    "venue": {
+      "altice-arena": {
+        "id": 946,
+        "slug": "altice-arena",
+        "name": "MEO Arena"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "pop": {
+        "id": 3608,
+        "slug": "pop",
+        "name": "pop"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/conan-gray/",
+    "occurences": [
+      "2026-06-07"
+    ],
+    "StartDate": "2026-06-07",
+    "LastDate": "2026-06-07",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"45 € a 75\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228274,
+    "type": "event",
+    "title": {
+      "rendered": "A Bronx Tale: One Man Show"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Chazz-Palminteri.jpg",
+    "subtitle": [
+      "Chazz Palminteri"
+    ],
+    "subject": "teatro",
+    "string_dates": "10 junho 2026",
+    "string_times": "qua: 21h30",
+    "description": [
+      "Nascido e criado no Bronx, Chazz Palminteri escreveu <i>A Bronx Tale</i> em 1988, uma poderosa peça autobiográfica que retrata a infância difícil, marcada por episódios intensos, como ter testemu..."
+    ],
+    "venue": {
+      "cinema-sao-jorge": {
+        "id": 776,
+        "slug": "cinema-sao-jorge",
+        "name": "Cinema São Jorge"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "estados-unidos-da-america": {
+        "id": 2831,
+        "slug": "estados-unidos-da-america",
+        "name": "Estados Unidos da América"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/a-bronx-tale-one-man-show/",
+    "occurences": [
+      "2026-06-10"
+    ],
+    "StartDate": "2026-06-10",
+    "LastDate": "2026-06-10",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"20 € a 45\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230104,
+    "type": "event",
+    "title": {
+      "rendered": "Travesty"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/travesty.jpg",
+    "subtitle": [
+      "Sasha Velour"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "11 junho 2026",
+    "string_times": "20h30",
+    "description": [
+      "Parte performance artística, parte narrativa histórica, parte manifesto, <em>Travesty </em>percorre a história <em>queer</em> secreta de um único lugar ao longo do tempo — uma bruxa é queimada..."
+    ],
+    "venue": {
+      "teatro-tivoli-bbva": {
+        "id": 784,
+        "slug": "teatro-tivoli-bbva",
+        "name": "Teatro Tivoli BBVA"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": {
+      "drag": {
+        "id": 7428,
+        "slug": "drag",
+        "name": "drag"
+      },
+      "queer": {
+        "id": 1100,
+        "slug": "queer",
+        "name": "queer"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/travesty/",
+    "occurences": [
+      "2026-06-11"
+    ],
+    "StartDate": "2026-06-11",
+    "LastDate": "2026-06-11",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229684,
+    "type": "event",
+    "title": {
+      "rendered": "Manel e Chico descobrem o Teatro Romano"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/LR_franciscaramalho_livro-teatro-romano_9.jpeg",
+    "subtitle": [
+      "Leitura encenada"
+    ],
+    "subject": "literatura",
+    "string_dates": "14 junho 2026",
+    "string_times": "11h00",
+    "description": [
+      "Leitura encenada do livro infantojuvenil <em>Manel e Chico descobrem o Teatro Romano </em>que nos conta uma surpreendente história sobre este monumento com mais de 2000 anos.\r\n\r\nAtravés desta hist..."
+    ],
+    "venue": {
+      "museu-de-lisboa-teatro-romano": {
+        "id": 694,
+        "slug": "museu-de-lisboa-teatro-romano",
+        "name": "Museu de Lisboa - Teatro Romano"
+      }
+    },
+    "categories_name_list": {
+      "literatura": {
+        "id": 41,
+        "slug": "literatura",
+        "name": "literatura"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/manel-e-chico-descobrem-o-teatro-romano-3/",
+    "occurences": [
+      "2026-06-14"
+    ],
+    "StartDate": "2026-06-14",
+    "LastDate": "2026-06-14",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232295,
+    "type": "event",
+    "title": {
+      "rendered": "Exercício de montagem"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/exercicio-de-montagem.jpg",
+    "subtitle": [
+      "Joana Craveiro e Teatro do Vestido"
+    ],
+    "subject": "teatro",
+    "string_dates": "18 junho a 28 junho 2026",
+    "string_times": "qui: 20h; sex: 20h; sáb: 19h; dom: 17h",
+    "description": [
+      "<em>Pode um filme em progresso ser uma performance? Joana Craveiro parte de um conjunto de imagens que captou na Palestina para ensaiar uma resposta a esta pergunta.</em>\r\n\r\n<em>O registo de duas via..."
+    ],
+    "venue": {
+      "centro-cultural-de-belem": {
+        "id": 335,
+        "slug": "centro-cultural-de-belem",
+        "name": "Centro Cultural de Belém"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "joana-craveiro": {
+        "id": 1047,
+        "slug": "joana-craveiro",
+        "name": "Joana Craveiro"
+      },
+      "teatro-do-vestido": {
+        "id": 1046,
+        "slug": "teatro-do-vestido",
+        "name": "Teatro do Vestido"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/exercicio-de-montagem/",
+    "occurences": [
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28"
+    ],
+    "StartDate": "2026-06-18",
+    "LastDate": "2026-06-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:11:\"12 € e 15\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230498,
+    "type": "event",
+    "title": {
+      "rendered": "Rock in Rio Lisboa"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/katy-pery.png",
+    "subtitle": [
+      "2026"
+    ],
+    "subject": "música",
+    "string_dates": "20 junho a 28 junho 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Nos dias 20, 21, 27 e 28 de junho, o Rock in Rio regressa ao Parque Tejo para a sua 11.ª edição, com mais espaço, mais conforto e uma experiência completamente renovada, desde a chegada ao recint..."
+    ],
+    "venue": {
+      "parque-urbano-do-tejo-e-do-trancao": {
+        "id": 6506,
+        "slug": "parque-urbano-do-tejo-e-do-trancao",
+        "name": "Parque Urbano do Tejo e do Trancão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "festival": {
+        "id": 23,
+        "slug": "festival",
+        "name": "festival"
+      },
+      "pop-rock": {
+        "id": 1082,
+        "slug": "pop-rock",
+        "name": "pop/rock"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/rock-in-rio-lisboa-3/",
+    "occurences": [
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-27",
+      "2026-06-28"
+    ],
+    "StartDate": "2026-06-20",
+    "LastDate": "2026-06-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 223654,
+    "type": "event",
+    "title": {
+      "rendered": "Uma cidade com 2000 anos"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/10/Uma-cidade-com-2000-anos-Jose-Avelar.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "29 novembro 2025 a 28 novembro 2026",
+    "string_times": "",
+    "description": [
+      "Lisboa tem mais de 2000 anos de história e muitos dos seus segredos continuam à vista, mesmo que nem sempre os vejamos.\r\n\r\nNuma viagem entre ruínas, objetos arqueológicos e histórias fascinantes,..."
+    ],
+    "venue": {
+      "museu-de-lisboa-teatro-romano": {
+        "id": 694,
+        "slug": "museu-de-lisboa-teatro-romano",
+        "name": "Museu de Lisboa - Teatro Romano"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "10": {
+        "id": 6438,
+        "slug": "10",
+        "name": "+10"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/uma-cidade-com-2000-anos/",
+    "occurences": [
+      "2025-11-29",
+      "2026-06-27",
+      "2026-11-28"
+    ],
+    "StartDate": "2026-06-27",
+    "LastDate": "2026-11-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:1:\"3\";s:11:\"description\";s:10:\"em Bolt.pt\";}}"
+    ],
+    "target_audience": {
+      "10": {
+        "id": 6438,
+        "slug": "10",
+        "name": "+10"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231794,
+    "type": "event",
+    "title": {
+      "rendered": "Grande entre os assassinos"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/eduardo-madeira.jpg",
+    "subtitle": [
+      "Eduardo Madeira"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "29 junho 2026",
+    "string_times": "21h00",
+    "description": [
+      "<em>O Sexo, a Loucura, os Excessos, a Morte do irmão, a Morte da namorada, a Experiência Gay, como acabou testemunha num processo de Violência Doméstica e uma ligação improvável com Assassinos...."
+    ],
+    "venue": {
+      "teatro-tivoli-bbva": {
+        "id": 784,
+        "slug": "teatro-tivoli-bbva",
+        "name": "Teatro Tivoli BBVA"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/grande-entre-os-assassinos/",
+    "occurences": [
+      "2026-06-29"
+    ],
+    "StartDate": "2026-06-29",
+    "LastDate": "2026-06-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"14 € a 22\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228333,
+    "type": "event",
+    "title": {
+      "rendered": "Um julgamento"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/um-julgamento.jpg",
+    "subtitle": [
+      "Christiane Jatahy e Wagner Moura"
+    ],
+    "subject": "teatro",
+    "string_dates": "3 julho a 5 julho 2026",
+    "string_times": "sex: 20h; sáb: 19h; dom: 17h",
+    "description": [
+      "<i>Um Julgamento</i> não é uma adaptação de <i>Um Inimigo do Povo</i>, de Ibsen, mas sim um texto original que transforma o teatro num tribunal. Um tribunal onde as personagens principais da pe?..."
+    ],
+    "venue": {
+      "centro-cultural-de-belem": {
+        "id": 335,
+        "slug": "centro-cultural-de-belem",
+        "name": "Centro Cultural de Belém"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "brasil": {
+        "id": 1006,
+        "slug": "brasil",
+        "name": "Brasil"
+      },
+      "christiane-jatahy": {
+        "id": 1001,
+        "slug": "christiane-jatahy",
+        "name": "Christiane Jatahy"
+      },
+      "ibsen": {
+        "id": 4231,
+        "slug": "ibsen",
+        "name": "Ibsen"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/um-julgamento/",
+    "occurences": [
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05"
+    ],
+    "StartDate": "2026-07-03",
+    "LastDate": "2026-07-05",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"21 € a 30\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231854,
+    "type": "event",
+    "title": {
+      "rendered": "Rocha n´Roll"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/rocha.jpg",
+    "subtitle": [
+      "Fernando Rocha"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "4 julho 2026",
+    "string_times": "21h30",
+    "description": [
+      "O primeiro solo de <em>stand-up</em> do humorista Fernando Rocha é uma viagem. É storytelling vivido e contado na primeira pessoa ao longo dos seus 50 anos de existência, transformando episódios..."
+    ],
+    "venue": {
+      "casino-de-lisboa": {
+        "id": 653,
+        "slug": "casino-de-lisboa",
+        "name": "Casino Lisboa"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/rocha-nroll/",
+    "occurences": [
+      "2026-07-04"
+    ],
+    "StartDate": "2026-07-04",
+    "LastDate": "2026-07-04",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"20 € a 22\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230523,
+    "type": "event",
+    "title": {
+      "rendered": "Iron Maiden"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/iron-maiden.png",
+    "subtitle": [
+      "Run for your lives"
+    ],
+    "subject": "música",
+    "string_dates": "7 julho 2026",
+    "string_times": "ter: 19h30",
+    "description": [
+      "Os Iron Maiden regressam a Portugal para aquele que promete ser o maior concerto da sua carreira no nosso país. No dia 7 de julho, o Estádio da Luz abre as portas a um espetáculo de proporções co..."
+    ],
+    "venue": {
+      "estadio-do-sport-lisboa-e-benfica": {
+        "id": 415,
+        "slug": "estadio-do-sport-lisboa-e-benfica",
+        "name": "Estádio do Sport Lisboa e Benfica"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "heavy-metal": {
+        "id": 1087,
+        "slug": "heavy-metal",
+        "name": "heavy metal"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/iron-maiden-2/",
+    "occurences": [
+      "2026-07-07"
+    ],
+    "StartDate": "2026-07-07",
+    "LastDate": "2026-07-07",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"70 € a 90\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230536,
+    "type": "event",
+    "title": {
+      "rendered": "Scorpions"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/scorpions.jpeg",
+    "subtitle": [
+      "Coming Home"
+    ],
+    "subject": "música",
+    "string_dates": "8 julho 2026",
+    "string_times": "qua: 21h",
+    "description": [
+      "Os lendários Scorpions estão de volta com a <em>Coming Home 2026 Tour</em>, com passagem por Portugal no dia 8 de julho, na MEO Arena. Com uma carreira que atravessa mais de seis décadas, os Scorpi..."
+    ],
+    "venue": {
+      "altice-arena": {
+        "id": 946,
+        "slug": "altice-arena",
+        "name": "MEO Arena"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "rock": {
+        "id": 2035,
+        "slug": "rock",
+        "name": "rock"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/scorpions-3/",
+    "occurences": [
+      "2026-07-08"
+    ],
+    "StartDate": "2026-07-08",
+    "LastDate": "2026-07-08",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"45 € a 65\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230541,
+    "type": "event",
+    "title": {
+      "rendered": "Belle and Sebastian"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/AIC_9526-F.jpg",
+    "subtitle": [
+      "If You’re Feeling Sinister"
+    ],
+    "subject": "música",
+    "string_dates": "21 julho 2026",
+    "string_times": "ter: 21h",
+    "description": [
+      "A banda escocesa regressa a Lisboa no dia 21 de julho com o espetáculo <em>If You’re Feeling Sinister</em>, onde toca na íntegra o álbum de culto que celebra este ano o seu 30.º aniversário..."
+    ],
+    "venue": {
+      "coliseu-dos-recreios": {
+        "id": 90,
+        "slug": "coliseu-dos-recreios",
+        "name": "Coliseu dos Recreios"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "alternativa": {
+        "id": 1102,
+        "slug": "alternativa",
+        "name": "alternativa"
+      },
+      "indie": {
+        "id": 1103,
+        "slug": "indie",
+        "name": "indie"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/belle-and-sebastian-2/",
+    "occurences": [
+      "2026-07-21"
+    ],
+    "StartDate": "2026-07-21",
+    "LastDate": "2026-07-21",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"40 € a 60\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231176,
+    "type": "event",
+    "title": {
+      "rendered": "Macbeth"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/macbeth.jpg",
+    "subtitle": [
+      "Silly Season"
+    ],
+    "subject": "teatro",
+    "string_dates": "21 julho a 25 julho 2026",
+    "string_times": "ter: 21h; qua: 21h; qui: 21h; sex: 21h; sáb: 21h",
+    "description": [
+      "Nesta reescrita, partindo de Shakespeare, o percurso trágico dos indivíduos desenrola-se sob o olhar atento de um público voyeur, num formato que evoca a lógica dos<em> reality shows</em> que marc..."
+    ],
+    "venue": {
+      "cineteatro-capitolio-teatro-raul-solnado": {
+        "id": 798,
+        "slug": "cineteatro-capitolio-teatro-raul-solnado",
+        "name": "Capitólio"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "sillyseason": {
+        "id": 6450,
+        "slug": "sillyseason",
+        "name": "SillySeason"
+      },
+      "william-shakespeare": {
+        "id": 994,
+        "slug": "william-shakespeare",
+        "name": "William Shakespeare"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/macbeth-3/",
+    "occurences": [
+      "2026-07-21",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-25"
+    ],
+    "StartDate": "2026-07-21",
+    "LastDate": "2026-07-25",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"15\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228277,
+    "type": "event",
+    "title": {
+      "rendered": "Worten Mock Fest"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2024/03/cinema-sao-jorge.jpg",
+    "subtitle": [
+      "2026"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "28 agosto a 30 agosto 2026",
+    "string_times": "",
+    "description": [
+      "O <span data-olk-copy-source=\"MessageBody\">Festival Internacional de Comédia está de regresso ao Cinema São Jorge no final de agosto.</span>\r\n\r\nPrograma integral <a href=\"https://mockfest.pt/en/\" t..."
+    ],
+    "venue": {
+      "cinema-sao-jorge": {
+        "id": 776,
+        "slug": "cinema-sao-jorge",
+        "name": "Cinema São Jorge"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/worten-mock-fest/",
+    "occurences": [
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30"
+    ],
+    "StartDate": "2026-08-28",
+    "LastDate": "2026-08-30",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230515,
+    "type": "event",
+    "title": {
+      "rendered": "MEO Kalorama"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Robbie-Williams.png",
+    "subtitle": [
+      "2026"
+    ],
+    "subject": "música",
+    "string_dates": "28 agosto a 30 agosto 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Em agosto, o Parque da Bela Vista volta a receber o MEO Kalorama. Desde 2022, o festival tem vindo a estabelecer-se como o maior festival de verão da cidade de Lisboa, ocupando todos os anos um dos m..."
+    ],
+    "venue": {
+      "parque-da-belavista": {
+        "id": 13,
+        "slug": "parque-da-belavista",
+        "name": "Parque da Belavista"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "alternativa": {
+        "id": 1102,
+        "slug": "alternativa",
+        "name": "alternativa"
+      },
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "festival": {
+        "id": 23,
+        "slug": "festival",
+        "name": "festival"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/meo-kalorama-5/",
+    "occurences": [
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30"
+    ],
+    "StartDate": "2026-08-28",
+    "LastDate": "2026-08-30",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:13:\"100 € a 120\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 222782,
+    "type": "event",
+    "title": {
+      "rendered": "The Weeknd"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/10/Photo-by-Sebastien-Nagy-4.jpg",
+    "subtitle": [
+      "After Hours Til Dawn"
+    ],
+    "subject": "música",
+    "string_dates": "5 setembro 2026",
+    "string_times": "",
+    "description": [
+      "<span data-olk-copy-source=\"MessageBody\">A digressão </span><em>After Hours Til Dawn Stadium Tour</em> celebra a trilogia de álbuns do americano The Weeknd — <em>After Hours</em> (2020), <em>Da..."
+    ],
+    "venue": {
+      "estadio-do-restelo": {
+        "id": 1772,
+        "slug": "estadio-do-restelo",
+        "name": "Estádio do Restelo"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "pop-rock": {
+        "id": 1082,
+        "slug": "pop-rock",
+        "name": "pop/rock"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/the-weeknd-2/",
+    "occurences": [
+      "2026-09-05"
+    ],
+    "StartDate": "2026-09-05",
+    "LastDate": "2026-09-05",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232493,
+    "type": "event",
+    "title": {
+      "rendered": "Rádio Macau"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Radio-Macau-5.2.jpg",
+    "subtitle": "",
+    "subject": "música",
+    "string_dates": "30 setembro a 2 outubro 2026",
+    "string_times": "qua: 21h30; sex: 21h30",
+    "description": [
+      "Os Rádio Macau estão de regresso aos palcos com dois concertos marcados no Coliseus, a 30 de setembro e 2 de outubro. Depois de mais de uma década de pausa, a banda volta a subir aos palcos com a..."
+    ],
+    "venue": {
+      "coliseu-dos-recreios": {
+        "id": 90,
+        "slug": "coliseu-dos-recreios",
+        "name": "Coliseu dos Recreios"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "musica-portuguesa": {
+        "id": 1489,
+        "slug": "musica-portuguesa",
+        "name": "música portuguesa"
+      },
+      "pop-rock": {
+        "id": 1082,
+        "slug": "pop-rock",
+        "name": "pop/rock"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/radio-macau/",
+    "occurences": [
+      "2026-09-30",
+      "2026-10-02"
+    ],
+    "StartDate": "2026-09-30",
+    "LastDate": "2026-10-02",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"18 € a 45\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231872,
+    "type": "event",
+    "title": {
+      "rendered": "Está tudo sob controle"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/laura.jpg",
+    "subtitle": [
+      "Laura"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "28 outubro 2026",
+    "string_times": "21h00",
+    "description": [
+      "<em>Está Tudo Sob Controle</em> é um retrato hilariante e honesto da vida de uma mulher francesa a tentar sobreviver em Portugal: mãe de três filhos, recém-separada e a namorar um “tuga a séri..."
+    ],
+    "venue": {
+      "teatro-villaret": {
+        "id": 785,
+        "slug": "teatro-villaret",
+        "name": "Teatro Villaret"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/esta-tudo-sob-controle/",
+    "occurences": [
+      "2026-10-28"
+    ],
+    "StartDate": "2026-10-28",
+    "LastDate": "2026-10-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"12\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229063,
+    "type": "event",
+    "title": {
+      "rendered": "The Mo You Know"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Mo.jpg",
+    "subtitle": [
+      "Mo Gilligan"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "25 novembro 2026",
+    "string_times": "21h00",
+    "description": [
+      "O comediante sensação e vencedor de três prémios BAFTA, Mo Gilligan, anunciou a sua maior digressão mundial de sempre com <em>The Mo You Know</em>, em 2026."
+    ],
+    "venue": {
+      "maria-matos-teatro-municipal": {
+        "id": 175,
+        "slug": "maria-matos-teatro-municipal",
+        "name": "Teatro Maria Matos"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/the-mo-you-know/",
+    "occurences": [
+      "2026-11-25"
+    ],
+    "StartDate": "2026-11-25",
+    "LastDate": "2026-11-25",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"23 € e 26\";}}"
+    ],
+    "target_audience": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "accessibility": []
+  }
+]

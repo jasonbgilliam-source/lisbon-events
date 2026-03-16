@@ -1,0 +1,26 @@
+{
+  "stamp": "2026-03-14_144917Z",
+  "total_sources": 3,
+  "total_events": 732,
+  "total_rows": 732,
+  "total_occurrences": 25424,
+  "by_source": [
+    {
+      "key": "lisboa_secreta",
+      "ok": true,
+      "events": 9
+    },
+    {
+      "key": "visitlisboa",
+      "ok": true,
+      "events": 203
+    },
+    {
+      "key": "agendalx",
+      "ok": true,
+      "events": 520
+    }
+  ],
+  "output_events_csv": "tmp/ingest/export/2026-03-14_144917Z/events.csv",
+  "output_occurrences_csv": "tmp/ingest/export/2026-03-14_144917Z/event_occurrences.csv"
+}
