@@ -1,0 +1,434 @@
+{
+  "created_at": "2026-03-16_021530Z",
+  "input_csv": "tmp/ingest/merged/events_merged_2026-03-16_021449Z.csv",
+  "dry_run": false,
+  "import_only_pending_review": true,
+  "import_require_enrich_ok": true,
+  "default_organizer_email": "imports@local.invalid",
+  "default_category": null,
+  "input_row_count": 698,
+  "selected_count": 0,
+  "ready_to_insert_count": 0,
+  "skipped_count": 698,
+  "selected_sample": [],
+  "ready_to_insert_sample": [],
+  "skipped_sample": [
+    {
+      "title": "Visitas à Fábrica da Eletricidade",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Carlos Bunga",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Alberto Reguera",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Filminhos Infantis à Solta Pelo País",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Cláudia Clemente",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Take 1",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Pedro Casqueiro",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Paula Prates e Rita Gaspar Vieira",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rituais de Luz",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Os Direitos Humanos e a Constituição",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sabaprodaktion",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Câmara Escura",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Crónicas de uma Lisboa Desconhecida",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Superbichos!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mingyu Wu",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Toma! 150 Anos de Zés Povinhos",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visitas orientadas à Casa Fernando Pessoa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Leonel Moura",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Bruno Zhu",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Edis One",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Timeless Experiences",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Eduardo Malé",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Daniel Barroca",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Peddy +",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Filhos de Todos… Filhos de Quem? Os expostos da roda de Lisboa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Maria Augusta Bordalo Pinheiro",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lápis de Pintar Dias Cinzentos",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "O Eu como Múltiplo",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rafael dos Santos",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Sofia Arez",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Live Sessions by indiemusic.pt",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Entre a Palavra e o Silêncio",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Griet Baeyens",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Carpintaria da Central Tejo 1936-2013",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Francisco Leal",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mário Dionísio",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Húmus",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Comunicar é Natural - A Botânica das Comunicações",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Habitar Portugal",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Conferências da Primavera no CCC Macau",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Maratona Óscares",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visitas guiadas ao B-MAD, Museu Berardo Arte Deco",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "José de Guimarães",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "She is the One",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "AperiFestas 2026",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Teresa Couto Pinto",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "The Garden of Earthly Delights",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Elaine Pessoa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rising Stars – Portas Abertas",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fernando Calhau e Rui Chafes",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Percorrer Lisboa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lugar de Estar: O Legado Burle Marx",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ciclo Ingmar Bergman",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Pedro Jaime Vasconcelos",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "À Descoberta do Castelo de São Jorge",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "José Veloso de Castro",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Vítor Serrano",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "O ano em livro. O Almanaque de Santo António",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visita ao Parque Botânico do Monteiro-Mor",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Avenida 211",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Os Bichos de Lisboa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "60 Anos de Animação de Marionetas da Letónia",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "MONSTRA - Festival de Animação de Lisboa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Uma Lisboa de múltiplas confissões",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Detalhes em Cor",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Cinepop",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Turn Around",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Willem de Rooij",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Ordem Notável do Dia do Pai",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "As estreias da semana",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Visitas à Igreja do Menino Deus",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Isabel Cordovil",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Antes de ser independência foi luta de libertação",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Carlota Roque Martins",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Lisbon Drawing Club",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Rui Ventura",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Hércules",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A mala das viagens imaginárias",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Nós e a voz",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Tapetes em Flor",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Ah, Amália",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "'Le Parc' de Angelin Preljocaj/ Ópera de Paris",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mamma Mia Baby!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Fevereiro e março nos Coruchéus",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Mulheres, Lutas e Liberdades",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Cabeça Coletiva",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Era uma vez...",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Leia Mulheres Lisboa",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Verdadeira História do Lobo Mau",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "A Casinha de Chocolate",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Folha em branco, tela cheia",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Pum Pum Dá! Dá!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Có Có Ró Có Có",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Uma outra Bela Adormecida",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "'City Lights' de C. Chaplin",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Vamos, Obi!",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "May I help you? Posso Ajudar?",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Desconstruir o Colonialismo, Descolonizar o Imaginário",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Dona Flor e seus dois maridos",
+      "reason": "not_selected_by_import_filters"
+    },
+    {
+      "title": "Um Quinteto de Morte",
+      "reason": "not_selected_by_import_filters"
+    }
+  ],
+  "allowed_categories_sample": [
+    "Music",
+    "Food & Drink",
+    "Arts",
+    "Sports",
+    "Nightlife",
+    "Festival",
+    "Theater",
+    "Dance",
+    "Cinema",
+    "Market",
+    "Lecture",
+    "Comedy",
+    "Exhibition",
+    "Outdoor",
+    "Workshop"
+  ]
+}

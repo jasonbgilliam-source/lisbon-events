@@ -1,0 +1,12 @@
+{
+  "export_csv": "tmp/ingest/export/2026-03-15_134644Z/events.csv",
+  "patch_csv": "tmp/ingest/enriched/serpapi_openai_patch_2026-03-16_020828Z.csv",
+  "export_rows": 698,
+  "patch_rows": 22,
+  "accepted_patch_rows": 6,
+  "matched_rows": 6,
+  "updated_rows": 6,
+  "unmatched_patch_rows": 0,
+  "merged_csv": "tmp/ingest/merged/events_merged_2026-03-16_021449Z.csv",
+  "unmatched_json": "tmp/ingest/merged/merge_unmatched_2026-03-16_021449Z.json"
+}

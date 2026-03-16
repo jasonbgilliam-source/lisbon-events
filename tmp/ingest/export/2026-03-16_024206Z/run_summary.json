@@ -1,0 +1,27 @@
+{
+  "stamp": "2026-03-16_024206Z",
+  "source_count": 3,
+  "succeeded": [
+    {
+      "key": "agendalx",
+      "count": 470,
+      "durationMs": 129297
+    },
+    {
+      "key": "lisboa_secreta",
+      "count": 7,
+      "durationMs": 7490
+    },
+    {
+      "key": "visitlisboa",
+      "count": 192,
+      "durationMs": 59480
+    }
+  ],
+  "failed": [],
+  "totals": {
+    "raw_events": 669,
+    "deduped_events": 669,
+    "occurrence_rows": 24842
+  }
+}

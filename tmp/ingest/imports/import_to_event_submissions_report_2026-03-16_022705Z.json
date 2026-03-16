@@ -1,0 +1,163 @@
+{
+  "created_at": "2026-03-16_022705Z",
+  "input_csv": "tmp/ingest/merged/changed_rows_only_2026-03-16_022635Z.csv",
+  "dry_run": false,
+  "import_only_pending_review": false,
+  "import_require_enrich_ok": false,
+  "default_organizer_email": "imports@local.invalid",
+  "default_category": null,
+  "input_row_count": 4,
+  "selected_count": 4,
+  "ready_to_insert_count": 3,
+  "skipped_count": 1,
+  "selected_sample": [
+    {
+      "title": "Brunch Electronik Lisboa'26",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "Feira da Luz",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "APA's Autumn Fair - Art and Antiques",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "Alkantara Festival'26",
+      "enrich_ok": "",
+      "review_status": ""
+    }
+  ],
+  "ready_to_insert_sample": [
+    {
+      "title": "Brunch Electronik Lisboa'26",
+      "description": "Brunch Electronik Lisboa'26",
+      "starts_at": "2026-07-01T00:00:00.000Z",
+      "ends_at": "2026-07-31T00:00:00.000Z",
+      "location_name": "Tapada da Ajuda - Lagoa Branca",
+      "address": "Tapada da Ajuda, 1349-017, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events/brunch-electronik-lisboa-l",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzAyNjQsInB1ciI6ImJsb2JfaWQifX0=--b90c26d6a7e33a1d66d3bb5ac11bf40dd592815d/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/GEN25-brunch-eletronik.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Music",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": false,
+        "category_inference_basis": "existing_value"
+      }
+    },
+    {
+      "title": "Feira da Luz",
+      "description": "Feira da Luz",
+      "starts_at": "2026-08-01T00:00:00.000Z",
+      "ends_at": "2026-08-31T00:00:00.000Z",
+      "location_name": "Largo da Luz",
+      "address": "Largo da Luz, 1600-000, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events/feira-da-luz-2",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzU2MjMsInB1ciI6ImJsb2JfaWQifX0=--c818eb952c67ca098a9af9561e14261c94641c0e/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/2026-Feira-da-luz.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "APA's Autumn Fair - Art and Antiques",
+      "description": "APA's Autumn Fair - Art and Antiques",
+      "starts_at": "2026-11-01T00:00:00.000Z",
+      "ends_at": "2026-11-30T00:00:00.000Z",
+      "location_name": "Sociedade Nacional de Belas Artes",
+      "address": "R. Barata Salgueiro, 36, 1250-044, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events/apa-s-autumn-fair-art-and-antiques",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzM2NjgsInB1ciI6ImJsb2JfaWQifX0=--1794b78d548285c8ad3fe6ae24a0cfdde2d53e0d/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/GEN25_APA.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    }
+  ],
+  "skipped_sample": [
+    {
+      "title": "Alkantara Festival'26",
+      "reason": "missing_required_fields",
+      "missing_fields": [
+        "location_name"
+      ],
+      "debug": {
+        "title": "Alkantara Festival'26",
+        "starts_at": "2026-12-01T00:00:00Z",
+        "location_name": "",
+        "category": "Main Events",
+        "resolved_category": "Festival",
+        "category_inference_basis": "rule_match",
+        "description": "",
+        "enrichment_source_notes": ""
+      }
+    }
+  ],
+  "allowed_categories_sample": [
+    "Music",
+    "Food & Drink",
+    "Arts",
+    "Sports",
+    "Nightlife",
+    "Festival",
+    "Theater",
+    "Dance",
+    "Cinema",
+    "Market",
+    "Lecture",
+    "Comedy",
+    "Exhibition",
+    "Outdoor",
+    "Workshop"
+  ]
+}

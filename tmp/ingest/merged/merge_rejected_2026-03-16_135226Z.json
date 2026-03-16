@@ -1,0 +1,332 @@
+[
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/octopus-festival-ericeira",
+    "original_title": "Octopus Festival | Ericeira",
+    "resolved_title": "Octopus Festival | Ericeira",
+    "starts_at": "2026-05-01",
+    "ends_at": "2026-05-31",
+    "chosen_url": "https://www.visitlisboa.com/fr/evenements/octopus-festival-ericeira",
+    "canonical_url": "https://www.visitlisboa.com/en/events/octopus-festival-ericeira",
+    "source_notes": "No specific venue or exact dates; event occurs annually in May across various restaurants in Ericeira.",
+    "reasons": [
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/kulturfest-festival-of-german-expression-cultures-l",
+    "original_title": "KULTURfest - Festival of German Expression Cultures l",
+    "resolved_title": "KULTURfest - Festival of German Expression Cultures l",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/cineconchas_",
+    "original_title": "CineConchas'26",
+    "resolved_title": "CineConchas'26",
+    "starts_at": "2025-06-26",
+    "ends_at": "2025-07-12",
+    "chosen_url": "https://egeac.pt/evento/cineconchas-13/",
+    "canonical_url": "https://egeac.pt/evento/cineconchas-13/",
+    "source_notes": "Extracted from official EGEAC event page; individual film schedule included in event description.",
+    "reasons": [
+      "starts_at_too_far_in_past:263d",
+      "title_year_mismatch:title=2026,starts_at=2025"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/trezena-to-saint-anthony",
+    "original_title": "Trezena to Saint Anthony",
+    "resolved_title": "Trezena to Saint Anthony",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/brunch-electronik-lisboa-l",
+    "original_title": "Brunch Electronik Lisboa'26",
+    "resolved_title": "Brunch Electronik Lisboa'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/portuguese-surf-film-festival",
+    "original_title": "Portuguese Surf Film Festival",
+    "resolved_title": "Portuguese Surf Film Festival",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/festas-do-mar-cascais",
+    "original_title": "Festas do Mar | Cascais",
+    "resolved_title": "Festas do Mar | Cascais",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/jazz-em-agosto-2",
+    "original_title": "Jazz em Agosto'26",
+    "resolved_title": "Jazz em Agosto'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/motelx-lisbon-international-horror-film-festival",
+    "original_title": "MOTELx - Lisbon International Horror Film Festival",
+    "resolved_title": "MOTELx - Lisbon International Horror Film Festival",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/x-market",
+    "original_title": "X Market",
+    "resolved_title": "X Market",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/lisbon-arab-film-festival-laff_",
+    "original_title": "Lisbon Arab Film Festival (LAFF)",
+    "resolved_title": "A Cinemateca Com O Lisbon Arab Film Festival",
+    "starts_at": "2025-09-29",
+    "ends_at": "2025-09-30",
+    "chosen_url": "https://www.cinemateca.pt/programacao.aspx?ciclo=1940",
+    "canonical_url": "https://www.cinemateca.pt/programacao.aspx?ciclo=1940",
+    "source_notes": "Official Cinemateca program page; event is a film cycle in collaboration with Lisbon Arab Film Festival, with screenings on 29 and 30 September 2025.",
+    "reasons": [
+      "starts_at_too_far_in_past:168d"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/mil-lisbon-international-music-network23",
+    "original_title": "MIL - Lisbon International Music Network'26",
+    "resolved_title": "MIL - Lisbon International Music Network'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/french-film-festival-2",
+    "original_title": "French Film Festival'26",
+    "resolved_title": "French Film Festival'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/amadora-international-comic-festival-2",
+    "original_title": "Amadora International Comic Festival'26",
+    "resolved_title": "Amadora International Comic Festival'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/festival-big-bang-I",
+    "original_title": "Festival Big Bang'26",
+    "resolved_title": "Festival Big Bang'26",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/apa-s-autumn-fair-art-and-antiques",
+    "original_title": "APA's Autumn Fair - Art and Antiques",
+    "resolved_title": "APA's Autumn Fair - Art and Antiques",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/alkantara-festival-2",
+    "original_title": "Alkantara Festival'26",
+    "resolved_title": "Alkantara Festival'26",
+    "starts_at": "2026-12-01",
+    "ends_at": "2026-12-24",
+    "chosen_url": "https://alkantara.pt/en/info/venues/",
+    "canonical_url": "https://alkantara.pt/en/info/venues/",
+    "source_notes": "page lists venues, but festival dates inferred from navigation header",
+    "reasons": [
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/lisbon-half-marathon-2",
+    "original_title": "Lisbon Half Marathon'27",
+    "resolved_title": "Lisbon Half Marathon'27",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/monstra-lisboa-animation-film-festival_",
+    "original_title": "Monstra - Lisboa Animation Film Festival'27",
+    "resolved_title": "Monstra - Lisboa Animation Film Festival'27",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  },
+  {
+    "source": "visitlisboa",
+    "source_id": "en/events/italian-film-festival_",
+    "original_title": "Italian Film Festival'27",
+    "resolved_title": "Italian Film Festival'27",
+    "starts_at": "",
+    "ends_at": "",
+    "chosen_url": "",
+    "canonical_url": "https://www.visitlisboa.com/en/events",
+    "source_notes": "",
+    "reasons": [
+      "enrich_ok_false",
+      "missing_starts_at",
+      "non_event_url",
+      "missing_location_signal"
+    ]
+  }
+]

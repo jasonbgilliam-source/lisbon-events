@@ -1,0 +1,315 @@
+import fs from "node:fs";
+import path from "node:path";
+import Papa from "papaparse";
+
+const EXPORT_CSV =
+  process.env.MERGE_EXPORT_CSV || process.argv[2] || getLatestExportCsv();
+
+const PATCH_CSV =
+  process.env.MERGE_PATCH_CSV || process.argv[3] || getLatestPatchCsv();
+
+const OUTPUT_DIR =
+  process.env.MERGE_OUTPUT_DIR || path.join("tmp", "ingest", "merged");
+
+const TODAY = new Date();
+const MAX_PAST_DAYS = Number(process.env.MERGE_MAX_PAST_DAYS || 30);
+
+function nowStamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(
+    d.getUTCDate()
+  )}_${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(
+    d.getUTCSeconds()
+  )}Z`;
+}
+
+function getLatestExportCsv() {
+  const root = path.join("tmp", "ingest", "export");
+  const stamps = fs
+    .readdirSync(root, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+
+  if (!stamps.length) {
+    throw new Error(`No export directories found in ${root}`);
+  }
+
+  const latest = stamps[stamps.length - 1];
+  return path.join(root, latest, "events.csv");
+}
+
+function getLatestPatchCsv() {
+  const root = path.join("tmp", "ingest", "enriched");
+  const files = fs
+    .readdirSync(root, { withFileTypes: true })
+    .filter((d) => d.isFile() && /^serpapi_openai_patch_.*\.csv$/i.test(d.name))
+    .map((d) => d.name)
+    .sort();
+
+  if (!files.length) {
+    throw new Error(`No patch CSV files found in ${root}`);
+  }
+
+  return path.join(root, files[files.length - 1]);
+}
+
+function readCsv(csvPath) {
+  const txt = fs.readFileSync(csvPath, "utf8");
+  const parsed = Papa.parse(txt, { header: true, skipEmptyLines: true });
+  return parsed.data || [];
+}
+
+function writeCsv(filePath, rows) {
+  const csv = Papa.unparse(rows, { quotes: true });
+  fs.writeFileSync(filePath, csv, "utf8");
+}
+
+function writeJson(filePath, obj) {
+  fs.writeFileSync(filePath, JSON.stringify(obj, null, 2), "utf8");
+}
+
+function firstNonEmpty(...vals) {
+  for (const v of vals) {
+    if (v !== null && v !== undefined && String(v).trim() !== "") {
+      return String(v).trim();
+    }
+  }
+  return "";
+}
+
+function asBool(v) {
+  return String(v || "").trim().toLowerCase() === "true";
+}
+
+function patchKey(row) {
+  return `${firstNonEmpty(row.source)}::${firstNonEmpty(row.source_id)}`;
+}
+
+function normalizeDateForExport(v) {
+  const raw = firstNonEmpty(v);
+  if (!raw) return "";
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    return `${raw}T00:00:00Z`;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}t/i.test(raw)) {
+    return raw;
+  }
+
+  return raw;
+}
+
+function parseDate(v) {
+  const raw = firstNonEmpty(v);
+  if (!raw) return null;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function daysBetween(a, b) {
+  const ms = a.getTime() - b.getTime();
+  return Math.floor(ms / (1000 * 60 * 60 * 24));
+}
+
+function extractExpectedYear(title) {
+  const t = firstNonEmpty(title);
+
+  const shorthand = t.match(/['’](\d{2})\b/);
+  if (shorthand) {
+    return Number(`20${shorthand[1]}`);
+  }
+
+  const full = t.match(/\b(20\d{2})\b/);
+  if (full) {
+    return Number(full[1]);
+  }
+
+  return null;
+}
+
+function validatePatchRow(row) {
+  const reasons = [];
+
+  if (!asBool(row.enrich_ok)) {
+    reasons.push("enrich_ok_false");
+  }
+
+  const startsAt = firstNonEmpty(row.starts_at);
+  if (!startsAt) {
+    reasons.push("missing_starts_at");
+  }
+
+  const startDate = parseDate(startsAt);
+  if (!startDate && startsAt) {
+    reasons.push("invalid_starts_at");
+  }
+
+  const title = firstNonEmpty(row.original_title, row.resolved_title);
+  const expectedYear = extractExpectedYear(title);
+
+  if (startDate) {
+    const ageDays = daysBetween(TODAY, startDate);
+    if (ageDays > MAX_PAST_DAYS) {
+      reasons.push(`starts_at_too_far_in_past:${ageDays}d`);
+    }
+
+    if (expectedYear && startDate.getUTCFullYear() !== expectedYear) {
+      reasons.push(
+        `title_year_mismatch:title=${expectedYear},starts_at=${startDate.getUTCFullYear()}`
+      );
+    }
+  }
+
+  return {
+    ok: reasons.length === 0,
+    reasons,
+  };
+}
+
+function mergeRow(base, patch) {
+  const merged = { ...base };
+
+  const patchStartsAt = normalizeDateForExport(patch.starts_at);
+  const patchEndsAt = normalizeDateForExport(patch.ends_at);
+
+  if (patchStartsAt) merged.starts_at = patchStartsAt;
+  if (patchEndsAt) merged.ends_at = patchEndsAt;
+
+  const patchLocation = firstNonEmpty(patch.location_name, patch.venue_name);
+  if (patchLocation) merged.location_name = patchLocation;
+
+  const patchAddress = firstNonEmpty(patch.address);
+  if (patchAddress) merged.address = patchAddress;
+
+  const patchCity = firstNonEmpty(patch.city);
+  if (patchCity) merged.city = patchCity;
+
+  const patchPrice = firstNonEmpty(patch.price);
+  if (patchPrice) merged.price = patchPrice;
+
+  const patchImage = firstNonEmpty(patch.image_url);
+  if (patchImage) merged.image_url = patchImage;
+
+  const patchCanonicalUrl = firstNonEmpty(patch.canonical_url, patch.chosen_url);
+  if (patchCanonicalUrl) merged.url = patchCanonicalUrl;
+
+  return merged;
+}
+
+function main() {
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+  const exportRows = readCsv(EXPORT_CSV);
+  const patchRows = readCsv(PATCH_CSV);
+
+  const acceptedPatchRows = [];
+  const rejectedPatchRows = [];
+
+  for (const row of patchRows) {
+    const validation = validatePatchRow(row);
+    if (validation.ok) {
+      acceptedPatchRows.push(row);
+    } else {
+      rejectedPatchRows.push({
+        source: row.source,
+        source_id: row.source_id,
+        original_title: row.original_title,
+        resolved_title: row.resolved_title,
+        starts_at: row.starts_at,
+        ends_at: row.ends_at,
+        chosen_url: row.chosen_url,
+        canonical_url: row.canonical_url,
+        source_notes: row.source_notes,
+        reasons: validation.reasons,
+      });
+    }
+  }
+
+  const patchMap = new Map();
+  for (const row of acceptedPatchRows) {
+    patchMap.set(patchKey(row), row);
+  }
+
+  let matched = 0;
+  let updated = 0;
+
+  const changedRowsOnly = [];
+  const mergedRows = exportRows.map((row) => {
+    const key = patchKey(row);
+    const patch = patchMap.get(key);
+
+    if (!patch) return row;
+
+    matched += 1;
+    updated += 1;
+
+    const merged = mergeRow(row, patch);
+    changedRowsOnly.push(merged);
+    return merged;
+  });
+
+  const exportKeySet = new Set(exportRows.map((row) => patchKey(row)));
+  const unmatchedPatches = [];
+  for (const row of acceptedPatchRows) {
+    const key = patchKey(row);
+    if (!exportKeySet.has(key)) {
+      unmatchedPatches.push({
+        source: row.source,
+        source_id: row.source_id,
+        original_title: row.original_title,
+        starts_at: row.starts_at,
+        chosen_url: row.chosen_url,
+      });
+    }
+  }
+
+  const stamp = nowStamp();
+  const mergedCsv = path.join(OUTPUT_DIR, `events_merged_${stamp}.csv`);
+  const changedRowsCsv = path.join(OUTPUT_DIR, `changed_rows_only_${stamp}.csv`);
+  const reportJson = path.join(OUTPUT_DIR, `merge_report_${stamp}.json`);
+  const unmatchedJson = path.join(OUTPUT_DIR, `merge_unmatched_${stamp}.json`);
+  const rejectedJson = path.join(OUTPUT_DIR, `merge_rejected_${stamp}.json`);
+
+  writeCsv(mergedCsv, mergedRows);
+  writeCsv(changedRowsCsv, changedRowsOnly);
+  writeJson(unmatchedJson, unmatchedPatches);
+  writeJson(rejectedJson, rejectedPatchRows);
+
+  const report = {
+    export_csv: EXPORT_CSV,
+    patch_csv: PATCH_CSV,
+    export_rows: exportRows.length,
+    patch_rows: patchRows.length,
+    accepted_patch_rows: acceptedPatchRows.length,
+    rejected_patch_rows: rejectedPatchRows.length,
+    matched_rows: matched,
+    updated_rows: updated,
+    unmatched_patch_rows: unmatchedPatches.length,
+    merged_csv: mergedCsv,
+    changed_rows_csv: changedRowsCsv,
+    unmatched_json: unmatchedJson,
+    rejected_json: rejectedJson,
+    max_past_days: MAX_PAST_DAYS,
+  };
+
+  writeJson(reportJson, report);
+
+  console.log(`Export rows:            ${exportRows.length}`);
+  console.log(`Patch rows:             ${patchRows.length}`);
+  console.log(`Accepted patch rows:    ${acceptedPatchRows.length}`);
+  console.log(`Rejected patch rows:    ${rejectedPatchRows.length}`);
+  console.log(`Matched rows:           ${matched}`);
+  console.log(`Updated rows:           ${updated}`);
+  console.log(`Unmatched patch rows:   ${unmatchedPatches.length}`);
+  console.log(``);
+  console.log(`Merged CSV:             ${mergedCsv}`);
+  console.log(`Changed rows CSV:       ${changedRowsCsv}`);
+  console.log(`Report JSON:            ${reportJson}`);
+  console.log(`Rejected JSON:          ${rejectedJson}`);
+  console.log(`Unmatched JSON:         ${unmatchedJson}`);
+}
+
+main();

@@ -277,7 +277,7 @@ function mapRowToSubmission(row, allowedCategories) {
   const title = firstNonEmpty(row.title);
   const starts_at = toIsoMaybe(firstNonEmpty(row.starts_at));
   const ends_at = toIsoMaybe(firstNonEmpty(row.ends_at));
-  const location_name = resolveLocationName(row);
+  const location_name = firstNonEmpty(row.location_name, row.venue_name);
 
   const categoryResolved = resolveCategory(row, allowedCategories);
   const category = firstNonEmpty(categoryResolved.category);

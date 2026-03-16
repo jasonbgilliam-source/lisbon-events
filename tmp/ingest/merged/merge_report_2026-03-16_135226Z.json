@@ -1,0 +1,16 @@
+{
+  "export_csv": "tmp/ingest/export/2026-03-16_024206Z/events.csv",
+  "patch_csv": "tmp/ingest/enriched/serpapi_openai_patch_2026-03-16_024416Z.csv",
+  "export_rows": 669,
+  "patch_rows": 22,
+  "accepted_patch_rows": 2,
+  "rejected_patch_rows": 20,
+  "matched_rows": 2,
+  "updated_rows": 2,
+  "unmatched_patch_rows": 0,
+  "merged_csv": "tmp/ingest/merged/events_merged_2026-03-16_135226Z.csv",
+  "changed_rows_csv": "tmp/ingest/merged/changed_rows_only_2026-03-16_135226Z.csv",
+  "unmatched_json": "tmp/ingest/merged/merge_unmatched_2026-03-16_135226Z.json",
+  "rejected_json": "tmp/ingest/merged/merge_rejected_2026-03-16_135226Z.json",
+  "max_past_days": 30
+}

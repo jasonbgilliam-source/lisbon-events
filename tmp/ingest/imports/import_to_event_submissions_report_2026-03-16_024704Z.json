@@ -1,0 +1,175 @@
+{
+  "created_at": "2026-03-16_024704Z",
+  "input_csv": "tmp/ingest/merged/changed_rows_only_2026-03-16_024703Z.csv",
+  "dry_run": false,
+  "import_only_pending_review": false,
+  "import_require_enrich_ok": false,
+  "default_organizer_email": "imports@local.invalid",
+  "default_category": null,
+  "input_row_count": 4,
+  "selected_count": 4,
+  "ready_to_insert_count": 4,
+  "skipped_count": 0,
+  "selected_sample": [
+    {
+      "title": "Octopus Festival | Ericeira",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "LAAF - Lisbon Art & Antiques Fair'26",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "Feira da Luz",
+      "enrich_ok": "",
+      "review_status": ""
+    },
+    {
+      "title": "Alkantara Festival'26",
+      "enrich_ok": "",
+      "review_status": ""
+    }
+  ],
+  "ready_to_insert_sample": [
+    {
+      "title": "Octopus Festival | Ericeira",
+      "description": "Octopus Festival | Ericeira",
+      "starts_at": "2026-05-01T00:00:00.000Z",
+      "ends_at": "2026-05-31T00:00:00.000Z",
+      "location_name": "Venue TBA",
+      "address": null,
+      "ticket_url": "https://www.visitlisboa.com/en/events/octopus-festival-ericeira",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzY2NDcsInB1ciI6ImJsb2JfaWQifX0=--29aeb793c9de6941c058a7df4a8bc810e5062d95/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/gen-visit-lisboa-festival-do-polvo.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Ericeira",
+      "all_day": false,
+      "category": "Festival",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "LAAF - Lisbon Art & Antiques Fair'26",
+      "description": "LAAF - Lisbon Art & Antiques Fair'26",
+      "starts_at": "2026-05-01T00:00:00.000Z",
+      "ends_at": "2026-05-31T00:00:00.000Z",
+      "location_name": "Cordoaria Nacional",
+      "address": "Avenida da Índia 1300-299 Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events/laaf-lisbon-art-antiques-fair-2",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6Mjk3NTgsInB1ciI6ImJsb2JfaWQifX0=--de7dba3cd5b103126a1b9411678404551f998b97/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/2025-LAAF-x-sem-data.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Feira da Luz",
+      "description": "Feira da Luz",
+      "starts_at": "2026-08-01T00:00:00.000Z",
+      "ends_at": "2026-08-31T00:00:00.000Z",
+      "location_name": "Largo da Luz",
+      "address": "Largo da Luz, 1600-000, Lisboa",
+      "ticket_url": "https://www.visitlisboa.com/en/events/feira-da-luz-2",
+      "image_url": "https://www.visitlisboa.com/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MzU2MjMsInB1ciI6ImJsb2JfaWQifX0=--c818eb952c67ca098a9af9561e14261c94641c0e/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemUiOiIxMjAweDEyMDBcdTAwM2UifSwicHVyIjoidmFyaWF0aW9uIn19--19d67177a9879edd8f885ce80c29da2d57a5e00e/2026-Feira-da-luz.jpg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Market",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": true,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    },
+    {
+      "title": "Alkantara Festival'26",
+      "description": "Alkantara Festival'26",
+      "starts_at": "2026-12-01T00:00:00.000Z",
+      "ends_at": "2026-12-24T00:00:00.000Z",
+      "location_name": "Venue TBA",
+      "address": null,
+      "ticket_url": "https://alkantara.pt/en/info/venues/",
+      "image_url": "https://alkantara.pt/site/assets/files/1/alkantara.1200x630n.jpeg",
+      "organizer_email": "imports@local.invalid",
+      "age": null,
+      "audience": [
+        "All Ages",
+        "Family",
+        "Kids",
+        "Teens",
+        "Adults"
+      ],
+      "city": "Lisbon",
+      "all_day": false,
+      "category": "Festival",
+      "youtube_url": null,
+      "spotify_url": null,
+      "is_free": false,
+      "status": "pending",
+      "__meta": {
+        "category_inferred": true,
+        "category_inference_basis": "rule_match"
+      }
+    }
+  ],
+  "skipped_sample": [],
+  "allowed_categories_sample": [
+    "Music",
+    "Food & Drink",
+    "Arts",
+    "Sports",
+    "Nightlife",
+    "Festival",
+    "Theater",
+    "Dance",
+    "Cinema",
+    "Market",
+    "Lecture",
+    "Comedy",
+    "Exhibition",
+    "Outdoor",
+    "Workshop"
+  ]
+}

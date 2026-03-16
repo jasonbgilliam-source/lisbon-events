@@ -1,0 +1,6861 @@
+[
+  {
+    "id": 229698,
+    "type": "event",
+    "title": {
+      "rendered": "Eileen Alister"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/eileen-alister.jpeg",
+    "subtitle": "",
+    "subject": "música",
+    "string_dates": "24 março 2026",
+    "string_times": "ter: 21h30",
+    "description": [
+      "<div data-olk-copy-source=\"MessageBody\">\r\n\r\nEileen Alister é uma cantora e compositora suíça de 23 anos. Escreve sobre grandes sentimentos, solidão e a confusão entre eles — muitas vezes partil..."
+    ],
+    "venue": {
+      "casa-do-capitao": {
+        "id": 3780,
+        "slug": "casa-do-capitao",
+        "name": "Casa Capitão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "pop": {
+        "id": 3608,
+        "slug": "pop",
+        "name": "pop"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/eileen-alister/",
+    "occurences": [
+      "2026-03-24"
+    ],
+    "StartDate": "2026-03-24",
+    "LastDate": "2026-03-24",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:5:\"27,03\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231351,
+    "type": "event",
+    "title": {
+      "rendered": "Ciclo Cinema e Direito"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2022/11/outro-pais.jpg",
+    "subtitle": [
+      "Filmes e debates"
+    ],
+    "subject": "cinema",
+    "string_dates": "19 fevereiro a 23 abril 2026",
+    "string_times": "",
+    "description": [
+      "<p id=\"x_iqmpw\" data-olk-copy-source=\"MessageBody\">O ciclo propõe uma reflexão sobre os sistemas judiciais contemporâneos através de uma seleção de filmes que abrange diferentes culturas, época..."
+    ],
+    "venue": {
+      "teatro-turim": {
+        "id": 366,
+        "slug": "teatro-turim",
+        "name": "Turim - Um Teatro em Cada Bairro"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "ciclo": {
+        "id": 56,
+        "slug": "ciclo",
+        "name": "ciclo"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ciclo-cinema-e-direito/",
+    "occurences": [
+      "2026-02-19",
+      "2026-03-25",
+      "2026-04-23"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-04-23",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232062,
+    "type": "event",
+    "title": {
+      "rendered": "Anna Maria Maiolino"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Imagem1-20.jpg",
+    "subtitle": [
+      "Terra poética"
+    ],
+    "subject": "artes",
+    "string_dates": "25 março a 31 agosto 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Anna Maria Maiolino, nascida em Itália, em 1942, é uma artista brasileira, país em que reside desde a década de 1960, após ter vivido e estudado na Venezuela. O seu trabalho integra a reação à..."
+    ],
+    "venue": {
+      "maat-museu-de-arte-arquitetura-e-tecnologia": {
+        "id": 149,
+        "slug": "maat-museu-de-arte-arquitetura-e-tecnologia",
+        "name": "MAAT - Museu de Arte, Arquitetura e Tecnologia"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "desenho": {
+        "id": 60,
+        "slug": "desenho",
+        "name": "desenho"
+      },
+      "escultura": {
+        "id": 65,
+        "slug": "escultura",
+        "name": "escultura"
+      },
+      "fotografia": {
+        "id": 67,
+        "slug": "fotografia",
+        "name": "fotografia"
+      },
+      "video": {
+        "id": 84,
+        "slug": "video",
+        "name": "vídeo"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/anna-maria-maiolino/",
+    "occurences": [
+      "2026-03-25",
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-03-30",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-25",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-01",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28",
+      "2026-06-29",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05",
+      "2026-07-06",
+      "2026-07-08",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-11",
+      "2026-07-12",
+      "2026-07-13",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-17",
+      "2026-07-18",
+      "2026-07-19",
+      "2026-07-20",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-25",
+      "2026-07-26",
+      "2026-07-27",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+      "2026-08-01",
+      "2026-08-02",
+      "2026-08-03",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07",
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-10",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-16",
+      "2026-08-17",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-24",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30",
+      "2026-08-31"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-08-31",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232082,
+    "type": "event",
+    "title": {
+      "rendered": "Viver com Arte"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Exposicao-Viver-com-Arte.jpg",
+    "subtitle": [
+      "Universidade Sénior de Santa Clara"
+    ],
+    "subject": "artes",
+    "string_dates": "25 março a 28 março 2026",
+    "string_times": "vários horários",
+    "description": [
+      "A Academia de Formação de Adultos de Santa Clara ocupa a Quinta Alegre durante quatro dias com uma exposição e várias aulas abertas a quem vier ver e participar. Não importa a idade para se vive..."
+    ],
+    "venue": {
+      "quinta-alegre": {
+        "id": 4494,
+        "slug": "quinta-alegre",
+        "name": "Quinta Alegre - Um Teatro em Cada Bairro"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "coletiva": {
+        "id": 92,
+        "slug": "coletiva",
+        "name": "coletiva"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "pintura": {
+        "id": 81,
+        "slug": "pintura",
+        "name": "pintura"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/viver-com-arte/",
+    "occurences": [
+      "2026-03-25",
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232461,
+    "type": "event",
+    "title": {
+      "rendered": "Visitas à Fundação Mário Soares e Maria Barroso"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/c677473c-f0a4-4095-801c-abd8a34e4a62.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "25 março a 29 julho 2026",
+    "string_times": "qua: última do mês, às 10h e 15h",
+    "description": [
+      "<div>\r\n<p class=\"x_MsoNormal\" data-olk-copy-source=\"MessageBody\">Na última quarta-feira de cada mês, a Fundação Mário Soares e Maria Barroso abre as suas portas para visitas orientadas.</p>\r\n<p d..."
+    ],
+    "venue": {
+      "fundacao-mario-soares": {
+        "id": 485,
+        "slug": "fundacao-mario-soares",
+        "name": "Fundação Mário Soares e Maria Barroso"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "maria-barroso": {
+        "id": 7380,
+        "slug": "maria-barroso",
+        "name": "Maria Barroso"
+      },
+      "mario-soares": {
+        "id": 7426,
+        "slug": "mario-soares",
+        "name": "Mário Soares"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/visitas-a-fundacao-mario-soares-e-maria-barroso/",
+    "occurences": [
+      "2026-03-25",
+      "2026-04-29",
+      "2026-05-27",
+      "2026-06-24",
+      "2026-07-29"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-07-29",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232777,
+    "type": "event",
+    "title": {
+      "rendered": "Anna Maria Maiolino"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/2.-Anna-Maria-Maiolino-installation-Ao-Infinito-Biennale-di-Venezia-2025.-Photo-Livia-Gonzaga-scaled.jpg",
+    "subtitle": [
+      "Terra poética"
+    ],
+    "subject": "artes",
+    "string_dates": "24 março a 31 agosto 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Com curadoria de João Pinharanda e Sérgio Mah, <em>Terra Poética</em> apresenta no MAAT Gallery um percurso essencial pela obra de Anna Maria Maiolino, a artista nascida em Itália em 1942 e radica..."
+    ],
+    "venue": {
+      "maat-museu-de-arte-arquitetura-e-tecnologia": {
+        "id": 149,
+        "slug": "maat-museu-de-arte-arquitetura-e-tecnologia",
+        "name": "MAAT - Museu de Arte, Arquitetura e Tecnologia"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "desenho": {
+        "id": 60,
+        "slug": "desenho",
+        "name": "desenho"
+      },
+      "escultura": {
+        "id": 65,
+        "slug": "escultura",
+        "name": "escultura"
+      },
+      "fotografia": {
+        "id": 67,
+        "slug": "fotografia",
+        "name": "fotografia"
+      },
+      "video": {
+        "id": 84,
+        "slug": "video",
+        "name": "vídeo"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/anna-maria-maiolino-2/",
+    "occurences": [
+      "2026-03-25",
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-03-30",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-25",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-01",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28",
+      "2026-06-29",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05",
+      "2026-07-06",
+      "2026-07-08",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-11",
+      "2026-07-12",
+      "2026-07-13",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-17",
+      "2026-07-18",
+      "2026-07-19",
+      "2026-07-20",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-25",
+      "2026-07-26",
+      "2026-07-27",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+      "2026-08-01",
+      "2026-08-02",
+      "2026-08-03",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07",
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-10",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-16",
+      "2026-08-17",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-24",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30",
+      "2026-08-31"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-08-31",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 81384,
+    "type": "event",
+    "title": {
+      "rendered": "Visita ao Observatório Astronómico de Lisboa"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2022/12/fachada_OAL_FB.jpg",
+    "subtitle": "",
+    "subject": "ciências, visitas guiadas",
+    "string_dates": "25 fevereiro a 25 março 2026",
+    "string_times": "",
+    "description": [
+      "O Real Observatório Astronómico de Lisboa, situado na Tapada da Ajuda, foi mandado construir por D. Pedro V. Atualmente denominado de Observatório Astronómico de Lisboa, foi o Observatório Nacion..."
+    ],
+    "venue": {
+      "observatorio-astronomico-de-lisboa": {
+        "id": 892,
+        "slug": "observatorio-astronomico-de-lisboa",
+        "name": "Observatório Astronómico de Lisboa"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      },
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/visita-ao-observatorio-astronomico-de-lisboa/",
+    "occurences": [
+      "2026-02-25",
+      "2026-03-25"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-25",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 226217,
+    "type": "event",
+    "title": {
+      "rendered": "Breve encontro"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/11/casa-museu-anastacio.jpeg",
+    "subtitle": [
+      "Peça do mês"
+    ],
+    "subject": "visitas guiadas",
+    "string_dates": "25 março 2026",
+    "string_times": "qua: 13h30",
+    "description": [
+      "Visitas guiadas, à peça do mês, num <em>Breve Encontro</em> com uma obra da coleção de Anastácio Gonçalves.\r\n\r\nEm março o Breve Encontro centra-se no óleo sobre tela, <em>Primavera</em> (18..."
+    ],
+    "venue": {
+      "casa-museu-doutor-anastacio-goncalves": {
+        "id": 413,
+        "slug": "casa-museu-doutor-anastacio-goncalves",
+        "name": "Casa-Museu Dr. Anastácio Gonçalves"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/breve-encontro-4/",
+    "occurences": [
+      "2026-03-25"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-25",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228404,
+    "type": "event",
+    "title": {
+      "rendered": "Monsanto: Onde a História Ganha Vida"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2024/09/monsanto.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "11 março a 25 março 2026",
+    "string_times": "",
+    "description": [
+      "<div class=\"event-son-teaser\">Um passeio a um local onde a história e a natureza se encontram, uma experiência única no coração de Lisboa.</div>\r\n<div></div>\r\n<div class=\"event-son-description\">..."
+    ],
+    "venue": {
+      "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto": {
+        "id": 832,
+        "slug": "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto",
+        "name": "Parque Florestal de Monsanto - Centro de Interpretação de Monsanto"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/monsanto-onde-a-historia-ganha-vida/",
+    "occurences": [
+      "2026-02-11",
+      "2026-02-25",
+      "2026-03-11",
+      "2026-03-25"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-25",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228960,
+    "type": "event",
+    "title": {
+      "rendered": "In the Heights"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/In-the-heights.jpg",
+    "subtitle": [
+      "Lin-Manuel Miranda e Quiara Alegría Hudes"
+    ],
+    "subject": "teatro",
+    "string_dates": "25 março a 3 maio 2026",
+    "string_times": "qua: 21h; qui: 21h; sex: 21h; sáb: 16h, 21h; dom: 21h",
+    "description": [
+      "<em>In the Heights</em> conta a história da comunidade latina de Washington Heights, Nova Iorque, centrada em Usnavi, o dono de uma <em>Bodega</em> que sonha em voltar para a República Dominicana..."
+    ],
+    "venue": {
+      "teatro-variedades": {
+        "id": 6597,
+        "slug": "teatro-variedades",
+        "name": "Teatro Variedades"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "audiodescricao": {
+        "id": 5409,
+        "slug": "audiodescricao",
+        "name": "audiodescrição"
+      },
+      "martim-galamba": {
+        "id": 6916,
+        "slug": "martim-galamba",
+        "name": "Martim Galamba"
+      },
+      "sissi-martins": {
+        "id": 6954,
+        "slug": "sissi-martins",
+        "name": "Sissi Martins"
+      },
+      "teatro-musical": {
+        "id": 1034,
+        "slug": "teatro-musical",
+        "name": "teatro musical"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/in-the-heights/",
+    "occurences": [
+      "2026-03-25",
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-05-03",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"20 € a 30\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": {
+      "audiodescricao": {
+        "id": 5409,
+        "slug": "audiodescricao",
+        "name": "audiodescrição"
+      }
+    }
+  },
+  {
+    "id": 231257,
+    "type": "event",
+    "title": {
+      "rendered": "Bach³"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/bach.png",
+    "subtitle": [
+      "Música na Universidade de Lisboa"
+    ],
+    "subject": "música",
+    "string_dates": "25 março 2026",
+    "string_times": "qua: 21h",
+    "description": [
+      "Bach³, pelo Coro de Câmara da Universidade de Lisboa, realiza-se na Igreja da Graça, no dia 25 de março. O concerto é integrado na iniciativa <em>Música na Universidade de Lisboa</em>.\r\n<p style..."
+    ],
+    "venue": {
+      "igreja-da-graca": {
+        "id": 840,
+        "slug": "igreja-da-graca",
+        "name": "Igreja da Graça"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "coros": {
+        "id": 4946,
+        "slug": "coros",
+        "name": "coros"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "musica-erudita": {
+        "id": 4447,
+        "slug": "musica-erudita",
+        "name": "música erudita"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/bach%c2%b3/",
+    "occurences": [
+      "2026-03-25"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-25",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231115,
+    "type": "event",
+    "title": {
+      "rendered": "Sean Riley & The Slowriders"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/©AnaViotti_Sean-Riley_edit-1.jpg",
+    "subtitle": [
+      "20 anos"
+    ],
+    "subject": "música",
+    "string_dates": "25 março 2026",
+    "string_times": "qua: 21h30",
+    "description": [
+      "No dia 25 de março, a Casa Capitão recebe um concerto muito especial de Sean Riley &amp; The Slowriders, que assinala duas décadas desde o primeiro momento em que a banda subiu ao palco.\r\n\r\nA hist?..."
+    ],
+    "venue": {
+      "casa-do-capitao": {
+        "id": 3780,
+        "slug": "casa-do-capitao",
+        "name": "Casa Capitão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "rock-alternativo": {
+        "id": 2511,
+        "slug": "rock-alternativo",
+        "name": "rock alternativo"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sean-riley-the-slowriders-2/",
+    "occurences": [
+      "2026-03-25"
+    ],
+    "StartDate": "2026-03-25",
+    "LastDate": "2026-03-25",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"16\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231720,
+    "type": "event",
+    "title": {
+      "rendered": "Código Noite – O papel da madeira nas Comunicações"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/mar_cnoite_artigo.png",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 19h",
+    "description": [
+      "Neste final descobrem-se curiosidades sobre a botânica na exposição Comunicar é Natural. Através de um olhar atento veremos como a madeira das árvores tem sido essencial na história das comunic..."
+    ],
+    "venue": {
+      "fundacao-portuguesa-das-comunicacoes-museu-das-comunicacoes": {
+        "id": 633,
+        "slug": "fundacao-portuguesa-das-comunicacoes-museu-das-comunicacoes",
+        "name": "Fundação Portuguesa das Comunicações – Museu das Comunicações"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/codigo-noite-o-papel-da-madeira-nas-comunicacoes/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231949,
+    "type": "event",
+    "title": {
+      "rendered": "O que quero ver"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/2046.webp",
+    "subtitle": [
+      "2046 + Sátántangó + Slam Dance"
+    ],
+    "subject": "cinema",
+    "string_dates": "2 março a 30 março 2026",
+    "string_times": "",
+    "description": [
+      "<em>Para março selecionámos, das sugestões dos nossos espectadores, três filmes: </em>2046<em>, de Wong Kar-Wai, e </em>SLAM DANCE<em>, que aqui será exibido pela primeira vez, e repete-se o film..."
+    ],
+    "venue": {
+      "cinemateca": {
+        "id": 777,
+        "slug": "cinemateca",
+        "name": "Cinemateca Portuguesa - Museu do Cinema"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "ciclo": {
+        "id": 56,
+        "slug": "ciclo",
+        "name": "ciclo"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/o-que-quero-ver-44/",
+    "occurences": [
+      "2026-03-02",
+      "2026-03-14",
+      "2026-03-26",
+      "2026-03-30"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-30",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232711,
+    "type": "event",
+    "title": {
+      "rendered": "Christian Rosa"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Imagem1-5.jpg",
+    "subtitle": [
+      "Purpose"
+    ],
+    "subject": "artes",
+    "string_dates": "26 março a 9 maio 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Em <em>Purpose</em> Christian Rosa apresenta um novo conjunto de obras moldado pela contenção e pela decisão. As pinturas mantêm uma tensão entre estrutura e abertura, imediatismo e controlo. A t..."
+    ],
+    "venue": {
+      "kubikgallery": {
+        "id": 5757,
+        "slug": "kubikgallery",
+        "name": "Kubikgallery"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "pintura": {
+        "id": 81,
+        "slug": "pintura",
+        "name": "pintura"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/christian-rosa/",
+    "occurences": [
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-05",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-05-09",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231508,
+    "type": "event",
+    "title": {
+      "rendered": "Desligar é assim tão difícil?"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/DEsligar.png",
+    "subtitle": [
+      "Neuroses Coletivas"
+    ],
+    "subject": "ciências",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 16h",
+    "description": [
+      "O que nos inquieta enquanto sociedade? O que nos faz sentir “fora do sítio” ou nos rouba o bem‑estar? A RedeSAÚDE da Universidade de Lisboa propõe-se criar um espaço de <i>brainstorming</i>..."
+    ],
+    "venue": {
+      "centro-academico-do-caleidoscopio": {
+        "id": 1823,
+        "slug": "centro-academico-do-caleidoscopio",
+        "name": "Centro Académico do Caleidoscópio"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "daniel-sampaio": {
+        "id": 7616,
+        "slug": "daniel-sampaio",
+        "name": "Daniel Sampaio"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "psicologia": {
+        "id": 2350,
+        "slug": "psicologia",
+        "name": "psicologia"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/desligar-e-assim-tao-dificil/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231252,
+    "type": "event",
+    "title": {
+      "rendered": "Teresina"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/26-MAR_Musica_Teresina_hora-de-baco.jpg",
+    "subtitle": [
+      "Hora de Baco"
+    ],
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 18h",
+    "description": [
+      "Teresina é um projeto musical que celebra o património popular do Sul de Itália. <em>Pizzica</em>, <em>tarantella</em> e tammurriata encontram-se com músicas originais e memórias ancestrais, numa..."
+    ],
+    "venue": {
+      "museu-de-lisboa-teatro-romano": {
+        "id": 694,
+        "slug": "museu-de-lisboa-teatro-romano",
+        "name": "Museu de Lisboa - Teatro Romano"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/teresina/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229860,
+    "type": "event",
+    "title": {
+      "rendered": "Vargas Llosa e Saramago"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Saramago-Llosa.jpg",
+    "subtitle": [
+      "por Renato Cisneros e Pilar del Río"
+    ],
+    "subject": "literatura",
+    "string_dates": "26 março 2026",
+    "string_times": "18h30",
+    "description": [
+      "<span data-olk-copy-source=\"MessageBody\">Conversa entre o escritor peruano Renato Cisneros e Pilar del Río sobre os universos literários de Mario Vargas Llosa e José Saramago.</span>"
+    ],
+    "venue": {
+      "fundacao-jose-saramago": {
+        "id": 696,
+        "slug": "fundacao-jose-saramago",
+        "name": "Fundação José Saramago"
+      }
+    },
+    "categories_name_list": {
+      "literatura": {
+        "id": 41,
+        "slug": "literatura",
+        "name": "literatura"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/vargas-llosa-e-jose-saramago/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232238,
+    "type": "event",
+    "title": {
+      "rendered": "Um dia no palácio"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/traje.jpg",
+    "subtitle": [
+      "com Carlos Franco"
+    ],
+    "subject": "ciências",
+    "string_dates": "26 março 2026",
+    "string_times": "18h30",
+    "description": [
+      "<em>Um Dia no Palácio</em> é o título da conferência promovida pelo Grupo de Amigos do Museu do Traje, onde o historiador Carlos Franco propõe uma viagem aos interiores das casas da elite lisboet..."
+    ],
+    "venue": {
+      "museu-nacional-do-traje": {
+        "id": 527,
+        "slug": "museu-nacional-do-traje",
+        "name": "Museu Nacional do Traje"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "museologia": {
+        "id": 4133,
+        "slug": "museologia",
+        "name": "Museologia"
+      },
+      "olisipografia": {
+        "id": 2562,
+        "slug": "olisipografia",
+        "name": "olisipografia"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/um-dia-no-palacio/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 221634,
+    "type": "event",
+    "title": {
+      "rendered": "Sobre a verdade da mentira"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/09/Antonio-de-Castro-Caeiro_20231027_32-@Matilde-Fieschi.jpg",
+    "subtitle": [
+      "Ciclo de conversas"
+    ],
+    "subject": "ciências",
+    "string_dates": "9 outubro 2025 a 25 junho 2026",
+    "string_times": "",
+    "description": [
+      "António Castro Caeiro volta a programar no CCB um ciclo de conversas, desta vez com o tema <em>Sobre a Verdade da Mentira</em>. Ao todo são 10 conversas espalhadas entre outubro de 2025 e junho de 2..."
+    ],
+    "venue": {
+      "centro-cultural-de-belem": {
+        "id": 335,
+        "slug": "centro-cultural-de-belem",
+        "name": "Centro Cultural de Belém"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "filosofia": {
+        "id": 937,
+        "slug": "filosofia",
+        "name": "filosofia"
+      },
+      "pensamento": {
+        "id": 936,
+        "slug": "pensamento",
+        "name": "pensamento"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sobre-a-verdade-da-mentira/",
+    "occurences": [
+      "2025-10-09",
+      "2025-11-06",
+      "2025-12-18",
+      "2026-01-29",
+      "2026-02-26",
+      "2026-03-26",
+      "2026-04-30",
+      "2026-05-28",
+      "2026-06-25"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-06-25",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"63\";s:11:\"description\";s:21:\"integral/ 10 sessões\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232223,
+    "type": "event",
+    "title": {
+      "rendered": "Para que serve um museu (nacional)?"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/PHOTO_Filipa-Oliveira.jpg",
+    "subtitle": [
+      "Ciclo Eutopos"
+    ],
+    "subject": "artes, ciências",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 19h",
+    "description": [
+      "Inserido no ciclo <em>Eutopos</em>, uma conversa dedicada à museologia, com o título '<em>Para que serve um museu (nacional)? - Qual é o papel de um museu na sociedade atual? Como é que coleciona,..."
+    ],
+    "venue": {
+      "broteria": {
+        "id": 5048,
+        "slug": "broteria",
+        "name": "Brotéria"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      },
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "curadoria": {
+        "id": 7647,
+        "slug": "curadoria",
+        "name": "curadoria"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "museologia": {
+        "id": 4133,
+        "slug": "museologia",
+        "name": "Museologia"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/para-que-serve-um-museu-nacional/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 227897,
+    "type": "event",
+    "title": {
+      "rendered": "Kumina"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/12/kumina.jpg",
+    "subtitle": [
+      "Victor de Oliveira"
+    ],
+    "subject": "teatro",
+    "string_dates": "26 março a 29 março 2026",
+    "string_times": "qui: 19h30; sex: 19h30; sáb: 19h30; dom: 17h30",
+    "description": [
+      "<em>Kumina</em> é um solo performativo onde se interroga a história íntima e universal ligada ao desenraizamento, bem como a relação complexa entre os continentes africano e europeu. Puxando o fi..."
+    ],
+    "venue": {
+      "teatro-do-bairro-alto": {
+        "id": 813,
+        "slug": "teatro-do-bairro-alto",
+        "name": "Teatro do Bairro Alto"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/kumina/",
+    "occurences": [
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231146,
+    "type": "event",
+    "title": {
+      "rendered": "Lee Ritenour & Friends"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/lee-ritenour.png",
+    "subtitle": "",
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 20h",
+    "description": [
+      "<p data-start=\"312\" data-end=\"647\" data-olk-copy-source=\"MessageBody\">Com uma carreira que atravessa cinco décadas, o lendário guitarrista Lee Ritenour empurrou continuamente os limites da música,..."
+    ],
+    "venue": {
+      "centro-cultural-de-belem": {
+        "id": 335,
+        "slug": "centro-cultural-de-belem",
+        "name": "Centro Cultural de Belém"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "guitarra": {
+        "id": 2386,
+        "slug": "guitarra",
+        "name": "guitarra"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/lee-ritenour-friends/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"20 € a 35\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231636,
+    "type": "event",
+    "title": {
+      "rendered": "Concerto de Aranjuez"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Pablo-Sainz-Villegas.jpg",
+    "subtitle": [
+      "Pablo Sainz Villegas e Orquestra Gulbenkian"
+    ],
+    "subject": "música",
+    "string_dates": "26 março a 27 março 2026",
+    "string_times": "qui: 20h; sex: 19h",
+    "description": [
+      "Apontado pela imprensa internacional como o sucessor do mítico Andrés Segovia, Pablo Sainz Villegas é hoje um destacado concertista a divulgar o repertório para guitarra. Nesta sua apresentação..."
+    ],
+    "venue": {
+      "fundacao-calouste-gulbenkian": {
+        "id": 298,
+        "slug": "fundacao-calouste-gulbenkian",
+        "name": "Fundação Calouste Gulbenkian"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "guitarra": {
+        "id": 2386,
+        "slug": "guitarra",
+        "name": "guitarra"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/concerto-de-aranjuez/",
+    "occurences": [
+      "2026-03-26",
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"27 € a 55\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229594,
+    "type": "event",
+    "title": {
+      "rendered": "Maro"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/maro.jpeg",
+    "subtitle": [
+      "So much has changed"
+    ],
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 21h",
+    "description": [
+      "Depois de se formar na Berklee College of Music, <span class=\"markx9zyh4e9s\" data-markjs=\"true\" data-ogac=\"\" data-ogab=\"\" data-ogsc=\"\" data-ogsb=\"\">Maro i</span>niciou a sua carreira em 2018 com o lan..."
+    ],
+    "venue": {
+      "coliseu-dos-recreios": {
+        "id": 90,
+        "slug": "coliseu-dos-recreios",
+        "name": "Coliseu dos Recreios"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/maro-6/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"32\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231882,
+    "type": "event",
+    "title": {
+      "rendered": "Hornfuckers"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/hornfuckers.jpg",
+    "subtitle": [
+      "Diana Niepce"
+    ],
+    "subject": "dança",
+    "string_dates": "26 março a 28 março 2026",
+    "string_times": "qui: 21h; sex: 21h; sáb: 19h",
+    "description": [
+      "Diana Niepce é autora de obras que interrogam a existência de normas para o corpo humano, na sociedade e em palco. Espetáculos como <em>Anda, Diana</em> e <em>O Outro Lado da Dança</em> colocaram..."
+    ],
+    "venue": {
+      "culturgest": {
+        "id": 303,
+        "slug": "culturgest",
+        "name": "Culturgest"
+      }
+    },
+    "categories_name_list": {
+      "danca": {
+        "id": 26,
+        "slug": "danca",
+        "name": "dança"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/hornfuckers/",
+    "occurences": [
+      "2026-03-26",
+      "2026-03-27",
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"16\";s:11:\"description\";s:20:\"normal com descontos\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229569,
+    "type": "event",
+    "title": {
+      "rendered": "Alex D'Alva e Rita Onofre"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/alex-e-rita-onofre.jpg",
+    "subtitle": [
+      "Livre x Bruta"
+    ],
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 21h30",
+    "description": [
+      "Recentemente, Alex D’Alva Teixeira lançou o EP <em>Livre</em>, um trabalho que celebra a liberdade enquanto força criativa. São sete canções que exploram a eletrónica como um território de de..."
+    ],
+    "venue": {
+      "luxfragil": {
+        "id": 966,
+        "slug": "luxfragil",
+        "name": "LuxFrágil"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "alternativa": {
+        "id": 1102,
+        "slug": "alternativa",
+        "name": "alternativa"
+      },
+      "musica-portuguesa": {
+        "id": 1489,
+        "slug": "musica-portuguesa",
+        "name": "música portuguesa"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/alex-dalva-e-rita-onofre/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"15\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231066,
+    "type": "event",
+    "title": {
+      "rendered": "Celso"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/celso.png",
+    "subtitle": [
+      "Indiecorno"
+    ],
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 21h30",
+    "description": [
+      "Os Celso lançaram, em fevereiro passado, o segundo trabalho de originais, <em>Indiecorno</em>. O sucessor de <em>Não se brinca com coisas sérias</em> (2021) é um álbum sobre caos geracional. Esc..."
+    ],
+    "venue": {
+      "casa-do-capitao": {
+        "id": 3780,
+        "slug": "casa-do-capitao",
+        "name": "Casa Capitão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "alternativa": {
+        "id": 1102,
+        "slug": "alternativa",
+        "name": "alternativa"
+      },
+      "musica-portuguesa": {
+        "id": 1489,
+        "slug": "musica-portuguesa",
+        "name": "música portuguesa"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/celso/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:5:\"11,92\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232468,
+    "type": "event",
+    "title": {
+      "rendered": "Blaya"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/blaya.png",
+    "subtitle": [
+      "ARRAIÁ.L"
+    ],
+    "subject": "música",
+    "string_dates": "26 março 2026",
+    "string_times": "qui: 22h",
+    "description": [
+      "<p class=\"x_gmail-\"><span data-olk-copy-source=\"MessageBody\">Blaya lançou, recentemente, </span><em>No Meu Tempo de Escola</em>, um tema especial em colaboração com o seu marido, o músico João Ba..."
+    ],
+    "venue": {
+      "b-leza": {
+        "id": 965,
+        "slug": "b-leza",
+        "name": "B.Leza"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "eletronica": {
+        "id": 1309,
+        "slug": "eletronica",
+        "name": "eletrónica"
+      },
+      "rap": {
+        "id": 1539,
+        "slug": "rap",
+        "name": "rap"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/blaya-3/",
+    "occurences": [
+      "2026-03-26"
+    ],
+    "StartDate": "2026-03-26",
+    "LastDate": "2026-03-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"12\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231475,
+    "type": "event",
+    "title": {
+      "rendered": "Luzes na Caverna X"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/do_the_right_thing.webp",
+    "subtitle": [
+      "Conversas com Cinema©"
+    ],
+    "subject": "cinema",
+    "string_dates": "27 março 2026",
+    "string_times": "sex: 19h30",
+    "description": [
+      "O ciclo <em>Luzes na Caverna</em>, \"onde a filosofia da imagem se torna prática\", continua com uma obra de Spike Lee. <em>Não dês bronca, </em>o filme exibido, faz um retrato do que é a tensão ra..."
+    ],
+    "venue": {
+      "prosa-plataforma-cultural": {
+        "id": 4943,
+        "slug": "prosa-plataforma-cultural",
+        "name": "Prosa - Plataforma Cultural"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "ciclo": {
+        "id": 56,
+        "slug": "ciclo",
+        "name": "ciclo"
+      },
+      "conversa": {
+        "id": 4114,
+        "slug": "conversa",
+        "name": "conversa"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/luzes-na-caverna-x/",
+    "occurences": [
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:11:\"description\";s:32:\"Gratuito. Donativo sugerido 3€\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231522,
+    "type": "event",
+    "title": {
+      "rendered": "Vítor Franco"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Expo_Acreditar.jpg",
+    "subtitle": [
+      "Acreditar"
+    ],
+    "subject": "artes",
+    "string_dates": "27 março a 17 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Vitor Franco, natural de Portalegre, nasceu em janeiro de 1947. A sua paixão pelas artes despertou ainda na Escola Secundária Pedro de Santarém, onde os professores de desenho e trabalhos manuais o..."
+    ],
+    "venue": {
+      "biblioteca-orlando-ribeiro": {
+        "id": 4555,
+        "slug": "biblioteca-orlando-ribeiro",
+        "name": "Biblioteca Orlando Ribeiro"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "aguarela": {
+        "id": 3452,
+        "slug": "aguarela",
+        "name": "aguarela"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "pintura": {
+        "id": 81,
+        "slug": "pintura",
+        "name": "pintura"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/vitor-franco-2/",
+    "occurences": [
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-30",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-04-17",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232108,
+    "type": "event",
+    "title": {
+      "rendered": "Estelle Valente"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/perfil-perdido-marco-martins-2020-20-2000x1333-1.jpg",
+    "subtitle": [
+      "São Luiz, um retrato íntimo"
+    ],
+    "subject": "artes",
+    "string_dates": "27 março a 19 julho 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Em setembro de 2025, assinalou-se uma década desde que Estelle Valente iniciou o seu trabalho no Teatro São Luiz. O que começou de forma intuitiva evoluiu para uma relação contínua e profunda co..."
+    ],
+    "venue": {
+      "sao-luiz-teatro-municipal": {
+        "id": 572,
+        "slug": "sao-luiz-teatro-municipal",
+        "name": "São Luiz Teatro Municipal"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "fotografia": {
+        "id": 67,
+        "slug": "fotografia",
+        "name": "fotografia"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/estelle-valente-2/",
+    "occurences": [
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-03-30",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-05",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-19",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-25",
+      "2026-05-26",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-01",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-23",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28",
+      "2026-06-29",
+      "2026-06-30",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05",
+      "2026-07-06",
+      "2026-07-07",
+      "2026-07-08",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-11",
+      "2026-07-12",
+      "2026-07-13",
+      "2026-07-14",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-17",
+      "2026-07-18",
+      "2026-07-19"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-07-19",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 184471,
+    "type": "event",
+    "title": {
+      "rendered": "Japão: Festas e Rituais"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2024/01/a2cfb316e0576ac797e16e5d9cdfdaf58abb829a.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "27 fevereiro a 27 março 2026",
+    "string_times": "sex: 18h",
+    "description": [
+      "Ao longo do ano, realizam-se no Japão inúmeras festas e rituais tradicionais de natureza religiosa, de grande importância social e cultural. Com momentos cerimoniais solenes e outros de puro divert..."
+    ],
+    "venue": {
+      "museu-do-oriente": {
+        "id": 153,
+        "slug": "museu-do-oriente",
+        "name": "Museu do Oriente"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/japao-festas-e-rituais-3/",
+    "occurences": [
+      "2024-02-16",
+      "2024-03-22",
+      "2024-07-19",
+      "2024-08-23",
+      "2024-09-20",
+      "2024-10-18",
+      "2024-11-22",
+      "2024-12-20",
+      "2025-04-11",
+      "2025-05-23",
+      "2025-06-27",
+      "2025-07-18",
+      "2025-08-22",
+      "2025-09-19",
+      "2025-10-24",
+      "2025-11-21",
+      "2025-12-19",
+      "2026-02-27",
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"6\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230609,
+    "type": "event",
+    "title": {
+      "rendered": "Alvorada"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Alvorada.jpg",
+    "subtitle": [
+      "Vasco Mateus, André Oliveira e convidados"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "13 fevereiro a 22 maio 2026",
+    "string_times": "",
+    "description": [
+      "<div data-olk-copy-source=\"MessageBody\"><em>Prepara-te para as noites mais hilariantes de Lisboa! O Alvorada Comedy Club invade a cidade </em><em>com stand-up comedy.</em></div>\r\n<div><em>Num ambiente..."
+    ],
+    "venue": {
+      "casa-do-concelho-de-ponte-de-lima": {
+        "id": 7594,
+        "slug": "casa-do-concelho-de-ponte-de-lima",
+        "name": "Casa do Concelho de Ponte de Lima"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/alvorada/",
+    "occurences": [
+      "2026-02-13",
+      "2026-02-27",
+      "2026-03-12",
+      "2026-03-27",
+      "2026-04-10",
+      "2026-04-24",
+      "2026-05-08",
+      "2026-05-22"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-05-22",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"8\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230101,
+    "type": "event",
+    "title": {
+      "rendered": "Evita"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Evita.jpg",
+    "subtitle": [
+      "Andrew Lloyd Webber e Tim Rice"
+    ],
+    "subject": "teatro",
+    "string_dates": "27 março a 28 junho 2026",
+    "string_times": "qui: 21h; sex: 21h; sáb: 16h, 21h; dom: 16h, 21h",
+    "description": [
+      "A peça narra, em formato de ópera-rock, a ascensão e queda de Eva Perón, a carismática e controversa primeira-dama da Argentina. Passado nas décadas de 1930 e 1940, o musical acompanha a trajet?..."
+    ],
+    "venue": {
+      "cineteatro-capitolio-teatro-raul-solnado": {
+        "id": 798,
+        "slug": "cineteatro-capitolio-teatro-raul-solnado",
+        "name": "Capitólio"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "teatro-musical": {
+        "id": 1034,
+        "slug": "teatro-musical",
+        "name": "teatro musical"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/evita/",
+    "occurences": [
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-06-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:11:\"25 € a 35\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232352,
+    "type": "event",
+    "title": {
+      "rendered": "Descoberta das Orquídeas Silvestres"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/ophrys_apifera_150509_3932.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "27 março 2026",
+    "string_times": "sáb: 14h30-16h",
+    "description": [
+      "Percurso guiado à descoberta da beleza delicada das orquídeas silvestres que florescem nos trilhos.\r\n\r\nUm momento de observação, aprendizagem e contacto direto com a natureza, onde cada detalhe re..."
+    ],
+    "venue": {
+      "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto": {
+        "id": 832,
+        "slug": "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto",
+        "name": "Parque Florestal de Monsanto - Centro de Interpretação de Monsanto"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/descoberta-das-orquideas-silvestres/",
+    "occurences": [
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232169,
+    "type": "event",
+    "title": {
+      "rendered": "Mercado do Chocolate"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Madeira-Web-72-1.jpg",
+    "subtitle": "",
+    "subject": "feiras",
+    "string_dates": "27 março 2026",
+    "string_times": "sex: 15h-19h",
+    "description": [
+      "No dia 27 de março, o Posto de Informação e Promoção Turística da Madeira, em Lisboa, recebe o Mercado do Chocolate – uma iniciativa dedicada ao chocolate artesanal produzido na Madeira, inspi..."
+    ],
+    "venue": {
+      "posto-de-informacao-e-promocao-turistica-da-madeira": {
+        "id": 6542,
+        "slug": "posto-de-informacao-e-promocao-turistica-da-madeira",
+        "name": "Posto de Informação e Promoção Turística da Madeira"
+      }
+    },
+    "categories_name_list": {
+      "feiras": {
+        "id": 40,
+        "slug": "feiras",
+        "name": "feiras"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/mercado-do-chocolate/",
+    "occurences": [
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 227766,
+    "type": "event",
+    "title": {
+      "rendered": "Filodemo"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Filodemo_075_med_FilipeFerreira_TNDMII.jpg",
+    "subtitle": [
+      "Camões/ Pedro Penim"
+    ],
+    "subject": "teatro",
+    "string_dates": "27 março a 18 abril 2026",
+    "string_times": "qua: 20h; qui: 20h; sex: 21h; sáb: 19h; dom: 16h",
+    "description": [
+      "<i data-olk-copy-source=\"MessageBody\">Filodemo </i>é uma comédia pastoril situada num mundo rural idealizado, habitado por pastores e ninfas que vivem amores ingénuos, feitos de enganos e revelaç..."
+    ],
+    "venue": {
+      "sala-estudio-valentim-de-barros": {
+        "id": 6796,
+        "slug": "sala-estudio-valentim-de-barros",
+        "name": "Sala Estúdio Valentim de Barros"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "lingua-gestual-portuguesa": {
+        "id": 86,
+        "slug": "lingua-gestual-portuguesa",
+        "name": "língua gestual portuguesa"
+      },
+      "luis-vaz-de-camoes": {
+        "id": 3622,
+        "slug": "luis-vaz-de-camoes",
+        "name": "Luís Vaz de Camões"
+      },
+      "pedro-penim": {
+        "id": 4425,
+        "slug": "pedro-penim",
+        "name": "Pedro Penim"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/227766/",
+    "occurences": [
+      "2026-03-27",
+      "2026-03-28",
+      "2026-03-29",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-04-18",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": {
+      "lingua-gestual-portuguesa": {
+        "id": 86,
+        "slug": "lingua-gestual-portuguesa",
+        "name": "língua gestual portuguesa"
+      }
+    }
+  },
+  {
+    "id": 232826,
+    "type": "event",
+    "title": {
+      "rendered": "Oscar e a Senhora Cor-de-Rosa"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/lidia-francojsilveirar.jpg",
+    "subtitle": [
+      "Eric-Emmanuel Schmitt"
+    ],
+    "subject": "teatro",
+    "string_dates": "27 março a 10 abril 2026",
+    "string_times": "sex: 21h*",
+    "description": [
+      "A amizade incondicional entre uma criança de dez anos com leucemia e a voluntária que todos os dias o visita no hospital. Os dois inventam um jogo: viver cada dia como se este durasse dez anos. Dest..."
+    ],
+    "venue": {
+      "museu-do-fado": {
+        "id": 744,
+        "slug": "museu-do-fado",
+        "name": "Museu do Fado"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "dia-mundial-do-teatro": {
+        "id": 4730,
+        "slug": "dia-mundial-do-teatro",
+        "name": "Dia Mundial do Teatro"
+      },
+      "eric-emmanuel-schmitt": {
+        "id": 4948,
+        "slug": "eric-emmanuel-schmitt",
+        "name": "Eric-Emmanuel Schmitt"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/oscar-e-a-senhora-cor-de-rosa/",
+    "occurences": [
+      "2026-03-27",
+      "2026-04-10"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-04-10",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"5\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232694,
+    "type": "event",
+    "title": {
+      "rendered": "Sessões Nimas Fora de Horas: 'Exit 8', de Genki Kawamura"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/サブ⑧-scaled.jpg",
+    "subtitle": "",
+    "subject": "cinema",
+    "string_dates": "27 março 2026",
+    "string_times": "sex: 00h",
+    "description": [
+      "O <em>MOTELX</em>, em parceria com a plataforma de <em>streaming</em> FilmTwist (<span data-olk-copy-source=\"MessageBody\">dedicada exclusivamente ao cinema fantástico e de terror)</span>, <span data..."
+    ],
+    "venue": {
+      "espaco-nimas": {
+        "id": 405,
+        "slug": "espaco-nimas",
+        "name": "Cinema Nimas"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "ciclo": {
+        "id": 56,
+        "slug": "ciclo",
+        "name": "ciclo"
+      },
+      "motelx": {
+        "id": 1625,
+        "slug": "motelx",
+        "name": "Motelx"
+      },
+      "sessao-especial": {
+        "id": 7406,
+        "slug": "sessao-especial",
+        "name": "sessão especial"
+      },
+      "terror": {
+        "id": 1385,
+        "slug": "terror",
+        "name": "terror"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sessoes-nimas-fora-de-horas/",
+    "occurences": [
+      "2026-03-27"
+    ],
+    "StartDate": "2026-03-27",
+    "LastDate": "2026-03-27",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232050,
+    "type": "event",
+    "title": {
+      "rendered": "Diogo Pimentão"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/foto-Rebecca-Fanuele-Imagem-principal-de-evento-1.jpg",
+    "subtitle": [
+      "Força transitória das coisas"
+    ],
+    "subject": "artes",
+    "string_dates": "28 março a 14 setembro 2026",
+    "string_times": "vários horários",
+    "description": [
+      "<div>\r\n\r\nA prática e a redefinição do desenho são o eixo central do trabalho de Diogo Pimentão. Utilizando principalmente papel e grafite, por vezes em combinação com cimento, gesso acrílico o..."
+    ],
+    "venue": {
+      "centro-de-arte-moderna": {
+        "id": 319,
+        "slug": "centro-de-arte-moderna",
+        "name": "Fundação Calouste Gulbenkian - Centro de Arte Moderna"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "desenho": {
+        "id": 60,
+        "slug": "desenho",
+        "name": "desenho"
+      },
+      "performance": {
+        "id": 80,
+        "slug": "performance",
+        "name": "performance"
+      },
+      "video": {
+        "id": 84,
+        "slug": "video",
+        "name": "vídeo"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/diogo-pimentao-3/",
+    "occurences": [
+      "2026-03-28",
+      "2026-03-29",
+      "2026-03-30",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-25",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-01",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28",
+      "2026-06-29",
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05",
+      "2026-07-06",
+      "2026-07-08",
+      "2026-07-09",
+      "2026-07-10",
+      "2026-07-11",
+      "2026-07-12",
+      "2026-07-13",
+      "2026-07-15",
+      "2026-07-16",
+      "2026-07-17",
+      "2026-07-18",
+      "2026-07-19",
+      "2026-07-20",
+      "2026-07-22",
+      "2026-07-23",
+      "2026-07-24",
+      "2026-07-25",
+      "2026-07-26",
+      "2026-07-27",
+      "2026-07-29",
+      "2026-07-30",
+      "2026-07-31",
+      "2026-08-01",
+      "2026-08-02",
+      "2026-08-03",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07",
+      "2026-08-08",
+      "2026-08-09",
+      "2026-08-10",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-16",
+      "2026-08-17",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+      "2026-08-24",
+      "2026-08-26",
+      "2026-08-27",
+      "2026-08-28",
+      "2026-08-29",
+      "2026-08-30",
+      "2026-08-31",
+      "2026-09-02",
+      "2026-09-03",
+      "2026-09-04",
+      "2026-09-05",
+      "2026-09-06",
+      "2026-09-07",
+      "2026-09-09",
+      "2026-09-10",
+      "2026-09-11",
+      "2026-09-12",
+      "2026-09-13",
+      "2026-09-14"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-09-14",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232359,
+    "type": "event",
+    "title": {
+      "rendered": "Hora do Planeta - Natureza, Poesia e Partilha"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Parque-Florestal-Monsanto_LVT1505-scaled-1.jpg",
+    "subtitle": [
+      "Caminhada noturna"
+    ],
+    "subject": "visitas guiadas",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 20h30-21h30",
+    "description": [
+      "Caminhada noturna pelo Parque onde a tranquilidade da noite se transforma numa oportunidade de comunhão com a natureza.\r\n\r\nNo início, pequenos apontamentos de poesia despertam a imaginação e convi..."
+    ],
+    "venue": {
+      "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto": {
+        "id": 832,
+        "slug": "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto",
+        "name": "Parque Florestal de Monsanto - Centro de Interpretação de Monsanto"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/hora-do-planeta-natureza-poesia-e-partilha/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232705,
+    "type": "event",
+    "title": {
+      "rendered": "Ana Ferreira e Livre Corte (Hérnan Badilla)"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/20230830_205711-scaled.jpg",
+    "subtitle": [
+      "Do quotidiano ao infinito"
+    ],
+    "subject": "artes",
+    "string_dates": "28 março a 18 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "A residência artística <em>Do Quotidiano ao Infinito</em> promove a colaboração entre a fotógrafa Ana Ferreira e o colagista Livre Corte (Hérnan Badilla), explorando a fusão entre fotografia e..."
+    ],
+    "venue": {
+      "espaco-imperfeito": {
+        "id": 5389,
+        "slug": "espaco-imperfeito",
+        "name": "Espaço Imperfeito"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "colagem": {
+        "id": 1097,
+        "slug": "colagem",
+        "name": "colagem"
+      },
+      "coletiva": {
+        "id": 92,
+        "slug": "coletiva",
+        "name": "coletiva"
+      },
+      "fotografia": {
+        "id": 67,
+        "slug": "fotografia",
+        "name": "fotografia"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ana-ferreira-e-livre-corte-hernan-badilla/",
+    "occurences": [
+      "2026-03-28",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-04-18",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 20484,
+    "type": "event",
+    "title": {
+      "rendered": "Visitas guiadas ao Teatro São Luiz"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2019/10/SaoLuiz.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "18 outubro 2025 a 11 julho 2026",
+    "string_times": "sáb: 14h30",
+    "description": [
+      "Visitas guiadas ao Teatro São Luiz, pela mão de quem aí trabalha. Percurso pelas salas e bastidores, para conhecer os cantos à casa e as histórias que aqui vivem e de quem por cá passou.\r\n\r\n18 o..."
+    ],
+    "venue": {
+      "sao-luiz-teatro-municipal": {
+        "id": 572,
+        "slug": "sao-luiz-teatro-municipal",
+        "name": "São Luiz Teatro Municipal"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/visitas-guiadas-ao-teatro-sao-luiz/",
+    "occurences": [
+      "2019-11-09",
+      "2019-12-07",
+      "2020-01-25",
+      "2020-02-08",
+      "2020-03-14",
+      "2020-04-25",
+      "2020-05-16",
+      "2020-06-20",
+      "2020-07-11",
+      "2025-10-18",
+      "2025-11-15",
+      "2025-12-20",
+      "2026-01-17",
+      "2026-02-28",
+      "2026-03-28",
+      "2026-04-11",
+      "2026-05-30",
+      "2026-06-27",
+      "2026-07-11"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-07-11",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"2\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 207548,
+    "type": "event",
+    "title": {
+      "rendered": "A Saúde nas Aventuras de Astérix e Panoramix no Museu da Farmácia"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/02/asterix.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 11h",
+    "description": [
+      "Astérix e Panoramix são personagens icónicas das histórias aos quadrinhos criadas por René Goscinny (1926-1977) e Albert Uderzo (1927-2020), que exploram a vida de um pequeno povo gaulês que res..."
+    ],
+    "venue": {
+      "museu-da-farmacia": {
+        "id": 624,
+        "slug": "museu-da-farmacia",
+        "name": "Museu da Farmácia"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/a-saude-nas-aventuras-de-asterix-e-panoramix-no-museu-da-farmacia/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:2:{i:0;a:1:{s:5:\"value\";s:1:\"9\";}i:1;a:2:{s:5:\"value\";s:1:\"6\";s:11:\"description\";s:9:\"estudante\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 228408,
+    "type": "event",
+    "title": {
+      "rendered": "Monte Santo: Uma viagem ao Parque Florestal de Monsanto"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/janeiro_em_monsanto.webp",
+    "subtitle": "",
+    "subject": "cinema, visitas guiadas",
+    "string_dates": "14 março a 28 março 2026",
+    "string_times": "sáb: 15h",
+    "description": [
+      "Comece a experiência com uma visita guiada à exposição <em>9 Décadas do Parque Florestal de Monsanto</em>, onde descobrirá como uma serra quase despida de árvores se transformou, ao longo de qu..."
+    ],
+    "venue": {
+      "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto": {
+        "id": 832,
+        "slug": "parque-florestal-de-monsanto-centro-de-interpretacao-de-monsanto",
+        "name": "Parque Florestal de Monsanto - Centro de Interpretação de Monsanto"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      },
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/monte-santo-uma-viagem-ao-parque-florestal-de-monsanto/",
+    "occurences": [
+      "2026-01-31",
+      "2026-02-14",
+      "2026-02-28",
+      "2026-03-14",
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231739,
+    "type": "event",
+    "title": {
+      "rendered": "Visita ao Museu Geológico"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/MUSEU_GEOLOGICO.png",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 10h30",
+    "description": [
+      "Partindo de uma visita guiada às coleções do <span class=\"markn7x6mrbkx\" data-markjs=\"true\" data-ogac=\"\" data-ogab=\"\" data-ogsc=\"\" data-ogsb=\"\">Museu</span> Geológico, esta atividade tem como ob..."
+    ],
+    "venue": {
+      "museu-geologico-lneg": {
+        "id": 610,
+        "slug": "museu-geologico-lneg",
+        "name": "Museu Geológico - LNEG, IP"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/visita-ao-museu-geologico/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232790,
+    "type": "event",
+    "title": {
+      "rendered": "Oficina Casa Sustentável - Construção Criativa"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/FABLAB_LVT0809-scaled.jpg",
+    "subtitle": "",
+    "subject": "artes, ciências",
+    "string_dates": "28 março 2026",
+    "string_times": "10h00",
+    "description": [
+      "<div>\r\n\r\n<span data-olk-copy-source=\"MessageBody\">Com o auxílio de uma aplicação digital, vai construir-se um protótipo de uma casa sustentável feita em cartão, com o objetivo de unir a sustenta..."
+    ],
+    "venue": {
+      "fab-lab-lisboa": {
+        "id": 3198,
+        "slug": "fab-lab-lisboa",
+        "name": "Fab Lab Lisboa"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      },
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/oficina-casa-sustentavel-construcao-criativa/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 76920,
+    "type": "event",
+    "title": {
+      "rendered": "O meu primeiro Santo António"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2022/09/08_OUT_O_meu_primeiro_Santo_Antonio_Jose_Avelar_MuseudeLisboa.jpg",
+    "subtitle": [
+      "Visita-oficina"
+    ],
+    "subject": "artes",
+    "string_dates": "28 março 2026",
+    "string_times": "10h30",
+    "description": [
+      "Qual será o destino do seu primeiro Santo António? De cabeça para baixo, de pernas para o ar… ou com um toque completamente inesperado? Aqui, a imaginação é quem manda!\r\n\r\nNesta visita-oficina..."
+    ],
+    "venue": {
+      "museu-de-lisboa-santo-antonio": {
+        "id": 761,
+        "slug": "museu-de-lisboa-santo-antonio",
+        "name": "Museu de Lisboa - Santo António"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "6": {
+        "id": 6437,
+        "slug": "6",
+        "name": "+6"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/o-meu-primeiro-santo-antonio/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:1:\"5\";s:11:\"description\";s:23:\"inclui entrada no museu\";}}"
+    ],
+    "target_audience": {
+      "6": {
+        "id": 6437,
+        "slug": "6",
+        "name": "+6"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231400,
+    "type": "event",
+    "title": {
+      "rendered": "Cineastas de bolso, estórias que mexem"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Cineastas-de-bolso-scaled.jpeg",
+    "subtitle": "",
+    "subject": "cinema",
+    "string_dates": "28 março 2026",
+    "string_times": "11h00",
+    "description": [
+      "Nesta oficina, a imaginação é o principal motor e cabe inteira na palma da mão. A partir de um simples telemóvel ou máquina fotográfica digital, os participantes são convidados a criar pequen..."
+    ],
+    "venue": {
+      "cinemateca": {
+        "id": 777,
+        "slug": "cinemateca",
+        "name": "Cinemateca Portuguesa - Museu do Cinema"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/cineastas-de-bolso-estorias-que-mexem/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231744,
+    "type": "event",
+    "title": {
+      "rendered": "Palavras com pássaros"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/brujuncae-1024x659-1.jpg",
+    "subtitle": [
+      "Leitura com Bru Junça"
+    ],
+    "subject": "literatura",
+    "string_dates": "28 março a 29 março 2026",
+    "string_times": "11h30",
+    "description": [
+      "Histórias que rasgam o céu com histórias que voam por dentro de cabeças de vento, pássaros que vivem dentro da nossa cabeça e asas que desenham imaginação.\r\n\r\nA partir do livro <em>O dia em q..."
+    ],
+    "venue": {
+      "lu-ca-teatro-luis-de-camoes": {
+        "id": 1244,
+        "slug": "lu-ca-teatro-luis-de-camoes",
+        "name": "LU.CA - Teatro Luís de Camões"
+      }
+    },
+    "categories_name_list": {
+      "literatura": {
+        "id": 41,
+        "slug": "literatura",
+        "name": "literatura"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/palavras-com-passaros/",
+    "occurences": [
+      "2026-03-28",
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232634,
+    "type": "event",
+    "title": {
+      "rendered": "Tralhas d'Ajuda"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Imagem1-2.jpg",
+    "subtitle": "",
+    "subject": "feiras",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 10h-18h",
+    "description": [
+      "A Feira <em>Tralhas D’Ajuda</em> está integrada no projeto “Ecossistemas Nós da Ajuda”, financiado pelo Programa BIP/ZIP. O projeto é promovido pela Locals Approach, em parceria com a Associa..."
+    ],
+    "venue": false,
+    "categories_name_list": {
+      "feiras": {
+        "id": 40,
+        "slug": "feiras",
+        "name": "feiras"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/tralhas-dajuda/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 222744,
+    "type": "event",
+    "title": {
+      "rendered": "A Serviço do Rei"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/10/08-A-servico-do-Rei_-14-janeiro_-Eco-Tours.jpg",
+    "subtitle": [
+      "Visita teatral"
+    ],
+    "subject": "visitas guiadas",
+    "string_dates": "14 março a 23 maio 2026",
+    "string_times": "sáb: 15h30",
+    "description": [
+      "O Palácio Nacional da Ajuda prepara-se para oferecer mais um banquete.\r\n\r\nDesta vez, os ilustres convidados são não mais nem menos do que monarcas ingleses e a sua respetiva comitiva. Dada a pompa..."
+    ],
+    "venue": {
+      "palacio-nacional-da-ajuda": {
+        "id": 107,
+        "slug": "palacio-nacional-da-ajuda",
+        "name": "Palácio Nacional da Ajuda"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/a-servico-do-rei-3/",
+    "occurences": [
+      "2025-10-25",
+      "2025-11-08",
+      "2025-11-22",
+      "2025-12-13",
+      "2026-03-14",
+      "2026-03-28",
+      "2026-04-11",
+      "2026-04-25",
+      "2026-05-09",
+      "2026-05-23"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-05-23",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231824,
+    "type": "event",
+    "title": {
+      "rendered": "Dama e o Vagabundo"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/0f8dd0227c043af0c1c1338aeb2cee0b679e4af13d3c4f10667505a8318c39b3.jpg",
+    "subtitle": [
+      "O musical"
+    ],
+    "subject": "teatro",
+    "string_dates": "28 março 2026",
+    "string_times": "15h00",
+    "description": [
+      "A comovente história de Dama, uma cadela de luxo que nunca saíra à rua sozinha e que foi obrigada a fugir de casa da sua dona. Perdida e sem entender bem o que lhe estava a acontecer, conhece o Gan..."
+    ],
+    "venue": {
+      "aula-magna": {
+        "id": 404,
+        "slug": "aula-magna",
+        "name": "Aula Magna"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/dama-e-o-vagabundo/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232617,
+    "type": "event",
+    "title": {
+      "rendered": "Caça ao Tesouro"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Sem-Titulo-1.png",
+    "subtitle": "",
+    "subject": "ciências",
+    "string_dates": "28 março 2026",
+    "string_times": "15h00",
+    "description": [
+      "Para celebrar a Páscoa, desafiam-se as crianças a participar numa entusiasmante Caça ao Tesouro, que as vai conduzir pelo Museu. Nos lugares mais inimagináveis, podem surgir pistas para encontrare..."
+    ],
+    "venue": {
+      "museu-da-farmacia": {
+        "id": 624,
+        "slug": "museu-da-farmacia",
+        "name": "Museu da Farmácia"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/caca-ao-tesouro-2/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:12:\"participante\";}}"
+    ],
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231738,
+    "type": "event",
+    "title": {
+      "rendered": "Conseguimos ser felizes"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/play-marco-1024x576-1.jpg",
+    "subtitle": [
+      "Festival PLAY"
+    ],
+    "subject": "cinema",
+    "string_dates": "28 março a 29 março 2026",
+    "string_times": "16h30",
+    "description": [
+      "Há quem tire tantas selfies que até desaparece, quem passe o Verão a inventar histórias com as amigas e até quem encontre sapos de loiça que têm muito para dizer sobre o que é justo e o que é..."
+    ],
+    "venue": {
+      "lu-ca-teatro-luis-de-camoes": {
+        "id": 1244,
+        "slug": "lu-ca-teatro-luis-de-camoes",
+        "name": "LU.CA - Teatro Luís de Camões"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/conseguimos-ser-felizes/",
+    "occurences": [
+      "2026-03-28",
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231821,
+    "type": "event",
+    "title": {
+      "rendered": "Livrinho, mostra-me o caminho"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/img-20251121-wa0044-1398x1095-800x627-1.jpg",
+    "subtitle": [
+      "Palco de Chocolate"
+    ],
+    "subject": "teatro",
+    "string_dates": "28 março 2026",
+    "string_times": "16h30",
+    "description": [
+      "Ao som do acordeão ao vivo, os atores vão abrir o livro e as personagens ganham vida. O palhaço Zé vai viver muitas aventuras: vai à floresta e à cidade, fica pobre e fica rico, conhece um palá..."
+    ],
+    "venue": {
+      "biblioteca-orlando-ribeiro-fonoteca": {
+        "id": 516,
+        "slug": "biblioteca-orlando-ribeiro-fonoteca",
+        "name": "Auditório da Biblioteca Orlando Ribeiro"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/livrinho-mostra-me-o-caminho/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"8\";}}"
+    ],
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232306,
+    "type": "event",
+    "title": {
+      "rendered": "Sven Jungbeck"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Sven-Jungbeck-at-Django-Portugal-3.4-e1772553192583.png",
+    "subtitle": [
+      "Antestreia do Festival Django Portugal"
+    ],
+    "subject": "música",
+    "string_dates": "28 março 2026",
+    "string_times": "",
+    "description": [
+      "No dia 28 de março, a Fábrica Braço de Prata recebe a<span data-olk-copy-source=\"MessageBody\"> anteestreia do Festival Django Portugal com a presença do</span><span data-olk-copy-source=\"MessageBo..."
+    ],
+    "venue": {
+      "fabrica-braco-de-prata": {
+        "id": 549,
+        "slug": "fabrica-braco-de-prata",
+        "name": "Fábrica Braço de Prata"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "gypsy-jazz": {
+        "id": 4913,
+        "slug": "gypsy-jazz",
+        "name": "gypsy jazz"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sven-jungbeck/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231098,
+    "type": "event",
+    "title": {
+      "rendered": "João Xavier"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/joao-xavier.png",
+    "subtitle": [
+      "Piano solo"
+    ],
+    "subject": "música",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 19h",
+    "description": [
+      "O pianista João Xavier apresenta um recital de piano no Museu do Oriente .\r\n<p style=\"padding-left: 40px;\"><strong>Programa</strong>\r\n<strong>C. Debussy</strong> (1862-1918)\r\n<em>Estampes</em>\r\n<stro..."
+    ],
+    "venue": {
+      "museu-do-oriente": {
+        "id": 153,
+        "slug": "museu-do-oriente",
+        "name": "Museu do Oriente"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "piano": {
+        "id": 1584,
+        "slug": "piano",
+        "name": "piano"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/joao-xavier/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"15\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231151,
+    "type": "event",
+    "title": {
+      "rendered": "Ana Sofia Varela"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Ana-Sofia-Varela_Alfredo-Matos.jpg",
+    "subtitle": [
+      "Há Fado no Cais"
+    ],
+    "subject": "música",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 19h",
+    "description": [
+      "Fadista de voz singular e presença marcante, Ana Sofia Varela regressa aos palcos com um novo trabalho que celebra a mulher e a guitarra portuguesa. Neste concerto no Centro Cultural de Belém, a ar..."
+    ],
+    "venue": {
+      "centro-cultural-de-belem": {
+        "id": 335,
+        "slug": "centro-cultural-de-belem",
+        "name": "Centro Cultural de Belém"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "fado-en": {
+        "id": 4642,
+        "slug": "fado-en",
+        "name": "fado"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ana-sofia-varela-3/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:10:\"5 € a 25\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229689,
+    "type": "event",
+    "title": {
+      "rendered": "Harry Potter e a Pedra Filosofal"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/banner_1200x630px_HP1.jpg",
+    "subtitle": [
+      "Filme-concerto"
+    ],
+    "subject": "cinema, música",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 20h30",
+    "description": [
+      "No dia 28 de março<span data-olk-copy-source=\"MessageBody\">, a Orquestra Filarmonia das Beiras irá tocar, na íntegra, as músicas da banda sonora de <em>Harry Potter e a Pedra Filosofal.</em> O con..."
+    ],
+    "venue": {
+      "praca-de-toiros-do-campo-pequeno": {
+        "id": 310,
+        "slug": "praca-de-toiros-do-campo-pequeno",
+        "name": "Sagres Campo Pequeno"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      },
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "bandas-sonoras": {
+        "id": 1770,
+        "slug": "bandas-sonoras",
+        "name": "bandas sonoras"
+      },
+      "tag-criancas": {
+        "id": 959,
+        "slug": "tag-criancas",
+        "name": "crianças"
+      },
+      "teg-familias": {
+        "id": 4636,
+        "slug": "teg-familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/harry-potter-e-a-pedra-filosofal/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:12:\"35 € a 100\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232291,
+    "type": "event",
+    "title": {
+      "rendered": "Ensaio Aberto: O fim da História Humana"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/O-fim-da-historia.jpg",
+    "subtitle": "",
+    "subject": "teatro",
+    "string_dates": "28 março 2026",
+    "string_times": "sáb: 21h",
+    "description": [
+      "Este espetáculo \"parte da relação cénica entre três atores e um encenador experiente, para perspetivar o poder instituído e explorar um dos principais desafios colocados pela contemporaneidade:..."
+    ],
+    "venue": {
+      "escola-do-largo": {
+        "id": 4006,
+        "slug": "escola-do-largo",
+        "name": "Escola do Largo"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/ensaio-aberto-o-fim-da-historia-humana/",
+    "occurences": [
+      "2026-03-28"
+    ],
+    "StartDate": "2026-03-28",
+    "LastDate": "2026-03-28",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 15002,
+    "type": "event",
+    "title": {
+      "rendered": "Descobrir o Mosteiro"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2019/05/Mosteiro.jpg",
+    "subtitle": [
+      "Mosteiro de São Vicente de Fora"
+    ],
+    "subject": "visitas guiadas",
+    "string_dates": "29 março 2026",
+    "string_times": "sáb: 10h30",
+    "description": [
+      "O Mosteiro de São Vicente, Imóvel de Interesse Público (não abrange a cerca), hoje sede do Patriarcado de Lisboa, guarda uma das mais belas coleções azulejares oitocentista do Mundo, destacando-..."
+    ],
+    "venue": {
+      "igreja-de-sao-vicente-de-fora": {
+        "id": 849,
+        "slug": "igreja-de-sao-vicente-de-fora",
+        "name": "Igreja e Mosteiro de São Vicente de Fora"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/visitas-ao-mosteiro-de-sao-vicente-de-fora/",
+    "occurences": [
+      "2020-09-27",
+      "2020-10-25",
+      "2023-07-30",
+      "2023-08-27",
+      "2024-02-25",
+      "2024-03-24",
+      "2024-11-24",
+      "2024-12-29",
+      "2025-01-26",
+      "2025-02-23",
+      "2025-03-30",
+      "2025-04-27",
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 217368,
+    "type": "event",
+    "title": {
+      "rendered": "Passear na Lisboa do Zé"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2020/12/ze-povinho_-bordalo-scaled-e1732196079937.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "29 março 2026",
+    "string_times": "dom: 10h",
+    "description": [
+      "Em cada rua de Lisboa há inúmeros trilhos por explorar: paisagem urbana e camadas de histórias que nos mostram quem somos. Bordalo foi um lisboeta de gema e foi aqui que viveu e trabalhou. No seu t..."
+    ],
+    "venue": {
+      "museu-bordalo-pinheiro": {
+        "id": 176,
+        "slug": "museu-bordalo-pinheiro",
+        "name": "Museu Bordalo Pinheiro"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/passear-na-lisboa-do-ze/",
+    "occurences": [
+      "2025-07-27",
+      "2025-12-14",
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"5\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232195,
+    "type": "event",
+    "title": {
+      "rendered": "Cinema de Animação"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/santo-aleixo.png",
+    "subtitle": [
+      "Manhã criativa"
+    ],
+    "subject": "cinema",
+    "string_dates": "29 março 2026",
+    "string_times": "10h30",
+    "description": [
+      "Como se animam as marionetas no cinema de animação? Inspirados nas personagens da exposição temporária do festival <em>Monstra</em>, os pequenos realizadores vão descobrir os bastidores do cine..."
+    ],
+    "venue": {
+      "museu-da-marioneta": {
+        "id": 499,
+        "slug": "museu-da-marioneta",
+        "name": "Museu da Marioneta"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/cinema-de-animacao/",
+    "occurences": [
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"10\";s:11:\"description\";s:17:\"adulto + criança\";}}"
+    ],
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 229855,
+    "type": "event",
+    "title": {
+      "rendered": "Mărțișor – Festa Da Primavera"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Martisor-e1769527368312.jpg",
+    "subtitle": "",
+    "subject": "feiras",
+    "string_dates": "29 março 2026",
+    "string_times": "dom: 15h-16h30",
+    "description": [
+      "<span data-olk-copy-source=\"MessageBody\">A Junta de Freguesia de Belém, em parceria com a Școala Românească Lisabona, celebra o Mărțișor, uma tradição romena ancestral que assinala a chegada..."
+    ],
+    "venue": {
+      "parque-dos-moinhos-de-santana": {
+        "id": 1346,
+        "slug": "parque-dos-moinhos-de-santana",
+        "name": "Parque dos Moinhos de Santana"
+      }
+    },
+    "categories_name_list": {
+      "feiras": {
+        "id": 40,
+        "slug": "feiras",
+        "name": "feiras"
+      }
+    },
+    "tags_name_list": {
+      "ar-livre": {
+        "id": 27,
+        "slug": "ar-livre",
+        "name": "ar livre"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/martisor-festa-da-primavera/",
+    "occurences": [
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231793,
+    "type": "event",
+    "title": {
+      "rendered": "Bateu Matou"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/HMM9551.jpg",
+    "subtitle": [
+      "O Nosso Baile #2"
+    ],
+    "subject": "música",
+    "string_dates": "29 março 2026",
+    "string_times": "dom: a partir das 12h",
+    "description": [
+      "<p data-olk-copy-source=\"MessageBody\">Depois do sucesso da primeira edição de <em>O Nosso Baile</em>, os Bateu Matou anunciam uma segunda edição. No dia 29 de março, a Casa Capitão volta a en..."
+    ],
+    "venue": {
+      "casa-do-capitao": {
+        "id": 3780,
+        "slug": "casa-do-capitao",
+        "name": "Casa Capitão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "bateu-matou": {
+        "id": 7601,
+        "slug": "bateu-matou",
+        "name": "bateu matou"
+      },
+      "dj-set": {
+        "id": 4836,
+        "slug": "dj-set",
+        "name": "dj set"
+      },
+      "musica-portuguesa": {
+        "id": 1489,
+        "slug": "musica-portuguesa",
+        "name": "música portuguesa"
+      },
+      "percussao": {
+        "id": 4381,
+        "slug": "percussao",
+        "name": "percussão"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/bateu-matou-6/",
+    "occurences": [
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:2:{i:0;a:2:{s:5:\"value\";s:5:\"19,50\";s:11:\"description\";s:14:\"bilhete normal\";}i:1;a:2:{s:5:\"value\";s:4:\"5,50\";s:11:\"description\";s:9:\"6-12 anos\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232027,
+    "type": "event",
+    "title": {
+      "rendered": "Os Tubarões"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/os-tubaroes.png",
+    "subtitle": "",
+    "subject": "música",
+    "string_dates": "29 março 2026",
+    "string_times": "dom: 19h",
+    "description": [
+      "Formados em 1969, na cidade da Praia, Os Tubarões são muito mais do que uma banda, são um símbolo identitário, um movimento cultural e uma das formações mais influentes da história da música..."
+    ],
+    "venue": {
+      "lisboa-ao-vivo": {
+        "id": 705,
+        "slug": "lisboa-ao-vivo",
+        "name": "Lisboa ao Vivo"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "musica-cabo-verdiana": {
+        "id": 4477,
+        "slug": "musica-cabo-verdiana",
+        "name": "música cabo-verdiana"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/os-tubaroes/",
+    "occurences": [
+      "2026-03-29"
+    ],
+    "StartDate": "2026-03-29",
+    "LastDate": "2026-03-29",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"30 € a 40\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232618,
+    "type": "event",
+    "title": {
+      "rendered": "Luísa Pereira da Fonseca"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/ENTROPIA_Luisa-Pereira-da-Fonseca.jpg",
+    "subtitle": [
+      "Gravidade: a geometria do invisível"
+    ],
+    "subject": "artes",
+    "string_dates": "28 março a 29 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "A mostra propõe uma reflexão visual e poética sobre a arquitetura do Cosmos e as forças fundamentais que regem a existência. Nesta série, a artista explora o conceito de Espaço-Tempo, transform..."
+    ],
+    "venue": {
+      "atmosfera-m": {
+        "id": 774,
+        "slug": "atmosfera-m",
+        "name": "Atmosfera M"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/luisa-pereira-da-fonseca/",
+    "occurences": [
+      "2026-03-30",
+      "2026-03-31",
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29"
+    ],
+    "StartDate": "2026-03-30",
+    "LastDate": "2026-04-29",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231304,
+    "type": "event",
+    "title": {
+      "rendered": "Lisboa/Budapeste 2026"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Room-broken-hearts-anushka-apaixonarte-FB-event-02-1.jpg",
+    "subtitle": [
+      "Residência artística artes plásticas/visuais"
+    ],
+    "subject": "artes",
+    "string_dates": "1 março a 31 março 2026",
+    "string_times": "",
+    "description": [
+      "A Direção Municipal de Cultura do Município de Lisboa abre candidaturas para residências artísticas nas áreas das artes plásticas e visuais, a realizar em Budapeste, de 1 a 30 de junho e de 1 a..."
+    ],
+    "venue": {
+      "divisao-de-acao-cultural-da-cml": {
+        "id": 2306,
+        "slug": "divisao-de-acao-cultural-da-cml",
+        "name": "Divisão de Ação Cultural da CML"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "concurso": {
+        "id": 2448,
+        "slug": "concurso",
+        "name": "concurso"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/lisboa-budapeste-2026/",
+    "occurences": [
+      "2026-03-01",
+      "2026-03-31"
+    ],
+    "StartDate": "2026-03-31",
+    "LastDate": "2026-03-31",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231938,
+    "type": "event",
+    "title": {
+      "rendered": "ANIM, 30 anos"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/image-w1280.webp",
+    "subtitle": "",
+    "subject": "cinema",
+    "string_dates": "31 março 2026",
+    "string_times": "ter: 19h",
+    "description": [
+      "<em>Terceira etapa do programa dedicado aos 30 anos do Arquivo Nacional das Imagens em Movimento, abordamos aqui uma das componentes de cooperação internacional desenvolvidas pela Cinemateca: </em>L..."
+    ],
+    "venue": {
+      "cinemateca": {
+        "id": 777,
+        "slug": "cinemateca",
+        "name": "Cinemateca Portuguesa - Museu do Cinema"
+      }
+    },
+    "categories_name_list": {
+      "cinema": {
+        "id": 38,
+        "slug": "cinema",
+        "name": "cinema"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/anim-30-anos-3/",
+    "occurences": [
+      "2026-03-31"
+    ],
+    "StartDate": "2026-03-31",
+    "LastDate": "2026-03-31",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 229676,
+    "type": "event",
+    "title": {
+      "rendered": "Hans Zimmer"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2023/04/hans-zimmer.png",
+    "subtitle": [
+      "The Next Level"
+    ],
+    "subject": "música",
+    "string_dates": "31 março a 1 abril 2026",
+    "string_times": "ter: 21h; qua: 21h",
+    "description": [
+      "Hans Zimmer regressa a Lisboa em dose dupla, com novo espetáculo, <em>The Next Level</em>, onde os fãs poderão ouvir os grandes êxitos musicais do cinema. Trata-se de um conceito completamente no..."
+    ],
+    "venue": {
+      "altice-arena": {
+        "id": 946,
+        "slug": "altice-arena",
+        "name": "MEO Arena"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "bandas-sonoras": {
+        "id": 1770,
+        "slug": "bandas-sonoras",
+        "name": "bandas sonoras"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/hans-zimmer-3/",
+    "occurences": [
+      "2026-03-31",
+      "2026-04-01"
+    ],
+    "StartDate": "2026-03-31",
+    "LastDate": "2026-04-01",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:12:\"60 € a 300\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231877,
+    "type": "event",
+    "title": {
+      "rendered": "After Moonlight"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/after.jpg",
+    "subtitle": [
+      "A partir de Eugene O'Neill"
+    ],
+    "subject": "teatro",
+    "string_dates": "1 abril a 3 abril 2026",
+    "string_times": "qua: 19h; qui: 19h; sex: 19h",
+    "description": [
+      "Baseada no clássico de Eugene O’Neill <em>A Moon for the Misbegotten</em> surge como uma peça intensa para dois atores sobre dois amigos de longa data e potenciais amantes que se encontram num bar..."
+    ],
+    "venue": {
+      "tasca-das-artes": {
+        "id": 7339,
+        "slug": "tasca-das-artes",
+        "name": "Tasca das Artes"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/after-moonlight/",
+    "occurences": [
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03"
+    ],
+    "StartDate": "2026-04-01",
+    "LastDate": "2026-04-03",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231639,
+    "type": "event",
+    "title": {
+      "rendered": "A Cerimónia"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/DR-LOVE.jpeg",
+    "subtitle": [
+      "Dr. Love"
+    ],
+    "subject": "stand up comedy",
+    "string_dates": "1 abril 2026",
+    "string_times": "21h00",
+    "description": [
+      "<em>Dr. Love entra em modo cerimónia para o grande evento matrimonial, com direito a véu, grinalda, bouquet e ilustres convidados que irão apadrinhar a boda e ajudar-nos a responder, em tempo real,..."
+    ],
+    "venue": {
+      "maria-matos-teatro-municipal": {
+        "id": 175,
+        "slug": "maria-matos-teatro-municipal",
+        "name": "Teatro Maria Matos"
+      }
+    },
+    "categories_name_list": {
+      "stand-up-comedy": {
+        "id": 4737,
+        "slug": "stand-up-comedy",
+        "name": "stand up comedy"
+      }
+    },
+    "tags_name_list": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/a-cerimonia/",
+    "occurences": [
+      "2026-04-01"
+    ],
+    "StartDate": "2026-04-01",
+    "LastDate": "2026-04-01",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"20\";}}"
+    ],
+    "target_audience": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 228509,
+    "type": "event",
+    "title": {
+      "rendered": "Sr. Engenheiro - alegadamente um musical"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/sr-engenheiro.jpg",
+    "subtitle": "",
+    "subject": "teatro",
+    "string_dates": "1 abril a 12 abril 2026",
+    "string_times": "qua: 21h; qui: 21h; sex: 21h; sáb: 16h, 21h; dom: 16h",
+    "description": [
+      "Esta é a história de um antigo primeiro-ministro, desde os seus modestos começos nas Beiras até à sua vida em Paris.\r\n\r\nPelo caminho, há um melhor amigo muito generoso, uma assessora que acredit..."
+    ],
+    "venue": {
+      "teatro-tivoli-bbva": {
+        "id": 784,
+        "slug": "teatro-tivoli-bbva",
+        "name": "Teatro Tivoli BBVA"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "14": {
+        "id": 6440,
+        "slug": "14",
+        "name": "+14"
+      },
+      "artur-guimaraes": {
+        "id": 7545,
+        "slug": "artur-guimaraes",
+        "name": "artur guimarães"
+      },
+      "rui-melo": {
+        "id": 6591,
+        "slug": "rui-melo",
+        "name": "Rui Melo"
+      },
+      "teatro-musical": {
+        "id": 1034,
+        "slug": "teatro-musical",
+        "name": "teatro musical"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sr-engenheiro-alegadamente-um-musical/",
+    "occurences": [
+      "2026-04-01",
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12"
+    ],
+    "StartDate": "2026-04-01",
+    "LastDate": "2026-04-12",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:13:\"20€ a 37,50\";}}"
+    ],
+    "target_audience": {
+      "14": {
+        "id": 6440,
+        "slug": "14",
+        "name": "+14"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232816,
+    "type": "event",
+    "title": {
+      "rendered": "Isto é uma exposição?"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Sara-Batista.png",
+    "subtitle": [
+      "Sara Batista"
+    ],
+    "subject": "artes",
+    "string_dates": "2 abril a 24 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Sim, são livros. Mas antes de existirem como objeto - com capa, texto e imagens - os livros começam muito antes. Nascem de uma ideia. E uma ideia pode surgir de qualquer lugar: de um olhar, de um ge..."
+    ],
+    "venue": {
+      "biblioteca-camoes": {
+        "id": 571,
+        "slug": "biblioteca-camoes",
+        "name": "Biblioteca Camões"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      },
+      "jovens": {
+        "id": 6433,
+        "slug": "jovens",
+        "name": "jovens"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/232816/",
+    "occurences": [
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-06",
+      "2026-04-07",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24"
+    ],
+    "StartDate": "2026-04-02",
+    "LastDate": "2026-04-24",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "jovens": {
+        "id": 6433,
+        "slug": "jovens",
+        "name": "jovens"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 228279,
+    "type": "event",
+    "title": {
+      "rendered": "A Mão do Senhor"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/12/mds-01-8.jpg",
+    "subtitle": [
+      "Elmano Sancho e Mónica Calle"
+    ],
+    "subject": "teatro",
+    "string_dates": "2 abril a 5 abril 2026",
+    "string_times": "qui: 20h, 22h; sex: 20h, 22h; sáb: 18h, 20h; dom: 18h, 20h",
+    "description": [
+      "<em>Uma carrinha funerária avança pela noite de Lisboa.</em>\r\n<em>Lá dentro, os atores Elmano Sancho e Mónica Calle partilham um espaço que não lhes pertence — o lugar onde viaja quem já não..."
+    ],
+    "venue": {
+      "igreja-de-sao-joao-baptista-do-lumiar": {
+        "id": 7405,
+        "slug": "igreja-de-sao-joao-baptista-do-lumiar",
+        "name": "Igreja de São João Baptista do Lumiar"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "12": {
+        "id": 6439,
+        "slug": "12",
+        "name": "+12"
+      },
+      "elmano-sancho": {
+        "id": 3520,
+        "slug": "elmano-sancho",
+        "name": "Elmano Sancho"
+      },
+      "monica-calle": {
+        "id": 2291,
+        "slug": "monica-calle",
+        "name": "Mónica Calle"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/a-mao-do-senhor-2/",
+    "occurences": [
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05"
+    ],
+    "StartDate": "2026-04-02",
+    "LastDate": "2026-04-05",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"10\";}}"
+    ],
+    "target_audience": {
+      "12": {
+        "id": 6439,
+        "slug": "12",
+        "name": "+12"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231643,
+    "type": "event",
+    "title": {
+      "rendered": "Sweeney Todd - o cruel barbeiro da Rua Fleet"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Sweeney-Todd.jpg",
+    "subtitle": [
+      "Lisbon Film Orchestra"
+    ],
+    "subject": "teatro",
+    "string_dates": "2 abril a 3 maio 2026",
+    "string_times": "qui: 21h; sex: 21h; sáb: 21h; dom: 18h",
+    "description": [
+      "Benjamin Barker, um homem injustamente preso, retorna a Londres sob o nome de Sweeney Todd. Barbeiro de profissão, tenta a sua vingança contra o juiz corrupto Turpin, que lhe destruiu a família. Pa..."
+    ],
+    "venue": {
+      "teatro-armando-cortez": {
+        "id": 455,
+        "slug": "teatro-armando-cortez",
+        "name": "Teatro Armando Cortez"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "14": {
+        "id": 6440,
+        "slug": "14",
+        "name": "+14"
+      },
+      "lisbon-film-orchestra": {
+        "id": 7620,
+        "slug": "lisbon-film-orchestra",
+        "name": "Lisbon Film Orchestra"
+      },
+      "stephen-sondheim": {
+        "id": 7621,
+        "slug": "stephen-sondheim",
+        "name": "Stephen Sondheim"
+      },
+      "teatro-musical": {
+        "id": 1034,
+        "slug": "teatro-musical",
+        "name": "teatro musical"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/sweeney-todd-o-cruel-barbeiro-da-rua-fleet/",
+    "occurences": [
+      "2026-04-02",
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03"
+    ],
+    "StartDate": "2026-04-02",
+    "LastDate": "2026-05-03",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:11:\"25 € a 35\";}}"
+    ],
+    "target_audience": {
+      "14": {
+        "id": 6440,
+        "slug": "14",
+        "name": "+14"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 232768,
+    "type": "event",
+    "title": {
+      "rendered": "Rei Lear"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/rei-lear.jpg",
+    "subtitle": [
+      "William Shakespeare/ António Pires"
+    ],
+    "subject": "teatro",
+    "string_dates": "3 abril a 26 abril 2026",
+    "string_times": "qua: 21h; qui: 21h; sex: 21h; sáb: 17h; dom: 17h",
+    "description": [
+      "Um dos textos maiores de William Shakespeare, <em>Rei Lear</em> conta a história de um monarca envelhecido que decide dividir o reino entre as três filhas, esperando retirar-se do governo, mas conse..."
+    ],
+    "venue": {
+      "teatro-do-bairro": {
+        "id": 625,
+        "slug": "teatro-do-bairro",
+        "name": "Teatro do Bairro"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "12": {
+        "id": 6439,
+        "slug": "12",
+        "name": "+12"
+      },
+      "alvaro-cunhal": {
+        "id": 5104,
+        "slug": "alvaro-cunhal",
+        "name": "Álvaro Cunhal"
+      },
+      "antonio-pires": {
+        "id": 1054,
+        "slug": "antonio-pires",
+        "name": "António Pires"
+      },
+      "william-shakespeare": {
+        "id": 994,
+        "slug": "william-shakespeare",
+        "name": "William Shakespeare"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/rei-lear-2/",
+    "occurences": [
+      "2026-04-03",
+      "2026-04-04",
+      "2026-04-05",
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26"
+    ],
+    "StartDate": "2026-04-03",
+    "LastDate": "2026-04-26",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:2:{i:0;a:2:{s:5:\"value\";s:2:\"15\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}i:1;a:2:{s:5:\"value\";s:1:\"8\";s:11:\"description\";s:42:\"dia do espectador (quarta) - preço único\";}}"
+    ],
+    "target_audience": {
+      "12": {
+        "id": 6439,
+        "slug": "12",
+        "name": "+12"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 229173,
+    "type": "event",
+    "title": {
+      "rendered": "Mercado de Trocas"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/01/Mercado-de-Trocas.jpg",
+    "subtitle": "",
+    "subject": "feiras",
+    "string_dates": "7 fevereiro a 5 dezembro 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Esta iniciativa, de cariz social e ambiental, visa promover a economia circular permitindo a troca de bens usados e em bom estado. Esta prática incentiva a reutilização, reduz o desperdício e mini..."
+    ],
+    "venue": {
+      "biblioteca-camoes": {
+        "id": 571,
+        "slug": "biblioteca-camoes",
+        "name": "Biblioteca Camões"
+      }
+    },
+    "categories_name_list": {
+      "feiras": {
+        "id": 40,
+        "slug": "feiras",
+        "name": "feiras"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/mercado-de-trocas-2/",
+    "occurences": [
+      "2026-02-07",
+      "2026-03-07",
+      "2026-04-04",
+      "2026-05-02",
+      "2026-06-06",
+      "2026-07-04",
+      "2026-08-01",
+      "2026-09-05",
+      "2026-10-03",
+      "2026-11-07",
+      "2026-12-05"
+    ],
+    "StartDate": "2026-04-04",
+    "LastDate": "2026-12-05",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232668,
+    "type": "event",
+    "title": {
+      "rendered": "Ibrahim Maalouf"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/IBRAHIM-MAALOUF.jpeg",
+    "subtitle": [
+      "Trumpets of Michel-Ange"
+    ],
+    "subject": "música",
+    "string_dates": "4 abril 2026",
+    "string_times": "sáb: 21h",
+    "description": [
+      "O trompetista franco-libanês Ibrahim Maalouf regressa a Portugal com <em>T.O.M.A – Trumpets of Michel-Ange</em>, um espetáculo que é mais do que um concerto: é um manifesto artístico, uma t..."
+    ],
+    "venue": {
+      "coliseu-dos-recreios": {
+        "id": 90,
+        "slug": "coliseu-dos-recreios",
+        "name": "Coliseu dos Recreios"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "trompete": {
+        "id": 7666,
+        "slug": "trompete",
+        "name": "trompete"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ibrahim-maalouf/",
+    "occurences": [
+      "2026-04-04"
+    ],
+    "StartDate": "2026-04-04",
+    "LastDate": "2026-04-04",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:12:\"40 € a 120\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 3017,
+    "type": "event",
+    "title": {
+      "rendered": "Visita aos Paços do Concelho"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2018/07/pacos_concelho.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "7 dezembro 2025 a 6 dezembro 2026",
+    "string_times": "dom: 1.º mês, às 11h",
+    "description": [
+      "O edifício dos Paços do Concelho, para além do seu valor arquitetónico e artístico, reflete a imagem de Lisboa e de Portugal Liberal, Regenerador e Republicano. Importantes acontecimentos da noss..."
+    ],
+    "venue": {
+      "pacos-do-concelho": {
+        "id": 718,
+        "slug": "pacos-do-concelho",
+        "name": "Paços do Concelho"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": {
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/visita-aos-pacos-do-concelho/",
+    "occurences": [
+      "2018-08-05",
+      "2018-09-02",
+      "2018-10-07",
+      "2018-11-04",
+      "2018-12-02",
+      "2023-02-12",
+      "2023-03-05",
+      "2023-04-02",
+      "2023-05-07",
+      "2023-06-04",
+      "2023-07-02",
+      "2025-12-07",
+      "2026-01-04",
+      "2026-02-01",
+      "2026-03-01",
+      "2026-04-05",
+      "2026-05-03",
+      "2026-06-07",
+      "2026-07-05",
+      "2026-08-02",
+      "2026-09-06",
+      "2026-10-04",
+      "2026-11-01",
+      "2026-12-06"
+    ],
+    "StartDate": "2026-04-05",
+    "LastDate": "2026-12-06",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231963,
+    "type": "event",
+    "title": {
+      "rendered": "Caça aos ovos no Castelo"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Caca_aos_ovos©Jose-Frade.jpg",
+    "subtitle": "",
+    "subject": "ciências",
+    "string_dates": "5 abril 2026",
+    "string_times": "dom: 10h30, 16h30",
+    "description": [
+      "No domingo de Páscoa, o Castelo de São Jorge convida as famílias a participar numa caça aos ovos muito especial. Através de um mapa e de um conjunto de desafios, cada família percorre diferentes..."
+    ],
+    "venue": {
+      "castelo-de-sao-jorge": {
+        "id": 686,
+        "slug": "castelo-de-sao-jorge",
+        "name": "Castelo de São Jorge"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "4": {
+        "id": 6436,
+        "slug": "4",
+        "name": "+4"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/caca-aos-ovos-no-castelo-2/",
+    "occurences": [
+      "2026-04-05"
+    ],
+    "StartDate": "2026-04-05",
+    "LastDate": "2026-04-05",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "4": {
+        "id": 6436,
+        "slug": "4",
+        "name": "+4"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 28792,
+    "type": "event",
+    "title": {
+      "rendered": "Percurso Secreto"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2020/06/percurso-secreto.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "5 janeiro 2025 a 6 dezembro 2026",
+    "string_times": "dom: 1.º do mês, às 16h",
+    "description": [
+      "O <a href=\"https://maat.pt/pt/event/visita-guiada-percurso-secreto\" target=\"_blank\" rel=\"noopener\">Percurso Secreto</a> desafia os visitantes e conhecerem as zonas da Central Tejo habitualmente fechad..."
+    ],
+    "venue": {
+      "maat-museu-de-arte-arquitetura-e-tecnologia": {
+        "id": 149,
+        "slug": "maat-museu-de-arte-arquitetura-e-tecnologia",
+        "name": "MAAT - Museu de Arte, Arquitetura e Tecnologia"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/percurso-secreto/",
+    "occurences": [
+      "2025-01-05",
+      "2025-02-02",
+      "2025-03-02",
+      "2025-04-06",
+      "2025-05-04",
+      "2025-06-01",
+      "2025-07-06",
+      "2025-08-03",
+      "2025-09-07",
+      "2025-10-05",
+      "2025-11-02",
+      "2025-12-07",
+      "2026-01-04",
+      "2026-02-01",
+      "2026-03-01",
+      "2026-04-05",
+      "2026-05-03",
+      "2026-06-07",
+      "2026-07-05",
+      "2026-08-02",
+      "2026-09-06",
+      "2026-10-04",
+      "2026-11-01",
+      "2026-12-06"
+    ],
+    "StartDate": "2026-04-05",
+    "LastDate": "2026-12-06",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"15\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 223148,
+    "type": "event",
+    "title": {
+      "rendered": "Ponto de Partida"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/10/Ponto-de-Partida-Monica-Garnel-e1760627608628.jpg",
+    "subtitle": [
+      "Projeto municipal DESCOLA"
+    ],
+    "subject": "ciências",
+    "string_dates": "6 novembro 2025 a 6 maio 2026",
+    "string_times": "",
+    "description": [
+      "Na temporada 2025-2026, o DESCOLA reforça o compromisso com a comunidade escolar, promovendo o diálogo entre arte e educação e incentivando o desenvolvimento de competências criativas e críticas..."
+    ],
+    "venue": {
+      "teatro-aberto": {
+        "id": 318,
+        "slug": "teatro-aberto",
+        "name": "Teatro Aberto"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "atividades-pedagogicas": {
+        "id": 1377,
+        "slug": "atividades-pedagogicas",
+        "name": "atividades pedagógicas"
+      },
+      "conversa": {
+        "id": 4114,
+        "slug": "conversa",
+        "name": "conversa"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ponto-de-partida/",
+    "occurences": [
+      "2025-11-06",
+      "2025-12-06",
+      "2026-01-06",
+      "2026-02-06",
+      "2026-03-06",
+      "2026-04-06",
+      "2026-05-06"
+    ],
+    "StartDate": "2026-04-06",
+    "LastDate": "2026-05-06",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231646,
+    "type": "event",
+    "title": {
+      "rendered": "O amor é fodid*"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/O_AMOR_E_FODIDO.jpeg",
+    "subtitle": [
+      "Miguel Esteves Cardoso/ João Garcia Miguel"
+    ],
+    "subject": "teatro",
+    "string_dates": "7 abril a 8 abril 2026",
+    "string_times": "ter: 21h; qua: 21h",
+    "description": [
+      "<em>Com um toque de humor negro, o espetáculo em que o stand-up e o teatro de personagem se misturam, sobre um tema transversal no tempo como é o “amor” para um público adulto. Será a visão d..."
+    ],
+    "venue": {
+      "maria-matos-teatro-municipal": {
+        "id": 175,
+        "slug": "maria-matos-teatro-municipal",
+        "name": "Teatro Maria Matos"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "18": {
+        "id": 6442,
+        "slug": "18",
+        "name": "+18"
+      },
+      "companhia-joao-garcia-miguel": {
+        "id": 1059,
+        "slug": "companhia-joao-garcia-miguel",
+        "name": "Companhia João Garcia Miguel"
+      },
+      "miguel-esteves-cardoso": {
+        "id": 6772,
+        "slug": "miguel-esteves-cardoso",
+        "name": "Miguel Esteves Cardoso"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/o-amor-e-fodid/",
+    "occurences": [
+      "2026-04-07",
+      "2026-04-08"
+    ],
+    "StartDate": "2026-04-07",
+    "LastDate": "2026-04-08",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"18\";}}"
+    ],
+    "target_audience": {
+      "18": {
+        "id": 6442,
+        "slug": "18",
+        "name": "+18"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 226861,
+    "type": "event",
+    "title": {
+      "rendered": "Rosalía"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/12/rosalia-e1764875102918.png",
+    "subtitle": [
+      "Lux"
+    ],
+    "subject": "música",
+    "string_dates": "8 abril a 9 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "A cantora, compositora e produtora Rosalía, vencedora de prémios GRAMMY®, anuncia a sua maior digressão como cabeça de cartaz até à data — a <em>Lux Tour 2026</em>, que inclui 42 concertos em..."
+    ],
+    "venue": {
+      "altice-arena": {
+        "id": 946,
+        "slug": "altice-arena",
+        "name": "MEO Arena"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "pop": {
+        "id": 3608,
+        "slug": "pop",
+        "name": "pop"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/rosalia-2/",
+    "occurences": [
+      "2026-04-08",
+      "2026-04-09"
+    ],
+    "StartDate": "2026-04-08",
+    "LastDate": "2026-04-09",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231649,
+    "type": "event",
+    "title": {
+      "rendered": "Os contratos do comerciante"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/aueeeu-jelinek2.jpg",
+    "subtitle": [
+      "A partir de Elfriede Jelinek"
+    ],
+    "subject": "teatro",
+    "string_dates": "8 abril a 12 abril 2026",
+    "string_times": "qua: 20h; qui: 20h; sex: 20h; sáb: 20h; dom: 17h30",
+    "description": [
+      "<em>Os pequenos investidores lamuriam tudo o que perderam e as figuras sem nome e sem cara do setor financeiro conspiram contra eles, cidadãos comuns, caídos, por culpa própria nas malhas dos pode..."
+    ],
+    "venue": {
+      "sao-luiz-teatro-municipal": {
+        "id": 572,
+        "slug": "sao-luiz-teatro-municipal",
+        "name": "São Luiz Teatro Municipal"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "coletivo-aueeeu": {
+        "id": 7622,
+        "slug": "coletivo-aueeeu",
+        "name": "coletivo auéééu"
+      },
+      "elfriede-jelinek": {
+        "id": 3650,
+        "slug": "elfriede-jelinek",
+        "name": "Elfriede Jelinek"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/os-contratos-do-comerciante/",
+    "occurences": [
+      "2026-04-08",
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12"
+    ],
+    "StartDate": "2026-04-08",
+    "LastDate": "2026-04-12",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232798,
+    "type": "event",
+    "title": {
+      "rendered": "Mohamed Ahmed Ibrahim"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/MAI042.jpg",
+    "subtitle": [
+      "Sarab"
+    ],
+    "subject": "artes",
+    "string_dates": "9 abril a 6 junho 2026",
+    "string_times": "vários horários",
+    "description": [
+      "A Perve Galeria inaugura em abril <em>Sarab</em>, a primeira parte do tríptico <em>And Thus He Crossed Over</em>, um projeto artístico e curatorial desenvolvido pelo artista Mohamed Ahmed Ibrahim e..."
+    ],
+    "venue": {
+      "perve-galeria": {
+        "id": 746,
+        "slug": "perve-galeria",
+        "name": "Perve Galeria"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "escultura": {
+        "id": 65,
+        "slug": "escultura",
+        "name": "escultura"
+      },
+      "instalacao": {
+        "id": 72,
+        "slug": "instalacao",
+        "name": "instalação"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/mohamed-ahmed-ibrahim/",
+    "occurences": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-05",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-19",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-26",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06"
+    ],
+    "StartDate": "2026-04-09",
+    "LastDate": "2026-06-06",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232437,
+    "type": "event",
+    "title": {
+      "rendered": "Torrente"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/Torrente_Teatro-do-Vestido_acervo-A.A.Costa-site.png",
+    "subtitle": [
+      "Novas apresentações"
+    ],
+    "subject": "teatro",
+    "string_dates": "9 abril a 19 abril 2026",
+    "string_times": "qua: 21h; qui: 21h; sex: 21h*; sáb: 21h*; dom: 18h",
+    "description": [
+      "<em>Não temos a certeza de tudo já ter sido dito e escrito sobre o processo</em>\r\n<em>revolucionário de 1974-75 em Portugal.</em>\r\n<em>Momento ímpar na história mundial, esta torrente de acções..."
+    ],
+    "venue": {
+      "zdb8": {
+        "id": 3943,
+        "slug": "zdb8",
+        "name": "ZDB 8 Marvila"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "joana-craveiro": {
+        "id": 1047,
+        "slug": "joana-craveiro",
+        "name": "Joana Craveiro"
+      },
+      "teatro-do-vestido": {
+        "id": 1046,
+        "slug": "teatro-do-vestido",
+        "name": "Teatro do Vestido"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/torrente-2/",
+    "occurences": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19"
+    ],
+    "StartDate": "2026-04-09",
+    "LastDate": "2026-04-19",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 231123,
+    "type": "event",
+    "title": {
+      "rendered": "Antes que canalha caia em desuso"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/antes-que.jpg",
+    "subtitle": [
+      "Mário Coelho"
+    ],
+    "subject": "teatro",
+    "string_dates": "9 abril a 12 abril 2026",
+    "string_times": "qui: 21h; sex: 21h; sáb: 21h; dom: 17h",
+    "description": [
+      "(...) \"Um corpo mais ou menos concreto numa sala, que é uma máquina de lavar, que é uma ilha, que é um espaço onde habita um coro. O mundo lá fora não interessa, ou vai deixar de interessar mui..."
+    ],
+    "venue": {
+      "clube-estefania": {
+        "id": 278,
+        "slug": "clube-estefania",
+        "name": "Clube Estefânia"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      },
+      "mario-coelho": {
+        "id": 6776,
+        "slug": "mario-coelho",
+        "name": "Mário Coelho"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/antes-que-canalha-caia-em-desuso/",
+    "occurences": [
+      "2026-04-09",
+      "2026-04-10",
+      "2026-04-11",
+      "2026-04-12"
+    ],
+    "StartDate": "2026-04-09",
+    "LastDate": "2026-04-12",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:5:\"12,50\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 218534,
+    "type": "event",
+    "title": {
+      "rendered": "Noites de Impro"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2025/07/ImproMix.jpg",
+    "subtitle": [
+      "ImproMix"
+    ],
+    "subject": "teatro",
+    "string_dates": "25 setembro 2025 a 14 maio 2026",
+    "string_times": "qui: 21h*",
+    "description": [
+      "Os espetáculos de improviso do grupo Impromix consistem numa sequência de jogos que têm como objetivo colocar os improvisadores em situações desafiantes ao longo do espetáculo. Através de suges..."
+    ],
+    "venue": {
+      "com-calma-espaco-cultural": {
+        "id": 2834,
+        "slug": "com-calma-espaco-cultural",
+        "name": "Com Calma Espaço Cultural"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      },
+      "comedia": {
+        "id": 1516,
+        "slug": "comedia",
+        "name": "comédia"
+      },
+      "teatro-de-improviso": {
+        "id": 6053,
+        "slug": "teatro-de-improviso",
+        "name": "teatro de improviso"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/noites-de-impro-2/",
+    "occurences": [
+      "2025-09-25",
+      "2025-10-09",
+      "2025-11-13",
+      "2025-12-11",
+      "2026-01-22",
+      "2026-02-12",
+      "2026-03-12",
+      "2026-04-09",
+      "2026-05-14"
+    ],
+    "StartDate": "2026-04-09",
+    "LastDate": "2026-05-14",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"5\";}}"
+    ],
+    "target_audience": {
+      "16": {
+        "id": 6441,
+        "slug": "16",
+        "name": "+16"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 184467,
+    "type": "event",
+    "title": {
+      "rendered": "Presença Portuguesa na Ásia"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2024/01/9bc988238f3a3e34420e2f7d1e5677239b4a0c1d.jpg",
+    "subtitle": "",
+    "subject": "visitas guiadas",
+    "string_dates": "6 fevereiro a 11 dezembro 2026",
+    "string_times": "sex: 18h",
+    "description": [
+      "A estranheza primeiro e a curiosidade depois: foram estes os ingredientes do diálogo intercultural entre Oriente e Ocidente, e que se reflectiu na arte de ambos os hemisférios.\r\n\r\nAo longo das rotas..."
+    ],
+    "venue": {
+      "museu-do-oriente": {
+        "id": 153,
+        "slug": "museu-do-oriente",
+        "name": "Museu do Oriente"
+      }
+    },
+    "categories_name_list": {
+      "visitas-guiadas": {
+        "id": 44,
+        "slug": "visitas-guiadas",
+        "name": "visitas guiadas"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/presenca-portuguesa-na-asia/",
+    "occurences": [
+      "2024-02-02",
+      "2024-03-01",
+      "2024-07-05",
+      "2024-08-02",
+      "2024-09-06",
+      "2024-10-04",
+      "2024-11-08",
+      "2024-12-06",
+      "2025-04-04",
+      "2025-05-09",
+      "2025-06-06",
+      "2025-07-04",
+      "2025-08-01",
+      "2025-09-05",
+      "2025-10-03",
+      "2025-11-07",
+      "2025-12-05",
+      "2026-02-06",
+      "2026-03-06",
+      "2026-04-10",
+      "2026-05-08",
+      "2026-06-19",
+      "2026-07-10",
+      "2026-08-07",
+      "2026-09-11",
+      "2026-10-09",
+      "2026-11-06",
+      "2026-12-11"
+    ],
+    "StartDate": "2026-04-10",
+    "LastDate": "2026-12-11",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:1:\"6\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232735,
+    "type": "event",
+    "title": {
+      "rendered": "Edmundo Inácio"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/edmundo-inacio.png",
+    "subtitle": [
+      "Tour pelos Clubes Cá da Terra"
+    ],
+    "subject": "música",
+    "string_dates": "10 abril 2026",
+    "string_times": "sex: 21h30",
+    "description": [
+      "Edmundo Inácio leva à Casa Capitão a digressão <em>Tour pelos Clubes Cá da Terra</em>. A <em>tournée</em> surge no seguimento do lançamento do seu mais recente single, <em>Terra</em>, e serve..."
+    ],
+    "venue": {
+      "casa-do-capitao": {
+        "id": 3780,
+        "slug": "casa-do-capitao",
+        "name": "Casa Capitão"
+      }
+    },
+    "categories_name_list": {
+      "musica": {
+        "id": 42,
+        "slug": "musica",
+        "name": "música"
+      }
+    },
+    "tags_name_list": {
+      "musica-portuguesa": {
+        "id": 1489,
+        "slug": "musica-portuguesa",
+        "name": "música portuguesa"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/edmundo-inacio-2/",
+    "occurences": [
+      "2026-04-10"
+    ],
+    "StartDate": "2026-04-10",
+    "LastDate": "2026-04-10",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"13\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 232180,
+    "type": "event",
+    "title": {
+      "rendered": "A Quinta dos Animais"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/a-quinta-dos-animais-lu.ca-manuel-lino-41-1024x683-1.jpg",
+    "subtitle": [
+      "Tonan Quito"
+    ],
+    "subject": "teatro",
+    "string_dates": "11 abril a 19 abril 2026",
+    "string_times": "vários horários",
+    "description": [
+      "Publicado em 1945, “A Quinta dos Animais”, de George Orwell, é um texto político e satírico, mas também uma fábula sobre o modo como nos relacionamos com o outro. Soma-se a isso o velho tema..."
+    ],
+    "venue": {
+      "lu-ca-teatro-luis-de-camoes": {
+        "id": 1244,
+        "slug": "lu-ca-teatro-luis-de-camoes",
+        "name": "LU.CA - Teatro Luís de Camões"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "10": {
+        "id": 6438,
+        "slug": "10",
+        "name": "+10"
+      },
+      "audiodescricao": {
+        "id": 5409,
+        "slug": "audiodescricao",
+        "name": "audiodescrição"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "lingua-gestual-portuguesa": {
+        "id": 86,
+        "slug": "lingua-gestual-portuguesa",
+        "name": "língua gestual portuguesa"
+      },
+      "sessao-descontraida": {
+        "id": 87,
+        "slug": "sessao-descontraida",
+        "name": "sessão descontraída"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/a-quinta-dos-animais-4/",
+    "occurences": [
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-18",
+      "2026-04-19"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-04-19",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "10": {
+        "id": 6438,
+        "slug": "10",
+        "name": "+10"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": {
+      "audiodescricao": {
+        "id": 5409,
+        "slug": "audiodescricao",
+        "name": "audiodescrição"
+      },
+      "lingua-gestual-portuguesa": {
+        "id": 86,
+        "slug": "lingua-gestual-portuguesa",
+        "name": "língua gestual portuguesa"
+      },
+      "sessao-descontraida": {
+        "id": 87,
+        "slug": "sessao-descontraida",
+        "name": "sessão descontraída"
+      }
+    }
+  },
+  {
+    "id": 232809,
+    "type": "event",
+    "title": {
+      "rendered": "AH!"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/03/felicidade10b.png",
+    "subtitle": [
+      "Exposição de André Ruivo"
+    ],
+    "subject": "artes",
+    "string_dates": "11 abril a 28 junho 2026",
+    "string_times": "vários horários",
+    "description": [
+      "No entrepiso do LU.CA, a exposição <em>AH!</em> transforma os pequenos prazeres da vida numa experiência visual pensada para os mais novos. Desafiado a criar uma exposição sobre a felicidade, And..."
+    ],
+    "venue": {
+      "lu-ca-teatro-luis-de-camoes": {
+        "id": 1244,
+        "slug": "lu-ca-teatro-luis-de-camoes",
+        "name": "LU.CA - Teatro Luís de Camões"
+      }
+    },
+    "categories_name_list": {
+      "artes": {
+        "id": 1,
+        "slug": "artes",
+        "name": "artes"
+      }
+    },
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/ah/",
+    "occurences": [
+      "2026-04-11",
+      "2026-04-12",
+      "2026-04-13",
+      "2026-04-14",
+      "2026-04-15",
+      "2026-04-16",
+      "2026-04-17",
+      "2026-04-18",
+      "2026-04-19",
+      "2026-04-20",
+      "2026-04-21",
+      "2026-04-22",
+      "2026-04-23",
+      "2026-04-24",
+      "2026-04-25",
+      "2026-04-26",
+      "2026-04-27",
+      "2026-04-28",
+      "2026-04-29",
+      "2026-04-30",
+      "2026-05-01",
+      "2026-05-02",
+      "2026-05-03",
+      "2026-05-04",
+      "2026-05-05",
+      "2026-05-06",
+      "2026-05-07",
+      "2026-05-08",
+      "2026-05-09",
+      "2026-05-10",
+      "2026-05-11",
+      "2026-05-12",
+      "2026-05-13",
+      "2026-05-14",
+      "2026-05-15",
+      "2026-05-16",
+      "2026-05-17",
+      "2026-05-18",
+      "2026-05-19",
+      "2026-05-20",
+      "2026-05-21",
+      "2026-05-22",
+      "2026-05-23",
+      "2026-05-24",
+      "2026-05-25",
+      "2026-05-26",
+      "2026-05-27",
+      "2026-05-28",
+      "2026-05-29",
+      "2026-05-30",
+      "2026-05-31",
+      "2026-06-01",
+      "2026-06-02",
+      "2026-06-03",
+      "2026-06-04",
+      "2026-06-05",
+      "2026-06-06",
+      "2026-06-07",
+      "2026-06-08",
+      "2026-06-09",
+      "2026-06-10",
+      "2026-06-11",
+      "2026-06-12",
+      "2026-06-13",
+      "2026-06-14",
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17",
+      "2026-06-18",
+      "2026-06-19",
+      "2026-06-20",
+      "2026-06-21",
+      "2026-06-22",
+      "2026-06-23",
+      "2026-06-24",
+      "2026-06-25",
+      "2026-06-26",
+      "2026-06-27",
+      "2026-06-28"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-06-28",
+    "price_cat": [
+      "free"
+    ],
+    "price_val": "",
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231786,
+    "type": "event",
+    "title": {
+      "rendered": "Oficina do Carmo"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/Imagem-de-divulgacao1-scaled.jpg",
+    "subtitle": [
+      "Atividades de Arqueologia Experimental"
+    ],
+    "subject": null,
+    "string_dates": "7 março a 16 maio 2026",
+    "string_times": "vários horários",
+    "description": [
+      "<span data-olk-copy-source=\"MessageBody\">A Associação dos Arqueólogos Portugueses e a Pre &amp; Historic Skills convidam todos os interessados a fazer uma nova viagem didática pelas coleções do..."
+    ],
+    "venue": {
+      "ruinas-e-museu-arqueologico-do-carmo": {
+        "id": 1032,
+        "slug": "ruinas-e-museu-arqueologico-do-carmo",
+        "name": "Ruínas e Museu Arqueológico do Carmo"
+      }
+    },
+    "categories_name_list": [],
+    "tags_name_list": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "jovens": {
+        "id": 6433,
+        "slug": "jovens",
+        "name": "jovens"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/oficina-do-carmo-2/",
+    "occurences": [
+      "2026-03-07",
+      "2026-04-11",
+      "2026-05-16"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-05-16",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:1:{s:5:\"value\";s:2:\"15\";}}"
+    ],
+    "target_audience": {
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "jovens": {
+        "id": 6433,
+        "slug": "jovens",
+        "name": "jovens"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 84808,
+    "type": "event",
+    "title": {
+      "rendered": "Aqui há minhocas!"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2024/05/26MAI_aqui-ha-minhocas.png",
+    "subtitle": "",
+    "subject": "ciências",
+    "string_dates": "11 abril 2026",
+    "string_times": "15h00",
+    "description": [
+      "No Museu de Lisboa - Palácio Pimenta habitam inúmeras plantas e animais e todos estes seres desempenham um papel fundamental na vida dos jardins deste espaço. As minhocas, por exemplo, trabalham ar..."
+    ],
+    "venue": {
+      "museu-de-lisboa-palacio-pimenta": {
+        "id": 177,
+        "slug": "museu-de-lisboa-palacio-pimenta",
+        "name": "Museu de Lisboa - Palácio Pimenta"
+      }
+    },
+    "categories_name_list": {
+      "ciencias": {
+        "id": 39,
+        "slug": "ciencias",
+        "name": "ciências"
+      }
+    },
+    "tags_name_list": {
+      "4": {
+        "id": 6436,
+        "slug": "4",
+        "name": "+4"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      },
+      "gratuito": {
+        "id": 5121,
+        "slug": "gratuito",
+        "name": "gratuito"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/aqui-ha-minhocas/",
+    "occurences": [
+      "2026-04-11"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-04-11",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:1:\"3\";s:11:\"description\";s:23:\"inclui entrada no museu\";}}"
+    ],
+    "target_audience": {
+      "4": {
+        "id": 6436,
+        "slug": "4",
+        "name": "+4"
+      },
+      "criancas": {
+        "id": 6434,
+        "slug": "criancas",
+        "name": "crianças"
+      },
+      "familias": {
+        "id": 6432,
+        "slug": "familias",
+        "name": "famílias"
+      }
+    },
+    "accessibility": []
+  },
+  {
+    "id": 231653,
+    "type": "event",
+    "title": {
+      "rendered": "Kabeça Orí"
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/kabeca-ori-by-joniricos-2000x1333-1.jpg",
+    "subtitle": [
+      "Aoaní e Joyce Souza"
+    ],
+    "subject": "teatro",
+    "string_dates": "11 abril a 18 abril 2026",
+    "string_times": "qua: 19h30; qui: 19h30; sex: 19h30; sáb: 19h30; dom: 16h",
+    "description": [
+      "Em diáspora, no palco o encontro de mulheres negras que somam seus passos, constroem caminhos, refletem sobre apagamentos. Entre fragmentos e conexões, como perturbar o esquecimento? Como não perde..."
+    ],
+    "venue": {
+      "sao-luiz-teatro-municipal": {
+        "id": 572,
+        "slug": "sao-luiz-teatro-municipal",
+        "name": "São Luiz Teatro Municipal"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": [],
+    "link": "https://www.agendalx.pt/events/event/kabeca-ori/",
+    "occurences": [
+      "2026-04-11",
+      "2026-04-18"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-04-18",
+    "price_cat": [
+      "value"
+    ],
+    "price_val": [
+      "a:1:{i:0;a:2:{s:5:\"value\";s:2:\"12\";s:11:\"description\";s:41:\"preço normal (ver descontos aplicáveis)\";}}"
+    ],
+    "target_audience": [],
+    "accessibility": []
+  },
+  {
+    "id": 230499,
+    "type": "event",
+    "title": {
+      "rendered": "Lis Vegas Fest "
+    },
+    "featured_media_large": "https://www.agendalx.pt/content/uploads/2026/02/LisVegasFest_01.jpg",
+    "subtitle": [
+      "2026"
+    ],
+    "subject": "teatro",
+    "string_dates": "11 abril 2026",
+    "string_times": "sáb: 18h",
+    "description": [
+      "<span data-olk-copy-source=\"MessageBody\">Idealizado pelo encenador brasileiro César Gouvêa, Lisboa vai transformar-se num \"cassino lúdico\" onde o improviso é a moeda de troca.</span>"
+    ],
+    "venue": {
+      "sociedade-filarmonica-recordacao-dapolo": {
+        "id": 6646,
+        "slug": "sociedade-filarmonica-recordacao-dapolo",
+        "name": "Sociedade Filarmónica Recordação D’Apolo"
+      }
+    },
+    "categories_name_list": {
+      "teatro": {
+        "id": 43,
+        "slug": "teatro",
+        "name": "teatro"
+      }
+    },
+    "tags_name_list": {
+      "teatro-de-improviso": {
+        "id": 6053,
+        "slug": "teatro-de-improviso",
+        "name": "teatro de improviso"
+      }
+    },
+    "link": "https://www.agendalx.pt/events/event/lis-vegas-fest/",
+    "occurences": [
+      "2026-04-11"
+    ],
+    "StartDate": "2026-04-11",
+    "LastDate": "2026-04-11",
+    "price_cat": [
+      "unknown"
+    ],
+    "price_val": "",
+    "target_audience": [],
+    "accessibility": []
+  }
+]

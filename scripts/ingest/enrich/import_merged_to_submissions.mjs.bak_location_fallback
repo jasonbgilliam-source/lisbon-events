@@ -143,15 +143,6 @@ function normalizeAudience(input) {
   return [...new Set(normalized)];
 }
 
-function resolveLocationName(row) {
-  return firstNonEmpty(
-    row.location_name,
-    row.venue_name,
-    row.location,
-    "Venue TBA"
-  );
-}
-
 function makeSubmissionKey(title, startsAt, locationName) {
   return [
     normalizeText(title),
@@ -277,7 +268,7 @@ function mapRowToSubmission(row, allowedCategories) {
   const title = firstNonEmpty(row.title);
   const starts_at = toIsoMaybe(firstNonEmpty(row.starts_at));
   const ends_at = toIsoMaybe(firstNonEmpty(row.ends_at));
-  const location_name = resolveLocationName(row);
+  const location_name = firstNonEmpty(row.location_name, row.venue_name);
 
   const categoryResolved = resolveCategory(row, allowedCategories);
   const category = firstNonEmpty(categoryResolved.category);
@@ -303,7 +294,7 @@ function mapRowToSubmission(row, allowedCategories) {
       debug: {
         title: firstNonEmpty(row.title),
         starts_at: firstNonEmpty(row.starts_at),
-        location_name: resolveLocationName(row),
+        location_name: firstNonEmpty(row.location_name, row.venue_name),
         category: firstNonEmpty(row.category),
         resolved_category: category,
         category_inference_basis: categoryResolved.inference_basis,

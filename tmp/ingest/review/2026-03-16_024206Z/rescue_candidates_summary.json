@@ -1,0 +1,11 @@
+{
+  "input_csv": "tmp/ingest/export/2026-03-16_024206Z/events.csv",
+  "total_rows": 669,
+  "missing_start_rows": 38,
+  "rescue_candidates": 35,
+  "editorial_skipped": 3,
+  "manual_review": 0,
+  "rescue_csv": "tmp/ingest/review/2026-03-16_024206Z/rescue_candidates.csv",
+  "editorial_csv": "tmp/ingest/review/2026-03-16_024206Z/editorial_skipped.csv",
+  "review_csv": "tmp/ingest/review/2026-03-16_024206Z/missing_date_review.csv"
+}
