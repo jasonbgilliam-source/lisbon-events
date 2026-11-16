@@ -146,7 +146,8 @@ function normalizeAudience(input) {
 function makeSubmissionKey(title, startsAt, locationName) {
   return [
     normalizeText(title),
-    normalizeText(startsAt),
+    // PostgREST returns +00:00 while CSV mapping produces .000Z. Compare instants.
+    toIsoMaybe(startsAt) || normalizeText(startsAt),
     normalizeText(locationName),
   ].join("::");
 }
@@ -325,6 +326,7 @@ function mapRowToSubmission(row, allowedCategories) {
     location_name,
     address: firstNonEmpty(row.address) || null,
     ticket_url: firstNonEmpty(row.ticket_url, row.url, row.source_url) || null,
+    source_url: firstNonEmpty(row.source_url, row.url) || null,
     image_url: firstNonEmpty(row.image_url) || null,
     organizer_email: DEFAULT_ORGANIZER_EMAIL,
     age: firstNonEmpty(row.age) || null,
@@ -352,24 +354,27 @@ async function fetchAllowedCategories() {
   return new Set((data || []).map((r) => String(r.name)));
 }
 
-async function fetchExistingSubmissions() {
-  const { data, error } = await supabase
-    .from("event_submissions")
-    .select("title,starts_at,location_name,status")
-    .limit(5000);
+async function fetchAllExisting(table, columns) {
+  const rows = [];
+  const pageSize = 1000;
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+    if (error) throw new Error(`${table} fetch failed: ${error.message}`);
+    rows.push(...(data || []));
+    if (!data || data.length < pageSize) return rows;
+  }
+}
 
-  if (error) throw new Error(`event_submissions fetch failed: ${error.message}`);
-  return data || [];
+async function fetchExistingSubmissions() {
+  return fetchAllExisting("event_submissions", "title,starts_at,location_name,status");
 }
 
 async function fetchExistingEvents() {
-  const { data, error } = await supabase
-    .from("events")
-    .select("title,starts_at,location_name")
-    .limit(5000);
-
-  if (error) throw new Error(`events fetch failed: ${error.message}`);
-  return data || [];
+  return fetchAllExisting("events", "title,starts_at,location_name");
 }
 
 async function insertInBatches(rows) {
