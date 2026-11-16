@@ -105,7 +105,7 @@ function canonicalKeyForEvent(event) {
   );
 }
 
-function normalizeCanonicalEvent(sourceKey, event) {
+export function normalizeCanonicalEvent(sourceKey, event) {
   const slug = canonicalEventSlug(event);
   const sourceUrl = canonicalSourceUrl(event);
 
@@ -124,7 +124,7 @@ function normalizeCanonicalEvent(sourceKey, event) {
     category: event?.category || "",
     audience: toArray(event?.audience),
     price: event?.price || "",
-    status: event?.status || "approved",
+    status: canceled(event) ? "cancelled" : event?.status || "approved",
     source: event?.source || sourceKey,
     source_id: event?.source_id || "",
     source_url: sourceUrl,

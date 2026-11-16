@@ -1,0 +1,124 @@
+{
+  "captured_at": "2026-11-16T17:58:55.344Z",
+  "purpose": "Read-only verification sources; these examples were not imported into the live site.",
+  "sources": {
+    "selva": {
+      "url": "https://linktr.ee/selvacomedycafe",
+      "http_status": 200,
+      "sha256": "6d8eb48094dfb29ce185cca39998214ef5a69077299c767bd053e7d3d3d614b7",
+      "events": [],
+      "relevant_links": [
+        {
+          "label": "Nov 14th - Life in Lisboa - A cultural comedy show in English",
+          "url": "https://fienta.com/life-in-lisboa-a-cultural-comedy-show-212511"
+        },
+        {
+          "label": "Website",
+          "url": "https://selvacomedycafe.com"
+        }
+      ]
+    },
+    "hapsy": {
+      "url": "https://hapsy.co/e/life-in-lisboa-2",
+      "http_status": 200,
+      "sha256": "149eab913b4af4c9fdb7f2810b793fac27c8a6b5b44a1193123a7da9b592053a",
+      "events": [
+        {
+          "name": "Life in Lisboa - English Standup Comedy",
+          "startDate": "2026-12-12T20:30:00+00:00",
+          "endDate": "2026-12-12T22:30:00+00:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "location": {
+            "name": "Selva",
+            "address": "Rua Luís de Camões 112 A, Lisboa",
+            "city": "Lisbon"
+          },
+          "ticket_url": "https://www.eventbrite.com/e/life-in-lisboa-english-standup-comedy-tickets-1990568662454"
+        },
+        {
+          "name": "Life in Lisboa - English Standup Comedy",
+          "startDate": "2026-12-19T20:30:00+00:00",
+          "endDate": "2026-12-19T22:30:00+00:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "location": {
+            "name": "Selva",
+            "address": "Rua Luís de Camões 112 A, Lisboa",
+            "city": "Lisbon"
+          },
+          "ticket_url": "https://www.eventbrite.com/e/life-in-lisboa-english-standup-comedy-tickets-1990568662454"
+        }
+      ],
+      "description_schedule": {
+        "doors_open": "20:30",
+        "show_starts": "21:00",
+        "show_ends": "22:30",
+        "quote": "Doors open at 8.30PM. Come enjoy some drinks! The show starts at 9PM",
+        "ticket_verification_complete": false
+      },
+      "ticket_links": [
+        {
+          "label": "Get tickets",
+          "url": "https://www.eventbrite.com/e/life-in-lisboa-english-standup-comedy-tickets-1990568662454"
+        },
+        {
+          "label": "Original event source",
+          "url": "https://www.eventbrite.com/e/life-in-lisboa-english-standup-comedy-tickets-2004320131468"
+        }
+      ]
+    },
+    "lx": {
+      "url": "https://www.meetup.com/lisbon-retired-meetup-group/events/317255249/",
+      "http_status": 200,
+      "sha256": "5e8169facca9b105546492606fb04f3bcc287b43fe5addde1662631a1d777e38",
+      "events": [
+        {
+          "name": "TriviaENGLISHQuiz by Quizknights’s and LX brewing ",
+          "startDate": "2026-11-21T20:00:00Z",
+          "endDate": "2026-11-21T22:00:00Z",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "location": {
+            "name": "LX Brewery - LX BEER",
+            "address": "Rua ilha terceira 42D, Lisbon",
+            "city": "Lisbon"
+          },
+          "ticket_url": null
+        }
+      ]
+    },
+    "kossies": {
+      "url": "https://www.meetup.com/lisbon-retired-meetup-group/events/317144479/",
+      "http_status": 200,
+      "sha256": "df82849cbc77fdedd6a96006cfae0fa2a4209460033a23e3710a700154015274",
+      "events": [
+        {
+          "name": "Trivia”English”Quiz\nProbably the best quiz in town \nFree entry \n30€Rewards",
+          "startDate": "2026-11-15T14:00:00Z",
+          "endDate": "2026-11-15T16:00:00Z",
+          "eventStatus": "https://schema.org/EventCancelled",
+          "location": {
+            "name": "Kossies café",
+            "address": "R.da Rosa 240 1200-348 ,, Lisboa",
+            "city": "Lisboa"
+          },
+          "ticket_url": null
+        }
+      ]
+    }
+  },
+  "ticket_reads": [
+    {
+      "url": "https://fienta.com/life-in-lisboa-a-cultural-comedy-show-212511",
+      "result": "CONNECT 403 from environment proxy; ticket page not read",
+      "note": "Linked by Selva for November 14; not proof of December sessions"
+    },
+    {
+      "url": "https://www.eventbrite.com/e/life-in-lisboa-english-standup-comedy-tickets-1990568662454",
+      "result": "CONNECT 403 from environment proxy; ticket page not read",
+      "note": "Hapsy Get tickets link; December show start remains unverified"
+    },
+    {
+      "url": "https://selvacomedycafe.com",
+      "result": "CONNECT 403 from environment proxy; official website not read"
+    }
+  ]
+}

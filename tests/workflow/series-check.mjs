@@ -15,7 +15,8 @@ async function json(url, options) {
  assert.ok(res.ok, `${res.status}: ${JSON.stringify(data)}`); return data;
 }
 async function rows(table) { return json(`${rest}/${table}?select=*`); }
-const base = { status: 'confirmed', title: 'Life in Lisboa', location_name: 'Selva', city: 'Lisbon', address: 'Test venue address',
+const sourceEvidence = JSON.parse(readFileSync(new URL('../fixtures/recurring-source-evidence.json', import.meta.url), 'utf8'));
+const base = { eventStatus: '', status: 'confirmed', title: 'Life in Lisboa', location_name: 'Selva', city: 'Lisbon', address: 'Test venue address',
  description: 'Synthetic test performance, not a verified live showtime.', category: 'Music', source_url: 'https://example.invalid/organizer',
  enrichment_review_status: 'pending_review', enrichment_enrich_ok: 'true' };
 const data = [
@@ -25,6 +26,9 @@ const data = [
  { ...base, title: 'Double bill', starts_at: '2099-12-12T20:00:00Z' },
  ...['LX Brewery', 'Kossies'].map(location_name => ({ ...base, title: 'Quiz Knights', location_name, starts_at: '2099-12-12T19:00:00Z' })),
  { ...base, starts_at: '2099-12-26T19:00:00Z', status: 'cancelled' },
+ // The real Meetup cancellation shape, with a synthetic future date for repeatable UI tests.
+ { ...base, title: 'Quiz Knights', location_name: 'Kossies café', starts_at: '2099-11-15T14:00:00Z',
+   source_url: sourceEvidence.sources.kossies.url, eventStatus: sourceEvidence.sources.kossies.events[0].eventStatus },
  // A second source for the same instant is not another performance.
  { ...base, starts_at: '2099-12-12T19:00:00+00:00', source_url: 'https://example.invalid/aggregator' },
 ];
@@ -80,7 +84,7 @@ try {
  assert.equal(resolveImportPerformances(conflict).accepted[0].starts_at, conflict[1].starts_at);
  assert.equal(resolveImportPerformances(conflict.map(c => ({ ...c, time_authority: '' }))).conflicts.length, 1);
  assert.equal(resolveImportPerformances(conflict.map(c => ({ ...c, time_authority: 'ticket' }))).accepted.length, 0, 'conflicting authoritative pages require review');
- assert.equal(resolveImportPerformances(data).canceledRows.length, 1);
+ assert.equal(resolveImportPerformances(data).canceledRows.length, 2);
  const sourceEvents = dedupeCanonicalEvents([
   { ...base, starts_at: '2099-12-12T17:00:00Z', url: base.source_url },
   { ...base, starts_at: '2099-12-12T20:00:00Z', url: base.source_url },

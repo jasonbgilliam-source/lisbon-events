@@ -10,7 +10,7 @@ Category pages and map pins use the same shared upcoming schedules, so later per
 
 All CSV import entry points stage pending submissions, including the admin CSV button and legacy CLI wrapper. Nothing is published by importing. Each performance must be explicitly approved. Approval adds an occurrence to an existing matching show/venue or creates a new listing for the first performance. Repeated approval/import is idempotent for that instant. Existing confirmed starts are preserved when adding occurrences to legacy listings.
 
-Canceled CSV sessions (`status` or `event_status` equal to `canceled`/`cancelled`, or `is_cancelled`/`is_canceled` true) are skipped. This is not authorization to delete already-published performances; live cancellations need review.
+Canceled CSV sessions (`status`, `event_status` or `eventStatus` equal to `canceled`/`cancelled` or the Schema.org `EventCancelled` URL, or `is_cancelled`/`is_canceled` true) are skipped. This is not authorization to delete already-published performances; live cancellations need review.
 
 For conflicting source times, do not guess that every same-day row is the same performance: two performances on a day can be legitimate. When source verification establishes two rows refer to the same performance, supply the same `performance_key` and set `time_authority` to `organizer` or `ticket` on the row transcribed from that page. The importer prefers those verified rows. Contradictory authoritative times, or conflicts without authoritative verification, are excluded and recorded under `time_conflicts` in the import report for review. These fields describe provenance supplied by the operator; the importer does not claim to have independently fetched or verified that page. Without a performance key, differing times remain separate pending submissions for manual review.
 
@@ -30,7 +30,7 @@ node scripts/ingest/series_dry_run.mjs /tmp/live-events.json /tmp/live-series-dr
 
 The script uses only a public GET, writes a local JSON proposal, and makes zero database writes. For each duplicate group it records original IDs/slugs, proposed shared slug, every observed showtime, source/ticket URLs, and possible conflicting times requiring verification. It flags possible response truncation. The report covers returned public listings, not a private database audit. Review source pages before treating observed times as confirmed or executing any consolidation.
 
-Live audit update: the public site is now reachable. A read-only audit of 18 upcoming database records and 698 public CSV records is saved in [the live dry-run report](reports/live-series-audit-2026-11-16.md). Organizer/ticket verification remains blocked for Visit Lisboa and AgendaLX. Life in Lisboa and Quiz Knights were not found in the inspected public responses; their test fixtures remain synthetic. No live data changes were performed.
+Live audit update: the public site is now reachable. A read-only audit of 18 upcoming database records and 698 public CSV records is saved in [the live dry-run report](reports/live-series-audit-2026-11-16.md). Organizer/ticket verification remains blocked for Visit Lisboa and AgendaLX. The user clarified that Life in Lisboa and Quiz Knights are test examples that have never been imported. Their [source verification](reports/recurring-example-verification-2026-11-16.md) confirms the Meetup schedule/cancellation and records the unresolved Hapsy doors/show-time conflict; no preview containing them is needed. No live data changes were performed.
 
 ## Isolated validation
 

@@ -15,7 +15,7 @@ Read-only public audit of https://lisbon-events-psi.vercel.app/. No database wri
 | Calendar and CSV search for Life in Lisboa, Selva, Quiz Knights | No matching titles |
 | Linked Visit Lisboa / AgendaLX sources | Proxy rejected CONNECT with HTTP 403 |
 
-The date range is a bounded calendar audit, not a full private database export. Exact-title and venue queries do not establish the absence of spelling variants or records hidden by other API restrictions. These observations cannot verify the requested Selva December 12/19 times or the Quiz Knights venue schedules. No year, time or recurrence has been inferred for those examples.
+The date range is a bounded calendar audit, not a full private database export. Exact-title and venue queries do not establish the absence of spelling variants or records hidden by other API restrictions. These examples were subsequently clarified by the user as test cases that have never been imported; their absence is expected. Their separately supplied source evidence is documented in [the recurring example verification](recurring-example-verification-2026-11-16.md). No live import or recurrence was inferred from their absence.
 
 The JSON reports include capture timestamps, public source URLs and SHA-256 hashes of the downloaded inputs. `csv:<slug>` identifiers identify CSV rows, **not database UUIDs**.
 
@@ -52,4 +52,4 @@ These may include separate venues, editions, runs, or incorrectly labeled record
 
 ## Next actions
 
-Allow `www.visitlisboa.com` and `www.agendalx.pt` for source inspection. Obtain the organizer/ticket URLs or the correct preview/snapshot containing Life in Lisboa and Quiz Knights. Follow event-specific organizer/ticket links and retain the confirmed starts individually, including distinct same-day performances. Only then finalize a live consolidation proposal. Changing live data or deploying still requires explicit user approval.
+Allow `www.visitlisboa.com` and `www.agendalx.pt` for source inspection. The user has supplied organizer/ticket links for Life in Lisboa and Quiz Knights as test examples, not live records; no preview/snapshot containing them is needed. See the separate verification report for those sources and remaining ticket-host access requirements. Follow event-specific organizer/ticket links and retain the confirmed starts individually, including distinct same-day performances. Only then finalize a live consolidation proposal. Changing live data or deploying still requires explicit user approval.

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/../.."
+env -i "PATH=$PATH" node tests/workflow/source-evidence-check.mjs
+env -i "PATH=$PATH" node tests/workflow/report-check.mjs
 # Uses only disposable local containers. Fixed ports must be free.
 node - <<'JS'
 const net = require('node:net');
