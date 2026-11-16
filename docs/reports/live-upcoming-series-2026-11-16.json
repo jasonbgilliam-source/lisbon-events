@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-11-16T17:50:39.884Z",
+  "source": "https://lisbon-events-psi.vercel.app/api/events/list/?limit=2000",
+  "source_kind": "public_upcoming_database_api",
+  "captured_at": "2026-11-16T17:50:03.936768+00:00",
+  "snapshot_sha256": "93d67383398563fd9ed80a02e62ef12092510309e9d4d4a76b062dae512e17fd",
+  "scope": "Public listings returned by the supplied API/snapshot; not a full private database audit.",
+  "potentially_truncated": false,
+  "input_records": 18,
+  "proposed_listing_count": 18,
+  "policy": "Same normalized title, venue and city; distinct instants preserved. Canceled records excluded. Never invent daily recurrence.",
+  "source_verification": "Proposals require organizer/ticket verification before live data changes. Times listed here are observed, not independently verified.",
+  "groups": [],
+  "manual_review_candidates": [
+    {
+      "title": "This is Michael",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "bd89d259-0971-46ba-80c3-c8518b0bf280",
+          "slug": "camoes-epic-lyrical-universal",
+          "venue": null,
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": "https://www.visitlisboa.com/en/events"
+        },
+        {
+          "id": "4fe8d40b-0289-4ddd-9efa-05cd45fac272",
+          "slug": "this-is-michael",
+          "venue": null,
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": "https://www.visitlisboa.com/en/events"
+        },
+        {
+          "id": "ea58ab08-6083-4bbd-9176-89a498541cf4",
+          "slug": "tide-line-cam-s-collection",
+          "venue": null,
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": "https://www.visitlisboa.com/en/events"
+        },
+        {
+          "id": "259a2943-791e-4a77-b139-5c7e4252aec8",
+          "slug": "ah-amalia-living-experience",
+          "venue": null,
+          "starts_at": "2026-11-20T00:00:00+00:00",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": "https://www.visitlisboa.com/en/events"
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    }
+  ],
+  "writes_performed": 0
+}

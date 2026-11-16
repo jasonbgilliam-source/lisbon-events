@@ -1,0 +1,372 @@
+{
+  "generated_at": "2026-11-16T17:50:40.110Z",
+  "source": "https://lisbon-events-psi.vercel.app/events.csv",
+  "source_kind": "public_csv_ids_are_csv_colon_slug_not_database_ids",
+  "captured_at": "2026-11-16T17:50:03.939319+00:00",
+  "snapshot_sha256": "4283f03561d64edbbc7c28d117215e4a2d9657e6a7195e0a2d41abc4d8230bf1",
+  "scope": "Public listings returned by the supplied API/snapshot; not a full private database audit.",
+  "potentially_truncated": false,
+  "input_records": 698,
+  "proposed_listing_count": 697,
+  "policy": "Same normalized title, venue and city; distinct instants preserved. Canceled records excluded. Never invent daily recurrence.",
+  "source_verification": "Proposals require organizer/ticket verification before live data changes. Times listed here are observed, not independently verified.",
+  "groups": [
+    {
+      "title": "Anna Maria Maiolino",
+      "venue": "MAAT - Museu de Arte, Arquitetura e Tecnologia",
+      "city": "Lisboa",
+      "proposed_shared_slug": "anna-maria-maiolino",
+      "records_to_group": [
+        {
+          "id": "csv:anna-maria-maiolino",
+          "slug": "anna-maria-maiolino"
+        },
+        {
+          "id": "csv:anna-maria-maiolino-2",
+          "slug": "anna-maria-maiolino-2"
+        }
+      ],
+      "preserved_performances": [
+        {
+          "date": "2026-03-25",
+          "starts_at": null,
+          "ends_at": null,
+          "observed_run_ends_on": "2026-08-31",
+          "time_precision": "date_only_no_confirmed_clock_time",
+          "requires_source_verification": true
+        }
+      ],
+      "observed_schedule_records": [
+        {
+          "id": "csv:anna-maria-maiolino-2",
+          "slug": "anna-maria-maiolino-2",
+          "starts_at": "2026-03-25",
+          "ends_at": "2026-08-31"
+        },
+        {
+          "id": "csv:anna-maria-maiolino",
+          "slug": "anna-maria-maiolino",
+          "starts_at": "2026-03-25",
+          "ends_at": "2026-08-31"
+        }
+      ],
+      "source_records": [
+        {
+          "id": "csv:anna-maria-maiolino-2",
+          "slug": "anna-maria-maiolino-2",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events"
+        },
+        {
+          "id": "csv:anna-maria-maiolino",
+          "slug": "anna-maria-maiolino",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events"
+        }
+      ],
+      "needs_source_verification": [],
+      "action": "proposal_only_no_writes"
+    }
+  ],
+  "manual_review_candidates": [
+    {
+      "title": "Avenida 211",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:avenida-211",
+          "slug": "avenida-211",
+          "venue": "MAC/CCB",
+          "starts_at": "2026-03-15",
+          "ends_at": "2026-04-05",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:avenida-211",
+          "slug": "avenida-211",
+          "venue": null,
+          "starts_at": "2025-10-25",
+          "ends_at": "2026-04-05",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Ana, Carolina e Adelaide: ainda estamos aqui",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:ana-carolina-e-adelaide-ainda-estamos-aqui",
+          "slug": "ana-carolina-e-adelaide-ainda-estamos-aqui",
+          "venue": "Clube Estefânia",
+          "starts_at": "2026-03-15",
+          "ends_at": "2026-03-15",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:ana-carolina-e-adelaide-ainda-estamos-aqui",
+          "slug": "ana-carolina-e-adelaide-ainda-estamos-aqui",
+          "venue": null,
+          "starts_at": "2026-03-12",
+          "ends_at": "2026-03-15",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Concerto delle donne",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:concerto-delle-donne",
+          "slug": "concerto-delle-donne",
+          "venue": "Academia das Ciências de Lisboa",
+          "starts_at": "2026-03-17",
+          "ends_at": "2026-03-17",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:concerto-delle-donne",
+          "slug": "concerto-delle-donne",
+          "venue": null,
+          "starts_at": "2026-03-17",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Movie Experiments, Los Angeles",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:movie-experiments-los-angeles",
+          "slug": "movie-experiments-los-angeles",
+          "venue": "Pavilhão Julião Sarmento",
+          "starts_at": "2026-03-18",
+          "ends_at": "2026-04-01",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:movie-experiments-los-angeles",
+          "slug": "movie-experiments-los-angeles",
+          "venue": null,
+          "starts_at": "2026-03-18",
+          "ends_at": "2026-03-18",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Suede",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:suede",
+          "slug": "suede",
+          "venue": "Sagres Campo Pequeno",
+          "starts_at": "2026-03-20",
+          "ends_at": "2026-03-20",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:suede-26",
+          "slug": "suede-26",
+          "venue": null,
+          "starts_at": "2026-03-20",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Festival Criasons",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:festival-criasons-3",
+          "slug": "festival-criasons-3",
+          "venue": "Biblioteca Camões",
+          "starts_at": "2026-03-21",
+          "ends_at": "2026-03-28",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:festival-criasons",
+          "slug": "festival-criasons",
+          "venue": null,
+          "starts_at": "2026-03-21",
+          "ends_at": "2026-03-21",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "In the Heights",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:in-the-heights",
+          "slug": "in-the-heights",
+          "venue": "Teatro Variedades",
+          "starts_at": "2026-03-25",
+          "ends_at": "2026-05-03",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:in-the-heights",
+          "slug": "in-the-heights",
+          "venue": null,
+          "starts_at": "2026-03-25",
+          "ends_at": "2026-05-03",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Evita",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:evita",
+          "slug": "evita",
+          "venue": "Capitólio",
+          "starts_at": "2026-03-27",
+          "ends_at": "2026-06-28",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:evita",
+          "slug": "evita",
+          "venue": null,
+          "starts_at": "2026-03-25",
+          "ends_at": "2026-06-28",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Scorpions",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:scorpions-3",
+          "slug": "scorpions-3",
+          "venue": "MEO Arena",
+          "starts_at": "2026-07-08",
+          "ends_at": "2026-07-08",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:scorpions",
+          "slug": "scorpions",
+          "venue": null,
+          "starts_at": "2026-07-08",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "Belle and Sebastian",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:belle-and-sebastian-2",
+          "slug": "belle-and-sebastian-2",
+          "venue": "Coliseu dos Recreios",
+          "starts_at": "2026-07-21",
+          "ends_at": "2026-07-21",
+          "source_url": "https://www.agendalx.pt/wp-json/agendalx/v1/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:belle-and-sebastian",
+          "slug": "belle-and-sebastian",
+          "venue": null,
+          "starts_at": "2026-07-21",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "ModaLisboa - Lisboa Fashion Week'26",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:march-modalisboa-lisboa-fashion-week",
+          "slug": "march-modalisboa-lisboa-fashion-week",
+          "venue": null,
+          "starts_at": "2026-03-12",
+          "ends_at": "2026-03-15",
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:modalisboa-lisboa-fashion-week-oct",
+          "slug": "modalisboa-lisboa-fashion-week-oct",
+          "venue": null,
+          "starts_at": null,
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    },
+    {
+      "title": "James Taylor Quartet",
+      "reason": "Missing venue: identity is unverified; do not merge automatically",
+      "records": [
+        {
+          "id": "csv:james-taylor-quartet-0526",
+          "slug": "james-taylor-quartet-0526",
+          "venue": null,
+          "starts_at": "2026-05-16",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        },
+        {
+          "id": "csv:james-taylor-quartet",
+          "slug": "james-taylor-quartet",
+          "venue": null,
+          "starts_at": "2026-05-16",
+          "ends_at": null,
+          "source_url": "https://www.visitlisboa.com/en/events",
+          "ticket_url": null
+        }
+      ],
+      "action": "manual_source_and_venue_review_no_writes"
+    }
+  ],
+  "writes_performed": 0
+}

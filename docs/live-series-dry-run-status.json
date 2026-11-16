@@ -1,12 +1,17 @@
 {
-  "status": "blocked_network_access",
+  "status": "public_audit_completed_source_verification_incomplete",
   "live_site": "https://lisbon-events-psi.vercel.app/",
-  "attempted_read": "https://lisbon-events-psi.vercel.app/api/events/list/?limit=2000",
-  "observed_error": "Environment proxy rejected CONNECT with HTTP 403 before reaching the site",
-  "live_records_read": 0,
+  "live_upcoming_records_read": 18,
+  "live_csv_records_read": 698,
+  "live_calendar_entries_read": 17340,
+  "csv_grouping_proposals": 1,
+  "database_manual_review_clusters": 1,
+  "csv_manual_review_clusters": 12,
   "organizer_or_ticket_times_verified": 0,
+  "remaining_blocked_hosts": ["www.visitlisboa.com", "www.agendalx.pt"],
+  "requested_examples_found": false,
+  "report": "reports/live-series-audit-2026-11-16.md",
   "writes_performed": 0,
   "deployment_performed": false,
-  "required_next_step": "Allow the live hostname in environment networking; run scripts/ingest/series_dry_run.mjs, then read the linked organizer/ticket pages to verify any conflicting times. No live consolidation is authorized.",
-  "note": "This is a blocker record, not a completed live duplicate report. Synthetic tests must not be presented as live showtime evidence."
+  "environment_publication_performed": false
 }
