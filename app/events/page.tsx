@@ -14,6 +14,7 @@ const SPONSORED_EVENT_SLUGS = new Set<string>([
 ]);
 
 type EventItem = {
+  occurrences?: { starts_at: string }[];
   id: string;
   slug: string;
   title: string;
@@ -168,6 +169,8 @@ function hasMapData(e: EventItem) {
 }
 
 export default function EventsPage() {
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -186,7 +189,7 @@ export default function EventsPage() {
       setError(null);
 
       try {
-        const res = await fetch("/api/events/list/?limit=500", { cache: "no-store" });
+        const res = await fetch(`/api/events/list/?limit=500${fromDate ? `&from=${encodeURIComponent(fromDate)}` : ""}${toDate ? `&to=${encodeURIComponent(toDate)}` : ""}`, { cache: "no-store" });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(json?.error || `Failed to load events (${res.status})`);
 
@@ -202,7 +205,7 @@ export default function EventsPage() {
     }
 
     loadEvents();
-  }, []);
+  }, [fromDate, toDate]);
 
   const filteredEvents = useMemo(() => {
     let filtered = [...events];
@@ -244,10 +247,10 @@ export default function EventsPage() {
     return filtered;
   }, [events, filters]);
 
-  const showPromoRows = !hasActiveFilters(filters);
+  const showPromoRows = !hasActiveFilters(filters) && !fromDate && !toDate;
 
   const formatDate = (dateStr?: string | null) =>
-    dateStr ? dayjs(dateStr).format("ddd, MMM D, YYYY h:mm A") : "";
+    dateStr ? new Intl.DateTimeFormat("en-US", { timeZone: "Europe/Lisbon", weekday: "short", month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(dateStr)) : "";
 
   const getImage = (e: EventItem) => {
     if (e.image_url && e.source_folder) {
@@ -335,6 +338,7 @@ export default function EventsPage() {
             <div className="mt-1 space-y-1 text-sm text-gray-800">
               <p>📍 {e.location_name || "Location TBA"}</p>
               <p>🕒 {formatDate(e.starts_at)}</p>
+              {(e.occurrences?.length || 0) > 1 && <p>{e.occurrences!.length} upcoming performances</p>}
               {e.city ? <p>🏙️ {e.city}</p> : null}
             </div>
 
@@ -422,6 +426,7 @@ export default function EventsPage() {
 
           <div className="p-3">
             <div className="text-sm text-neutral-600">{formatDate(e.starts_at) || "Date TBA"}</div>
+            {(e.occurrences?.length || 0) > 1 && <div className="text-sm">{e.occurrences!.length} upcoming performances</div>}
             <div className="mt-1 line-clamp-2 font-semibold text-[#c94917] group-hover:underline">
               {e.title}
             </div>
@@ -451,6 +456,10 @@ export default function EventsPage() {
   return (
     <section className="max-w-5xl mx-auto">
       <Suspense fallback={<p className="text-center italic">Loading filters…</p>}>
+        <div className="flex gap-4 my-4">
+          <label>From <input aria-label="From date" type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label>
+          <label>To <input aria-label="To date" type="date" value={toDate} onChange={e => setToDate(e.target.value)} /></label>
+        </div>
         <FilterBar
           value={filters}
           onChange={setFilters}
@@ -498,7 +507,7 @@ export default function EventsPage() {
             Hearts are saved on this device only.
           </div>
 
-          <div className="flex flex-col gap-6">{filteredEvents.map(renderEventRowCard)}</div>
+          <div className="flex flex-col gap-6">{filteredEvents.filter(e => !showPromoRows || ![...sponsoredEvents, ...featuredEvents].some(p => p.slug === e.slug)).map(renderEventRowCard)}</div>
         </div>
       )}
     </section>

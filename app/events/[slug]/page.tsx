@@ -8,6 +8,7 @@ import FavoriteButton from "../../../components/FavoriteButton";
 import EventStaticMap from "@/components/EventStaticMap";
 
 type EventItem = {
+  occurrences?: { starts_at: string; ends_at?: string | null }[];
   id: string;
   slug: string;
   title: string;
@@ -215,12 +216,15 @@ export default function EventDetailPage() {
 
           <div className="mt-3 space-y-1 text-sm text-gray-800">
             {event.location_name && <p>📍 {event.location_name}</p>}
-            {when && (
-              <p>
-                🕒 {when}
-                {ends ? ` – ${ends}` : ""}
-              </p>
-            )}
+            {event.occurrences?.length ? (
+              <div aria-label="Upcoming performances">
+                <h2 className="font-semibold">Upcoming performances</h2>
+                <ul>{event.occurrences.map(o => <li key={o.starts_at}>
+                  <time dateTime={o.starts_at}>{formatLisbonDateTime(o.starts_at)}</time>
+                  {o.ends_at ? ` – ${formatLisbonDateTime(o.ends_at)}` : ""}
+                </li>)}</ul>
+              </div>
+            ) : <p>No upcoming confirmed performances.</p>}
             {event.city && <p>🏙️ {event.city}</p>}
             {event.address && <p>🗺️ {event.address}</p>}
             {event.is_free || (event.price || "").toLowerCase() === "free" ? (

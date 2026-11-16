@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { supabaseServer } from "@/lib/supabaseServer";
+import { loadUpcomingSeries } from "@/lib/eventOccurrences";
 import EventStaticMap from "@/components/EventStaticMap";
 import {
   findCategoryBySlug,
@@ -98,32 +98,9 @@ export default async function CategoryDetailPage({ params }: Props) {
   const category = findCategoryBySlug(slug);
   if (!category) notFound();
 
-  const supabase = supabaseServer();
-  const nowIso = new Date().toISOString();
-
-  const { data, error } = await supabase
-    .from("events")
-    .select(
-      [
-        "id",
-        "slug",
-        "title",
-        "description",
-        "starts_at",
-        "ends_at",
-        "category",
-        "location_name",
-        "address",
-        "city",
-        "latitude",
-        "longitude",
-        "price",
-        "audience",
-        "image_url",
-      ].join(",")
-    )
-    .or(`ends_at.gte.${nowIso},and(ends_at.is.null,starts_at.gte.${nowIso})`)
-    .order("starts_at", { ascending: true });
+  let data: any[] = [];
+  let error: any = null;
+  try { data = await loadUpcomingSeries(); } catch (e) { error = e; }
 
   if (error) {
     return (

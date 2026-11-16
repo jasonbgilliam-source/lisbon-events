@@ -1,9 +1,12 @@
+import { resolveImportPerformances, seriesKey } from "../../../lib/eventSeries.mjs";
+import { pathToFileURL } from "node:url";
 import fs from "node:fs";
 import path from "node:path";
 import Papa from "papaparse";
 import { createClient } from "@supabase/supabase-js";
 
-const INPUT_CSV = process.env.IMPORT_INPUT_CSV || process.argv[2];
+export async function importSubmissions(options = {}) {
+const INPUT_CSV = options.inputCsv || process.env.IMPORT_INPUT_CSV || process.argv[2];
 const OUTPUT_DIR =
   process.env.IMPORT_OUTPUT_DIR || path.join("tmp", "ingest", "imports");
 
@@ -19,10 +22,10 @@ const DEFAULT_CATEGORY =
   (process.env.IMPORT_DEFAULT_CATEGORY || "").trim();
 
 const IMPORT_ONLY_PENDING_REVIEW =
-  String(process.env.IMPORT_ONLY_PENDING_REVIEW ?? "true").toLowerCase() !== "false";
+  String(options.onlyPendingReview ?? process.env.IMPORT_ONLY_PENDING_REVIEW ?? "true").toLowerCase() !== "false";
 
 const IMPORT_REQUIRE_ENRICH_OK =
-  String(process.env.IMPORT_REQUIRE_ENRICH_OK ?? "true").toLowerCase() !== "false";
+  String(options.requireEnrichOk ?? process.env.IMPORT_REQUIRE_ENRICH_OK ?? "true").toLowerCase() !== "false";
 
 const DRY_RUN =
   String(process.env.IMPORT_DRY_RUN ?? "false").toLowerCase() === "true";
@@ -33,14 +36,14 @@ if (!INPUT_CSV) {
   console.error(
     'Usage: IMPORT_INPUT_CSV="tmp/ingest/merged/events_merged_...csv" node scripts/ingest/enrich/import_merged_to_submissions.mjs'
   );
-  process.exit(1);
+  throw new Error("Missing import input or database configuration");
 }
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
   console.error(
     "Missing SUPABASE_URL/NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY"
   );
-  process.exit(1);
+  throw new Error("Missing import input or database configuration");
 }
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -143,13 +146,8 @@ function normalizeAudience(input) {
   return [...new Set(normalized)];
 }
 
-function makeSubmissionKey(title, startsAt, locationName) {
-  return [
-    normalizeText(title),
-    // PostgREST returns +00:00 while CSV mapping produces .000Z. Compare instants.
-    toIsoMaybe(startsAt) || normalizeText(startsAt),
-    normalizeText(locationName),
-  ].join("::");
+function makeSubmissionKey(title, startsAt, locationName, city) {
+  return [seriesKey({ title, location_name: locationName, city }), toIsoMaybe(startsAt) || normalizeText(startsAt)].join("::");
 }
 
 function shouldSelectRow(row) {
@@ -266,7 +264,7 @@ function resolveCategory(row, allowedCategories) {
 }
 
 function mapRowToSubmission(row, allowedCategories) {
-  const title = firstNonEmpty(row.title);
+  const title = firstNonEmpty(row.series_title, row.title);
   const starts_at = toIsoMaybe(firstNonEmpty(row.starts_at));
   const ends_at = toIsoMaybe(firstNonEmpty(row.ends_at));
   const location_name = firstNonEmpty(row.location_name, row.venue_name);
@@ -361,7 +359,8 @@ async function fetchAllExisting(table, columns) {
     const { data, error } = await supabase
       .from(table)
       .select(columns)
-      .order("id", { ascending: true })
+      .order(table === "event_occurrences" ? "event_slug" : "id", { ascending: true })
+      .order("starts_at", { ascending: true })
       .range(from, from + pageSize - 1);
     if (error) throw new Error(`${table} fetch failed: ${error.message}`);
     rows.push(...(data || []));
@@ -370,11 +369,14 @@ async function fetchAllExisting(table, columns) {
 }
 
 async function fetchExistingSubmissions() {
-  return fetchAllExisting("event_submissions", "title,starts_at,location_name,status");
+  return fetchAllExisting("event_submissions", "title,starts_at,location_name,city,status");
 }
 
 async function fetchExistingEvents() {
-  return fetchAllExisting("events", "title,starts_at,location_name");
+  const events = await fetchAllExisting("events", "slug,title,starts_at,location_name,city");
+  const occurrences = await fetchAllExisting("event_occurrences", "event_slug,starts_at");
+  const bySlug = new Map(events.map(e => [e.slug, e]));
+  return [...events, ...occurrences.flatMap(o => bySlug.has(o.event_slug) ? [{ ...bySlug.get(o.event_slug), starts_at: o.starts_at }] : [])];
 }
 
 async function insertInBatches(rows) {
@@ -392,23 +394,24 @@ async function main() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
   const inputRows = readCsv(INPUT_CSV);
+  const resolved = resolveImportPerformances(inputRows);
   const allowedCategories = await fetchAllowedCategories();
   const existingSubs = await fetchExistingSubmissions();
   const existingEvents = await fetchExistingEvents();
 
   const existingSubmissionKeys = new Set(
-    existingSubs.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name))
+    existingSubs.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name, r.city))
   );
 
   const existingEventKeys = new Set(
-    existingEvents.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name))
+    existingEvents.map((r) => makeSubmissionKey(r.title, r.starts_at, r.location_name, r.city))
   );
 
   const selected = [];
   const readyToInsert = [];
   const skipped = [];
 
-  for (const row of inputRows) {
+  for (const row of resolved.accepted) {
     if (!shouldSelectRow(row)) {
       skipped.push({
         title: firstNonEmpty(row.title),
@@ -439,7 +442,8 @@ async function main() {
     const dedupeKey = makeSubmissionKey(
       submission.title,
       submission.starts_at,
-      submission.location_name
+      submission.location_name,
+      submission.city
     );
 
     if (existingSubmissionKeys.has(dedupeKey)) {
@@ -480,7 +484,7 @@ async function main() {
     `import_to_event_submissions_report_${stamp}.json`
   );
 
-  writeJson(reportPath, {
+  const report = {
     created_at: stamp,
     input_csv: INPUT_CSV,
     dry_run: DRY_RUN,
@@ -489,6 +493,8 @@ async function main() {
     default_organizer_email: DEFAULT_ORGANIZER_EMAIL,
     default_category: DEFAULT_CATEGORY || null,
     input_row_count: inputRows.length,
+    canceled_count: resolved.canceledRows.length,
+    time_conflicts: resolved.conflicts,
     selected_count: selected.length,
     ready_to_insert_count: insertPayload.length,
     skipped_count: skipped.length,
@@ -496,7 +502,8 @@ async function main() {
     ready_to_insert_sample: readyToInsert.slice(0, 50),
     skipped_sample: skipped.slice(0, 100),
     allowed_categories_sample: [...allowedCategories].slice(0, 50),
-  });
+  };
+  writeJson(reportPath, report);
 
   console.log(`Input rows:                 ${inputRows.length}`);
   console.log(`Selected rows:              ${selected.length}`);
@@ -506,9 +513,15 @@ async function main() {
   console.log(`Default category:           ${DEFAULT_CATEGORY || "(none)"}`);
   console.log(`\n✅ Import step complete`);
   console.log(`Report: ${reportPath}`);
+  return report;
 }
 
-main().catch((err) => {
-  console.error("Import to event_submissions failed:", err);
-  process.exit(1);
-});
+return main();
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  importSubmissions().catch((err) => {
+    console.error("Import to event_submissions failed:", err);
+    process.exitCode = 1;
+  });
+}

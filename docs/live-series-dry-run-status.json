@@ -1,0 +1,12 @@
+{
+  "status": "blocked_network_access",
+  "live_site": "https://lisbon-events-psi.vercel.app/",
+  "attempted_read": "https://lisbon-events-psi.vercel.app/api/events/list/?limit=2000",
+  "observed_error": "Environment proxy rejected CONNECT with HTTP 403 before reaching the site",
+  "live_records_read": 0,
+  "organizer_or_ticket_times_verified": 0,
+  "writes_performed": 0,
+  "deployment_performed": false,
+  "required_next_step": "Allow the live hostname in environment networking; run scripts/ingest/series_dry_run.mjs, then read the linked organizer/ticket pages to verify any conflicting times. No live consolidation is authorized.",
+  "note": "This is a blocker record, not a completed live duplicate report. Synthetic tests must not be presented as live showtime evidence."
+}

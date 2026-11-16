@@ -1,3 +1,4 @@
+import { loadUpcomingSeries } from "@/lib/eventOccurrences";
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 
@@ -31,37 +32,9 @@ export async function GET(req: Request) {
     const supabase = supabaseServer();
     const nowIso = new Date().toISOString();
 
-    // Pull rows without lat/lng filtering so we can explain what's missing.
-    let q = supabase
-      .from("events")
-      .select(
-        [
-          "id",
-          "slug",
-          "title",
-          "starts_at",
-          "category",
-          "latitude",
-          "longitude",
-          "geocode_status",
-          "geocode_error",
-          "geocoded_at",
-          "normalized_address",
-        ].join(",")
-      )
-      .order("starts_at", { ascending: true, nullsFirst: false })
-      .limit(Math.max(limit, 500));
+    const rows = (await loadUpcomingSeries()).filter((e: any) => !category || e.category === category);
 
-    if (category) q = q.eq("category", category);
-
-    const { data, error } = await q;
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500, headers: { "Cache-Control": "no-store" } });
-    }
-
-    const rows = data ?? [];
-
-    const isFuture = (r: any) => r.starts_at && String(r.starts_at) >= nowIso;
+    const isFuture = (r: any) => r.occurrences.length > 0;
     const hasLatLng = (r: any) => r.latitude != null && r.longitude != null;
     const hasSlug = (r: any) => typeof r.slug === "string" && r.slug.trim().length > 0;
 

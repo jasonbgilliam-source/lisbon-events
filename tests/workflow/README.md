@@ -1,4 +1,6 @@
-# Isolated import and approval regression test
+# Isolated import and approval regression tests
+
+The runner now also applies `sql/series-occurrences.sql` only to the disposable database and executes `series-check.mjs`. See [listing and performance design](../../docs/series-occurrences.md) for the new series model, migration review, tests and live-audit blocker. The original import-fix history below describes the earlier regression suite.
 
 Run from the repository root:
 

@@ -23,3 +23,8 @@ create table event_submissions (
  spotify_url text, is_free boolean, source_url text, status text default 'pending',
  reviewer text, review_notes text, approved_at timestamptz, created_at timestamptz default now()
 );
+create table event_occurrences (
+ id uuid primary key default gen_random_uuid(), event_slug text not null,
+ occurrence_date date not null, starts_at timestamptz not null, ends_at timestamptz,
+ is_all_day boolean default false, unique(event_slug, occurrence_date)
+);

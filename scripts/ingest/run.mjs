@@ -1,3 +1,5 @@
+import { pathToFileURL } from "node:url";
+import { confirmedPerformances, canceled, seriesKey } from "../../lib/eventSeries.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -91,53 +93,13 @@ function canonicalEventSlug(event) {
   return slugify(`${event?.title || "event"}-${event?.starts_at || ""}`);
 }
 
-function buildOccurrenceDateList(event) {
-  const directOccurrences = Array.isArray(event?.occurrences) ? event.occurrences : [];
-  const rawOccurrences = Array.isArray(event?.raw_occurrences) ? event.raw_occurrences : [];
-
-  const collected = [];
-
-  for (const item of directOccurrences) {
-    if (typeof item === "string") {
-      const d = parseDateOnly(item);
-      if (d) collected.push(d);
-      continue;
-    }
-
-    if (item && typeof item === "object") {
-      const starts = parseDateOnly(item.starts_at || item.date || "");
-      if (starts) collected.push(starts);
-    }
-  }
-
-  for (const item of rawOccurrences) {
-    if (typeof item === "string") {
-      const d = parseDateOnly(item);
-      if (d) collected.push(d);
-      continue;
-    }
-
-    if (item && typeof item === "object") {
-      const starts = parseDateOnly(item.starts_at || item.date || "");
-      if (starts) collected.push(starts);
-    }
-  }
-
-  const fallbackStart = parseDateOnly(event?.starts_at || "");
-  if (collected.length === 0 && fallbackStart) {
-    collected.push(fallbackStart);
-  }
-
-  return uniqueStrings(collected).sort();
-}
-
 function canonicalSourceUrl(event) {
   return event?.source_url || event?.url || "";
 }
 
 function canonicalKeyForEvent(event) {
   return slugify(
-    [event?.title || "", event?.location_name || "", parseDateOnly(event?.starts_at || "")]
+    [event?.title || "", event?.location_name || "", (event?.starts_at || "")]
       .join(" ")
       .trim()
   );
@@ -187,8 +149,8 @@ function normalizeCanonicalEvent(sourceKey, event) {
   };
 }
 
-function dedupeCanonicalEvents(events) {
-  const seen = new Set();
+export function dedupeCanonicalEvents(events) {
+  const seen = new Map();
   const result = [];
 
   for (const event of events) {
@@ -199,32 +161,43 @@ function dedupeCanonicalEvents(events) {
 
     const key = [source, sourceId, slug, url].join("|");
 
-    if (seen.has(key)) continue;
-    seen.add(key);
+    if (canceled(event)) continue;
+    if (seen.has(key)) {
+      const prior = seen.get(key);
+      prior.occurrences = [...confirmedPerformances(prior), ...confirmedPerformances(event)];
+      continue;
+    }
+    seen.set(key, event);
     result.push(event);
   }
 
   return result;
 }
 
-function buildRowsFromCanonical(events) {
+export function buildRowsFromCanonical(events) {
   const rows = [];
 
-  for (const e of events) {
+  for (const event of events) {
+   for (const performance of confirmedPerformances(event)) {
+    const e = { ...event, ...performance };
     const url = canonicalSourceUrl(e);
 
     const keyBase = [
       (e?.title || "").toLowerCase().trim(),
       normalizeUrl(url),
-      parseDateOnly(e?.starts_at || ""),
+      e?.starts_at || "",
+      e?.location_name || "",
+      e?.city || "",
     ].join("|");
 
-    const dedupe_key = e?.dedupe_key || sha1(keyBase);
+    const dedupe_key = sha1(keyBase);
 
     rows.push({
       slug: canonicalEventSlug(e),
-      canonical_key: e?.canonical_key || canonicalKeyForEvent(e),
+      canonical_key: canonicalKeyForEvent(e),
+      series_key: seriesKey(e),
       title: e?.title || "",
+      all_day: e?.is_all_day || false,
       starts_at: e?.starts_at || "",
       ends_at: e?.ends_at || "",
       location_name: e?.location_name || "",
@@ -259,32 +232,16 @@ function buildRowsFromCanonical(events) {
     });
   }
 
-  return rows;
-}
-
-function buildOccurrenceRows(events) {
-  const rows = [];
-
-  for (const e of events) {
-    const event_slug = canonicalEventSlug(e);
-    const occurrenceDates = buildOccurrenceDateList(e);
-
-    for (const occurrence_date of occurrenceDates) {
-      rows.push({
-        event_slug,
-        occurrence_date,
-        starts_at: e?.starts_at || "",
-        ends_at: e?.ends_at || "",
-        is_all_day: "true",
-        source: e?.source || "",
-        source_id: e?.source_id || "",
-        title: e?.title || "",
-        url: e?.url || "",
-      });
-    }
   }
 
   return rows;
+}
+
+export function buildOccurrenceRows(events) {
+  return events.flatMap(e => confirmedPerformances(e).map(o => ({
+    event_slug: canonicalEventSlug(e), ...o,
+    source: e.source || "", source_id: e.source_id || "", title: e.title || "", url: e.url || "",
+  })));
 }
 
 function writeJson(filePath, value) {
@@ -439,7 +396,6 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(error => { console.error(error); process.exitCode = 1; });
+}

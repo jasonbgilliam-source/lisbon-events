@@ -1,4 +1,5 @@
-import { supabaseServer } from "@/lib/supabaseServer";
+import { loadSeries } from "@/lib/eventOccurrences";
+import { matchesWindow } from "@/lib/eventSeries.mjs";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -54,8 +55,9 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
 
   const nowISO = new Date().toISOString();
-  const from = toISODate(url.searchParams.get("from"));
-  const to = toISODate(url.searchParams.get("to"));
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+  if ((from && !toISODate(from)) || (to && !toISODate(to))) return Response.json({ error: "Invalid date filter" }, { status: 400 });
   const category = url.searchParams.get("category");
   const city = url.searchParams.get("city");
   const allAges = url.searchParams.get("all_ages");
@@ -68,55 +70,33 @@ export async function GET(request: Request) {
 
   const hasExactMatchFilters = !!(titleEq || startsAtEq || locationNameEq || slugEq);
 
-  const supabase = supabaseServer();
-
-  let query = supabase
-    .from("events")
-    .select("*")
-    .order("starts_at", { ascending: true })
-    .limit(limit);
-
-  if (titleEq) query = query.eq("title", titleEq);
-  if (startsAtEq) query = query.eq("starts_at", startsAtEq);
-  if (locationNameEq) query = query.eq("location_name", locationNameEq);
-  if (slugEq) query = query.eq("slug", slugEq);
-
-  if (category) query = query.eq("category", category);
-  if (city) query = query.eq("city", city);
-
-  if (!hasExactMatchFilters) {
-    query = query.or(`ends_at.gte.${nowISO},and(ends_at.is.null,starts_at.gte.${nowISO})`);
-
-    if (from) {
-      query = query.gte("ends_at", from);
-    }
-
-    if (to) {
-      query = query.lte("starts_at", to);
-    }
-  } else {
-    if (from) query = query.gte("starts_at", from);
-    if (to) query = query.lte("starts_at", to);
+  let items: any[];
+  try {
+    const groups = await loadSeries();
+    items = groups.filter((e: any) =>
+      (!titleEq || e.title === titleEq) && (!locationNameEq || e.location_name === locationNameEq) &&
+      (!slugEq || e.members.some((m: any) => m.slug === slugEq)) &&
+      (!category || e.category === category) && (!city || e.city === city)
+    ).map((e: any) => {
+      const upcoming = e.occurrences.filter((o: any) => (hasExactMatchFilters || from || to || matchesWindow(o, nowISO, null)) && matchesWindow(o, from, to) && (!startsAtEq || o.starts_at === toISODate(startsAtEq)));
+      return { ...e, audience: normalizeAudienceForResponse(e),
+        starts_at: upcoming[0]?.starts_at, ends_at: upcoming[0]?.ends_at,
+        occurrences: e.occurrences.filter((o: any) => matchesWindow(o, nowISO, null)), matched_occurrences: upcoming };
+    }).filter((e: any) => e.matched_occurrences.length)
+      .sort((a: any, b: any) => a.starts_at.localeCompare(b.starts_at)).slice(0, limit);
+  } catch (error: any) {
+    return Response.json({ error: error.message }, { status: 500 });
   }
-
-  const { data, error } = await query;
-
-  if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  let items = (data ?? []).map((row: any) => ({
-    ...row,
-    audience: normalizeAudienceForResponse(row),
-  }));
 
   if (allAges === "true") {
     items = items.filter(isAllAgesRow);
   }
 
+  if (url.searchParams.get("view") === "calendar") {
+    items = items.flatMap((event: any) => event.matched_occurrences.map((o: any) => ({
+      ...event, ...o, slug: event.slug, id: `${event.id}::${o.starts_at}`,
+    })));
+  }
   return new Response(JSON.stringify({ items, limit, source: "events" }), {
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });

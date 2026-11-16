@@ -1,3 +1,5 @@
+import { seriesKey, lisbonDate, canceled } from "@/lib/eventSeries.mjs";
+import { readAll } from "@/lib/eventOccurrences";
 import { requireAdmin, requireCsrf } from "@/lib/adminAuth";
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
@@ -202,6 +204,10 @@ export async function POST(req: Request) {
     }
 
     const reviewedSub = applyOverrides(sub, overrides);
+    if (!reviewedSub.starts_at || Number.isNaN(Date.parse(reviewedSub.starts_at)) ||
+      (reviewedSub.ends_at && (Number.isNaN(Date.parse(reviewedSub.ends_at)) || Date.parse(reviewedSub.ends_at) < Date.parse(reviewedSub.starts_at)))) {
+      return NextResponse.json({ error: "A valid confirmed start and an end after the start are required" }, { status: 400 });
+    }
     const isCitywide = !!reviewedSub.is_citywide;
 
     if (
@@ -248,22 +254,64 @@ export async function POST(req: Request) {
       );
     }
 
-    const exactDuplicates = await findExactDuplicates({
-      supabase,
-      title: ev.title,
-      startsAt: ev.starts_at,
-      locationName: finalLocationName,
-    });
+    if (canceled(sub)) return NextResponse.json({ error: "Canceled sessions cannot be approved" }, { status: 400 });
+    const series = (await readAll("events")).filter((e: any) =>
+      (!e.status || e.status === "approved") && !canceled(e) &&
+      seriesKey(e) === seriesKey({ ...reviewedSub, location_name: finalLocationName })
+    ).sort((a: any, b: any) => String(a.created_at).localeCompare(String(b.created_at)) || a.id.localeCompare(b.id))[0];
+    const storePerformance = async (slug: string) => {
+      const { error } = await supabase.from("event_occurrences").upsert({
+        event_slug: slug, occurrence_date: lisbonDate(ev.starts_at),
+        starts_at: ev.starts_at, ends_at: ev.ends_at, is_all_day: ev.all_day,
+      }, { onConflict: "event_slug,starts_at" });
+      if (error) throw new Error(error.message);
+    };
+    const markReviewed = async () => {
+      const { error: upErr } = await supabase
+        .from("event_submissions")
+        .update({
+          title: reviewedSub.title ?? null,
+          description: reviewedSub.description ?? null,
+          starts_at: reviewedSub.starts_at ?? null,
+          ends_at: reviewedSub.ends_at ?? null,
+          location_name: reviewedSub.location_name ?? null,
+          city: reviewedSub.city ?? null,
+          address: reviewedSub.address ?? null,
+          category: reviewedSub.category ?? null,
+          organizer_email: reviewedSub.organizer_email ?? null,
+          image_url: reviewedSub.image_url ?? null,
+          ticket_url: reviewedSub.ticket_url ?? null,
+          source_url: reviewedSub.source_url ?? null,
+          all_day: reviewedSub.all_day ?? false,
+          age: reviewedSub.age ?? null,
+          audience: reviewedSub.audience ?? null,
+          youtube_url: reviewedSub.youtube_url ?? null,
+          spotify_url: reviewedSub.spotify_url ?? null,
+          status: "approved",
+          reviewer,
+          review_notes: notes ?? null,
+          approved_at: new Date().toISOString(),
+        })
+        .eq("id", id);
 
-    if (exactDuplicates.length > 0) {
-      return NextResponse.json(
-        {
-          error: "This event appears to already exist in the published events list.",
-          code: "duplicate_event",
-          duplicates: exactDuplicates,
-        },
-        { status: 409 }
-      );
+      if (upErr) throw new Error(upErr.message);
+    };
+    if (series?.slug) {
+      // Legacy listing starts are confirmed performances too. Preserve them before
+      // adding another date, so the old start never vanishes when rows appear.
+      const { data: old, error: oldError } = await supabase.from("event_occurrences")
+        .select("event_slug").eq("event_slug", series.slug).limit(1);
+      if (oldError) throw new Error(oldError.message);
+      if (!old?.length && series.starts_at) {
+        const { error } = await supabase.from("event_occurrences").upsert({
+          event_slug: series.slug, occurrence_date: lisbonDate(series.starts_at),
+          starts_at: series.starts_at, ends_at: series.ends_at, is_all_day: series.all_day || false,
+        }, { onConflict: "event_slug,starts_at" });
+        if (error) throw new Error(error.message);
+      }
+      await storePerformance(series.slug);
+      await markReviewed();
+      return NextResponse.json({ ok: true, eventId: series.id, slug: series.slug, addedPerformance: true });
     }
 
     let inserted: { id: string; audience: any } | null = null;
@@ -273,6 +321,7 @@ export async function POST(req: Request) {
         .from("events")
         .insert([
           {
+            status: "approved",
             title: ev.title,
             description: ev.description,
             starts_at: ev.starts_at,
@@ -405,35 +454,13 @@ export async function POST(req: Request) {
       }
     }
 
-    const { error: upErr } = await supabase
-      .from("event_submissions")
-      .update({
-        title: reviewedSub.title ?? null,
-        description: reviewedSub.description ?? null,
-        starts_at: reviewedSub.starts_at ?? null,
-        ends_at: reviewedSub.ends_at ?? null,
-        location_name: reviewedSub.location_name ?? null,
-        city: reviewedSub.city ?? null,
-        address: reviewedSub.address ?? null,
-        category: reviewedSub.category ?? null,
-        organizer_email: reviewedSub.organizer_email ?? null,
-        image_url: reviewedSub.image_url ?? null,
-        ticket_url: reviewedSub.ticket_url ?? null,
-        source_url: reviewedSub.source_url ?? null,
-        all_day: reviewedSub.all_day ?? false,
-        age: reviewedSub.age ?? null,
-        audience: reviewedSub.audience ?? null,
-        youtube_url: reviewedSub.youtube_url ?? null,
-        spotify_url: reviewedSub.spotify_url ?? null,
-        status: "approved",
-        reviewer,
-        review_notes: notes ?? null,
-        approved_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (upErr) {
-      return NextResponse.json({ error: upErr.message }, { status: 500 });
+    try {
+      await storePerformance(slug);
+      await markReviewed();
+    } catch (error) {
+      await supabase.from("event_occurrences").delete().eq("event_slug", slug);
+      await supabase.from("events").delete().eq("id", eventId);
+      throw error;
     }
 
     return NextResponse.json({

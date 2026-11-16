@@ -35,6 +35,7 @@ for ((i=0; i<60; i++)); do
  sleep 1
 done
 docker exec -i "$run_id-db" psql -h 127.0.0.1 -U postgres -d lisbon_test -v ON_ERROR_STOP=1 < tests/workflow/schema.sql
+docker exec -i "$run_id-db" psql -h 127.0.0.1 -U postgres -d lisbon_test -v ON_ERROR_STOP=1 < sql/series-occurrences.sql
 # Bind to loopback only. This test role bypasses RLS; see README for coverage limits.
 docker run -d --name "$run_id-rest" --network "$run_id" -p 127.0.0.1:54321:3000 \
  -e "PGRST_DB_URI=postgres://postgres:local-test-only@$run_id-db:5432/lisbon_test" \
@@ -62,3 +63,5 @@ for ((i=0; i<60; i++)); do
 done
 curl -fsS http://127.0.0.1:3100/api/ping/ >/dev/null
 "${test_env[@]}" node tests/workflow/check.mjs
+
+"${test_env[@]}" node tests/workflow/series-check.mjs

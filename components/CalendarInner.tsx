@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import FilterBar, { type EventFilters } from "@/components/FilterBar";
@@ -15,6 +16,7 @@ type EventItem = {
   description?: string | null;
   starts_at: string;
   ends_at?: string | null;
+  occurrence_date?: string;
   location_name?: string | null;
   address?: string | null;
   city?: string | null;
@@ -30,6 +32,7 @@ type EventItem = {
 };
 
 function occursOnDay(event: EventItem, day: dayjs.Dayjs) {
+  if (event.occurrence_date) return event.occurrence_date === day.format("YYYY-MM-DD");
   const start = dayjs(event.starts_at);
   if (!start.isValid()) return false;
 
@@ -77,6 +80,8 @@ function extractAudience(event: EventItem): string[] {
 }
 
 export default function CalendarInner() {
+  const initialDate = useSearchParams().get("date");
+  const initialDay = initialDate && dayjs(initialDate).isValid() ? dayjs(initialDate) : dayjs();
   const [events, setEvents] = useState<EventItem[]>([]);
   const [filters, setFilters] = useState<EventFilters>({
     search: "",
@@ -84,8 +89,8 @@ export default function CalendarInner() {
     audience: [],
     is_free: false,
   });
-  const [currentMonth, setCurrentMonth] = useState(dayjs());
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [currentMonth, setCurrentMonth] = useState(initialDay);
+  const [selectedDate, setSelectedDate] = useState(initialDay);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -95,7 +100,7 @@ export default function CalendarInner() {
       setError(null);
 
       try {
-        const res = await fetch("/api/events/list/?limit=2000", { cache: "no-store" });
+        const res = await fetch(`/api/events/list/?limit=2000&view=calendar&from=${currentMonth.startOf("month").format("YYYY-MM-DD")}&to=${currentMonth.endOf("month").format("YYYY-MM-DD")}`, { cache: "no-store" });
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok) {
@@ -113,7 +118,7 @@ export default function CalendarInner() {
     }
 
     loadEvents();
-  }, []);
+  }, [currentMonth]);
 
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
@@ -225,6 +230,8 @@ export default function CalendarInner() {
 
             return (
               <div
+                role="button"
+                aria-label={day.format("YYYY-MM-DD")}
                 key={day.format("YYYY-MM-DD")}
                 onClick={() => setSelectedDate(day)}
                 className={`border rounded-xl p-2 h-16 flex items-center justify-center cursor-pointer transition ${bgClass}`}

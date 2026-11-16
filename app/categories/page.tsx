@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { supabaseServer } from "@/lib/supabaseServer";
+import { loadUpcomingSeries } from "@/lib/eventOccurrences";
 import {
   CATEGORIES,
   audiencePreviewFromRows,
@@ -18,14 +18,9 @@ type EventLite = {
 };
 
 export default async function CategoriesPage() {
-  const supabase = supabaseServer();
-  const nowIso = new Date().toISOString();
-
-  const { data, error } = await supabase
-    .from("events")
-    .select("category,audience,starts_at,ends_at")
-    .or(`ends_at.gte.${nowIso},and(ends_at.is.null,starts_at.gte.${nowIso})`)
-    .order("starts_at", { ascending: true });
+  let data: any[] = [];
+  let error: any = null;
+  try { data = await loadUpcomingSeries(); } catch (e) { error = e; }
 
   if (error) {
     return (

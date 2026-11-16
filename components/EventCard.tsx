@@ -199,7 +199,7 @@ export default function EventCard({
 
         <div className="flex-1 p-5">
           <div className="flex justify-between items-start gap-3 mb-1">
-            <h2 className="text-xl font-semibold text-[#c94917]">{e.title}</h2>
+            <h2 className="text-xl font-semibold text-[#c94917]">{e.slug ? <Link onClick={ev => ev.stopPropagation()} href={`/events/${encodeURIComponent(e.slug)}`}>{e.title}</Link> : e.title}</h2>
 
             <div
               className="flex items-center gap-2 shrink-0"

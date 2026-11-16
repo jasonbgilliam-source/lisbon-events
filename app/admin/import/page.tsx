@@ -14,14 +14,13 @@ type SkippedRow = {
 type IngestResult = {
   ok: boolean;
   error?: string;
-  mode?: "import-current-csv";
+  mode?: "stage-current-csv";
   counts?: {
     csv_events: number;
-    existing_events: number;
-    prepared_upserts: number;
-    inserted_or_updated: number;
-    deduped_to_existing: number;
-    skipped_invalid: number;
+    pending_submissions: number;
+    skipped: number;
+    canceled: number;
+    time_conflicts: number;
   };
   skipped?: SkippedRow[];
 };
@@ -67,7 +66,7 @@ export default function AdminImportPage() {
         <div>
           <h1 className="text-2xl font-semibold">Admin Import</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Import the current <code>public/events.csv</code> into the live site database.
+            Import the current <code>public/events.csv</code> as pending submissions. Every new performance requires manual approval.
           </p>
           <p className="mt-2 text-sm text-gray-500">
             Run <code>node scripts/ingest/run.mjs</code> in the terminal first, then click this button.
@@ -79,7 +78,7 @@ export default function AdminImportPage() {
           disabled={working}
           className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
-          {working ? "Importing..." : "Import current CSV to site"}
+          {working ? "Importing..." : "Stage CSV for review"}
         </button>
       </div>
 
@@ -92,11 +91,10 @@ export default function AdminImportPage() {
       {result?.counts ? (
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Stat label="CSV rows read" value={result.counts.csv_events} />
-          <Stat label="Existing live events" value={result.counts.existing_events} />
-          <Stat label="Prepared upserts" value={result.counts.prepared_upserts} />
-          <Stat label="Inserted or updated" value={result.counts.inserted_or_updated} />
-          <Stat label="Matched existing rows" value={result.counts.deduped_to_existing} />
-          <Stat label="Skipped invalid rows" value={result.counts.skipped_invalid} />
+          <Stat label="Pending submissions staged" value={result.counts.pending_submissions} />
+          <Stat label="Skipped" value={result.counts.skipped} />
+          <Stat label="Canceled" value={result.counts.canceled} />
+          <Stat label="Time conflicts needing verification" value={result.counts.time_conflicts} />
         </div>
       ) : null}
 
